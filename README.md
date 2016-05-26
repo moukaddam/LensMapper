@@ -6,6 +6,6 @@ to determine the magnetization of the permanent magnets used in the SPICE lenses
 
 - input, 2 ascii files with a strict format: 
 	+ measured data 
-	+ simultaed magnetic field
+	+ simulated magnetic field
 
 - outout, a root file with a list of graphs and histograms determined by the user	

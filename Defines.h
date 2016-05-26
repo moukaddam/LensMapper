@@ -50,17 +50,17 @@ using namespace std;
 //#define ZOFFSET -124.20  // Zsim = - 124.2 + Zdata  Right value for now is - 124.2
                         // -124 value is just for testing
  
-#define SENSORXOFFSETX  0.0
-#define SENSORXOFFSETY  0.0
-#define SENSORXOFFSETZ  0.0
+#define SENSORXOFFSETX  +2.1
+#define SENSORXOFFSETY  +0.0
+#define SENSORXOFFSETZ  -1.8
   
-#define SENSORYOFFSETX  0.0
-#define SENSORYOFFSETY  0.0
-#define SENSORYOFFSETZ  0.0
+#define SENSORYOFFSETX  +0.0
+#define SENSORYOFFSETY  +2.1
+#define SENSORYOFFSETZ  -1.8
  
-#define SENSORZOFFSETX  0.0
-#define SENSORZOFFSETY  0.0
-#define SENSORZOFFSETZ  0.0
+#define SENSORZOFFSETX  +0.0
+#define SENSORZOFFSETY  +0.0
+#define SENSORZOFFSETZ  -1.8
  
 
  

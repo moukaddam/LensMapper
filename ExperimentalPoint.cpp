@@ -1,135 +1,129 @@
 #include "ExperimentalPoint.h"
 
-ExperimentalPoint::ExperimentalPoint(void)
-{
+ExperimentalPoint::ExperimentalPoint(void){
 //cout << "Inside ExperimentalPoint::ExperimentalPoint()" << endl;
-fSensorOffset.SetXYZ(0,0,0);
+LoadMap();
+fXSensorOffset.SetXYZ(SENSORXOFFSETX,SENSORXOFFSETY,SENSORXOFFSETZ);
+fYSensorOffset.SetXYZ(SENSORYOFFSETX,SENSORYOFFSETY,SENSORYOFFSETZ);
+fZSensorOffset.SetXYZ(SENSORZOFFSETX,SENSORZOFFSETY,SENSORZOFFSETZ);
 }
 
-ExperimentalPoint::ExperimentalPoint(double offset_x, double offset_y, double offset_z)
-{
-//cout << "Inside ExperimentalPoint::ExperimentalPoint()" << endl;
-fSensorOffset.SetXYZ(offset_x, offset_y, offset_z);
-}
-
-ExperimentalPoint::~ExperimentalPoint(void)
-{
+ExperimentalPoint::~ExperimentalPoint(void){
 //cout << "Inside ExperimentalPoint::Destructor()" << endl;
-
 }
 
+void ExperimentalPoint::CalculateCentralPosition(void){ // taking into account the level and the quadrant 
+ 
+	 //Calculate position with respect to the Mapper
+	double x,y,z;
+
+	TString label = fGrid+fGrid+Form("%d",fLocation); // AA1
+	x = fmapPosition[label].X() ; 
+	y = fmapPosition[label].Y() ;
+	// 210.0mm is the height of the firsthole, 15mm difference between holes, 5mm is the half thickness of the plate, 11.5mm is the pedestal where the probe rests 
+	// 104.8mm is the length of the probe, "L" in the catalogue however it's not ver accurate 
+	// 193.5mm is the distance from the contact surface of the pedestal to the tip of the probe
+	z = (210 + (fLevel-1)*15 + 5 ) - 193.5  ;    
+	//cout << " x y z " << x << " " << y << " " << z << endl; 
+	fPosition.SetXYZ(x,y,z); 
+}
+
+double ExperimentalPoint::CalculateRotationAngle(int MagnetQuadrant, TString Grid){ // returns  angfle in radian 
+
+if (Grid=="B") {
+	if (MagnetQuadrant==1)	return 0 ; 
+	if (MagnetQuadrant==2)	return +90 ; 
+	if (MagnetQuadrant==3)	return +180 ; 
+	if (MagnetQuadrant==4)	return +270 ; 
+	}
+if (Grid=="A") {
+	if (MagnetQuadrant==2)	return 0 ; 
+	if (MagnetQuadrant==3)	return +90 ; 
+	if (MagnetQuadrant==4)	return +180 ; 
+	if (MagnetQuadrant==1)	return +270 ; 
+	}
+if (Grid=="C") {
+	if (MagnetQuadrant==3)	return 0 ; 
+	if (MagnetQuadrant==4)	return +90 ; 
+	if (MagnetQuadrant==1)	return +180 ; 
+	if (MagnetQuadrant==2)	return +270 ; 
+	}
+if (Grid=="D") {
+	if (MagnetQuadrant==4)	return 0 ; 
+	if (MagnetQuadrant==1)	return +90 ; 
+	if (MagnetQuadrant==2)	return +180 ; 
+	if (MagnetQuadrant==3)	return +270 ; 
+	}
+
+} 
 
 //Read a line and fill parameter
-void ExperimentalPoint::ReadLineAndTreat(TString PlateLabel, Int_t MagnetQuadrant, Int_t ProbeAngle, Double_t  XR, Double_t  YT, Double_t  Z , Double_t Bx, Double_t By, Double_t Bz)
-{
-fPlateLabel = PlateLabel ;
-fMagnetQuadrant = MagnetQuadrant ; 
-fProbeAngle = ProbeAngle ;
+void ExperimentalPoint::ReadLineAndTreat(int MagnetQuadrant, TString Grid, int Location, int Level, double Bx, double By, double Bz){
 
-fPrePosition.SetXYZ(XR,YT,Z ); 
+	fGrid = Grid ;
+	fMagnetQuadrant = MagnetQuadrant ; 
+	fLocation = Location ; 
+	fLevel = Level; 
+    
+    CalculateCentralPosition() ; 
+    fXPosition = fPosition + fXSensorOffset; 
+    fYPosition = fPosition + fYSensorOffset; 
+    fZPosition = fPosition + fZSensorOffset; 
+    fBField.SetXYZ(Bx/10.,By/10.,Bz/10.); // turn to millitesla 
+   
+    //correct for rotations 
+    double angle = CalculateRotationAngle(MagnetQuadrant, Grid); 
+    //cout << MagnetQuadrant << " " << Grid <<  " rotation angle "  << angle << endl ;
+    fXPosition.RotateZ(angle*TMath::DegToRad()); 
+    fYPosition.RotateZ(angle*TMath::DegToRad()); 
+    fZPosition.RotateZ(angle*TMath::DegToRad()); 
+	fBField.RotateZ(angle*TMath::DegToRad()); 
 
-	if(fProbeAngle == 0){
-		// No operation on sensor positions
-		fBField.SetXYZ(Bx,By,Bz);
-    			      }
-	else if(fProbeAngle == 90){
-		fBField.SetXYZ(-By,Bx,Bz);
-		fSensorOffset.SetXYZ(-fSensorOffset.Y(),fSensorOffset.X(),fSensorOffset.Z()) ;
-				  }
-	else if(fProbeAngle == 180){
-		fBField.SetXYZ(-Bx,-By,Bz);
-		fSensorOffset.SetXYZ(-fSensorOffset.X(),-fSensorOffset.Y(),fSensorOffset.Z()) ;
-	    			  }
-	else if(fProbeAngle == 270){
-		fBField.SetXYZ(By,-Bx,Bz);
-		fSensorOffset.SetXYZ( fSensorOffset.Y(),-fSensorOffset.X(),fSensorOffset.Z()) ;
-				  }
-				  
-	
-Treat();
-
-
+	cin.get(); 
 }
 
 
-void ExperimentalPoint::SetSensorOffset( double x, double y, double z )
-{
-fSensorOffset.SetXYZ(x,y,z);
-}
+void ExperimentalPoint::ShowParameters(void){
+	cout<<" /////////////////////// ShowParameters /////////////////////// "<<endl;
+	cout<<endl<<"Plate label : "<<fGrid<<endl;
+	cout<<endl<<"Magnet Quadrant : "<<fMagnetQuadrant <<endl;
+	cout<<endl<<"Probe angle : "<<fProbeAngle <<endl;
+	cout<<endl<<"Magnetic Field : "<<fBField.X()<<" ; "<<fBField.Y()<<" ; "<<fBField.Z()<<endl;
+	cout<<endl<<"Position Central  : "<<fPosition.X()<<" ; "<<fPosition.Y()<<" ; "<<fPosition.Z()<<endl;
+	cout<<endl<<"Position Sensor X : "<<fXPosition.X()<<" ; "<<fXPosition.Y()<<" ; "<<fXPosition.Z()<<endl;
+	cout<<endl<<"Position Sensor Y : "<<fYPosition.X()<<" ; "<<fYPosition.Y()<<" ; "<<fYPosition.Z()<<endl;
+	cout<<endl<<"Position Sensor Z : "<<fZPosition.X()<<" ; "<<fZPosition.Y()<<" ; "<<fZPosition.Z()<<endl;
+	cout<<" //////////////////////////////////////////////////////////////// "<<endl;
 
-void ExperimentalPoint::ShowParameters(void)
-{
-cout<<" /////////////////////// ShowParameters /////////////////////// "<<endl;
-cout<<endl<<"Plate label : "<<fPlateLabel<<endl;
-cout<<endl<<"Magnet Quadrant : "<<fMagnetQuadrant <<endl;
-cout<<endl<<"Probe angle : "<<fProbeAngle <<endl;
-cout<<endl<<"Magnetic Field : "<<fBField.X()<<" ; "<<fBField.Y()<<" ; "<<fBField.Z()<<endl;
-cout<<endl<<"Pre-treated Position : "<<fPrePosition.X()<<" ; "<<fPrePosition.Y()<<" ; "<<fPrePosition.Z()<<endl;
-cout<<endl<<"Position : "<<fPosition.X()<<" ; "<<fPosition.Y()<<" ; "<<fPosition.Z()<<endl;
-cout<<" //////////////////////////////////////////////////////////////// "<<endl;
 }
 
 
 //Clear all parameters
-void ExperimentalPoint::ClearParameters()
-{
-fPlateLabel = "NULL" ;
-fMagnetQuadrant = -100 ; 
-fProbeAngle = -100 ;
-fBField.SetXYZ(-100,-100,-100); 
-fBFieldMag=-100;
-fPrePosition.SetXYZ(-100,-100,-100);
-fPosition.SetXYZ(-100,-100,-100);
+void ExperimentalPoint::ClearParameters(){
+	fGrid = "NULL" ;
+	fMagnetQuadrant = -100 ; 
+	fProbeAngle = -100 ;
+	fBField.SetXYZ(-100,-100,-100); 
+	fBFieldMag=-100;
+	fPosition.SetXYZ(-100,-100,-100);
+	fXPosition.SetXYZ(-100,-100,-100);
+	fYPosition.SetXYZ(-100,-100,-100);
+	fZPosition.SetXYZ(-100,-100,-100);
 }
 
-//convert  to absolute positions taking into account fPlateLabel, fMagnetQuadrant, fProbe
-    void ExperimentalPoint::Treat()// this could be automatic
-{
+void ExperimentalPoint::LoadMap(){
 
-    if (fPlateLabel=="A" || fPlateLabel=="B" || fPlateLabel=="B'") {
-        
-        Double_t r=0;
-        //Double_t r0=0;
-        Double_t theta=0;
+	TString pos; 
+	double X, Y ;
 
-           // if (fPrePosition.Y() == 45) r0 = 20; // 2 cm
-           // else r0 = 20.*10./7. ; //cf the mapper by Robert Henderson
-           
-        r =  fPrePosition.X() ; //cf the mapper by Robert Henderson
-        theta = fPrePosition.Y()*TMath::Pi()/180.0; // turn angle in rad
-        
-        //offset correction
-        fPosition.SetX( r*TMath::Cos(theta) + fSensorOffset.X());
-        fPosition.SetY( r*TMath::Sin(theta) + fSensorOffset.Y());
-        fPosition.SetZ( fPrePosition.Z()    + fSensorOffset.Z());
-        
-               
-        // x and y -> R theta
-        fPositionAngle = theta*TMath::RadToDeg(); // in degrees   fPosition.Phi()*TMath::RadToDeg();
-        fPositionRadius = fPosition.Perp(); // in mm 
+	ifstream file;
+	file.open("./input/PositionMap.txt");
 
-       //Inspection
-       //fPrePosition.Dump();
-       //fPosition.Dump();   
+	while (file>>pos>>X>>Y){
+		cout << " pos " << pos << "  " << X << " " << Y << endl ; 
+		fmapPosition.insert ( std::pair<TString,TVector2>(pos,TVector2(X,Y)));
+	}
 
-    }
-    else { // fPlateLabel=="C" or "D"
-    
-        fPosition.SetX( fPrePosition.X() + fSensorOffset.X());
-        fPosition.SetY( fPrePosition.Y() + fSensorOffset.Y());
-        fPosition.SetZ( fPrePosition.Z() + fSensorOffset.Z());
-
-        // x and y -> R theta
-        fPositionAngle = fPosition.Phi() * 180/TMath::Pi(); // in degrees
-        fPositionRadius = fPosition.Perp(); // in mm 
-    }
-    
-
-
-// absolute magnitudes
-fBFieldMag=fBField.Mag(); 
+	cout << "  finished reading the position map. " << endl ; 
 }
-
-
-
 
