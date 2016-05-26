@@ -104,7 +104,6 @@ void ExperimentalPoint::ClearParameters(){
 	fMagnetQuadrant = -100 ; 
 	fProbeAngle = -100 ;
 	fBField.SetXYZ(-100,-100,-100); 
-	fBFieldMag=-100;
 	fPosition.SetXYZ(-100,-100,-100);
 	fXPosition.SetXYZ(-100,-100,-100);
 	fYPosition.SetXYZ(-100,-100,-100);
