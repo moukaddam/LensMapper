@@ -48,10 +48,9 @@ ExperimentalPoint(void);
 
 void ClearParameters(void);
 void ShowParameters(void);
-void Treat(void);// this could be automatic
 void ReadLineAndTreat(int MagnetQuadrant, TString Grid, int Location, int Level , double Bx, double By, double Bz);
 
-TVector3 CalculateCentralPosition();
+void CalculateCentralPosition();
 double CalculateRotationAngle(int MagnetQuadrant, TString Grid); // returns  angfle in radian 
 
 void LoadMap();
