@@ -176,7 +176,7 @@ int graph_counter = 0 ;
 						
 		   graph_counter++;
 		   
-			}
+		}
    }
    
    
@@ -190,8 +190,7 @@ int graph_counter = 0 ;
 
 
 
-TGraphErrors* GraphManager::GetExp1dGraphCartesian(double y)   // do the same thing as for the polar interpolation
-{
+TGraphErrors* GraphManager::GetExp1dGraphCartesian(double y){   // do the same thing as for the polar interpolation
 
 // get size
     Int_t np   = fExpX.size();
@@ -204,30 +203,26 @@ TGraphErrors* GraphManager::GetExp1dGraphCartesian(double y)   // do the same th
     Double_t* bz_array = GetArrayFromCVector(fExpBz) ;
     Double_t* bmag_array = GetArrayFromCVector(fExpBmag) ;
     
-    
     //Errors
-    //create
     Double_t *ebx=0, *eby=0, *ebz=0, *ebmag=0;
     Double_t *ex=0, *ey=0, *ez=0;
     // allocate 
     ex = new Double_t[np];
     ey = new Double_t[np];
     ez = new Double_t[np];
-
     ebx = new Double_t[np];
     eby = new Double_t[np];
     ebz = new Double_t[np];
     ebmag = new Double_t[np]; // for mag   (must propagate the errors)
-    //fill
-    for (Int_t N=0; N<np;N++)
-    {
-    ex[N] = 1.0; // error 1mm
-    ey[N] = 1.0;
-    ez[N] = 1.0;
-    ebx[N] = 0.02; // error 0.2 mT
-    eby[N] = 0.02;
-    ebz[N] = 0.02;
-    ebmag[N] = 0.02; // CHECK (must propagate errors)
+
+    for (Int_t N=0; N<np;N++)  {
+	    ex[N] = 1.0; // error 1mm
+	    ey[N] = 1.0;
+	    ez[N] = 1.0;
+	    ebx[N] = 0.02; // error 0.2 mT
+	    eby[N] = 0.02;
+	    ebz[N] = 0.02;
+	    ebmag[N] = 0.02; // CHECK (must propagate errors)
     }
 
 //inspection 
@@ -239,7 +234,6 @@ cout<<i<<":"<<ex[i]<<" "<<ey[i]<<" "<<ez[i]<<endl;
 }
 */
 
-
     TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
     fGraph->SetTitle("Experimental Data;x (mm);Magnetic Field (mT)");
     fGraph->SetMarkerSize(0.8);
@@ -248,18 +242,15 @@ cout<<i<<":"<<ex[i]<<" "<<ey[i]<<" "<<ez[i]<<endl;
     fGraph->SetLineColor(kBlue-3);
     fGraph->SetLineWidth(2);
    
-
-double yvalue = y;
-int graph_counter = 0 ; 
-   for (Int_t N=0; N<np; N=N+1) {
-	if(y_array[N] == yvalue )
-		{
-		   fGraph->SetPoint(graph_counter,x_array[N],bmag_array[N]);
-		   fGraph->SetPointError(graph_counter,ex[N],ebmag[N]);
-                   graph_counter++;
+	double yvalue = y;
+	int graph_counter = 0 ; 
+	for (Int_t N=0; N<np; N=N+1) {
+		if( fabs(y_array[N]-yvalue)<0.01 )	{
+			fGraph->SetPoint(graph_counter,x_array[N],bmag_array[N]);
+			fGraph->SetPointError(graph_counter,ex[N],ebmag[N]);
+			graph_counter++;
 		}
-        }
-   
+	}
 	
    return fGraph ;
 }
@@ -292,19 +283,13 @@ void GraphManager::GetSim1dGraphPolar(TString NameTitle, double angle) // NEW
     
    
     //Errors
-    //create
     Double_t *ebmag=0;
     Double_t *etheta=0;
-  
-      // allocate 
     etheta = new Double_t[np];
     ebmag = new Double_t[np]; // for mag   (must propagate the errors)
-    
-    //fill
-    for (Int_t N=0; N<np;N++)
-    {
-    etheta[N] = 1.0; // CHECK (must propagate errors)    
-    ebmag[N] = 0.02; // CHECK (must propagate errors) these errors are really small and  negligible
+    for (Int_t N=0; N<np;N++)    {
+	    etheta[N] = 1.0; // CHECK (must propagate errors)    
+	    ebmag[N] = 0.02; // CHECK (must propagate errors) these errors are really small and  negligible
     }
 
 
@@ -320,7 +305,7 @@ void GraphManager::GetSim1dGraphPolar(TString NameTitle, double angle) // NEW
 int graph_counter = 0 ; 
    for (Int_t N=0; N<np; N=N+1)
    {
-		if(theta_array[N] == angle )
+		if(fabs(theta_array[N]-angle)<0.01) 
 			{
 			  
 			if(NameTitle=="Bmag")	{
@@ -451,17 +436,17 @@ double GraphManager::GetExpBField(double angle, double radius,TString NameTitle)
    	Int_t np   = fExpX.size();
 
 	Double_t* r_array = GetArrayFromCVector(fExpR) ;
-    	Double_t* theta_array = GetArrayFromCVector(fExpTheta) ;
-    	Double_t* bx_array = GetArrayFromCVector(fExpBx) ;
-    	Double_t* by_array = GetArrayFromCVector(fExpBy) ;
-    	Double_t* bz_array = GetArrayFromCVector(fExpBz) ;
+	Double_t* theta_array = GetArrayFromCVector(fExpTheta) ;
+	Double_t* bx_array = GetArrayFromCVector(fExpBx) ;
+	Double_t* by_array = GetArrayFromCVector(fExpBy) ;
+	Double_t* bz_array = GetArrayFromCVector(fExpBz) ;
 	Double_t* bmag_array = GetArrayFromCVector(fExpBmag);
 
 
 	int graph_counter = 0 ; 
    	for (Int_t N=0; N<np; N++) 
 	{
-		if(theta_array[N] == angle && r_array[N] == radius )
+		if( fabs(theta_array[N]-angle)<0.01 && fabs(r_array[N]-radius)<0.01 )
 		{
 			if(NameTitle == "Bx")
 				output = bx_array[N];

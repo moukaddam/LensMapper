@@ -1,22 +1,18 @@
 #include "ExperimentalPoint.h"
 
 ExperimentalPoint::ExperimentalPoint(void){
-//cout << "Inside ExperimentalPoint::ExperimentalPoint()" << endl;
-LoadMap();
-fXSensorOffset.SetXYZ(SENSORXOFFSETX,SENSORXOFFSETY,SENSORXOFFSETZ);
-fYSensorOffset.SetXYZ(SENSORYOFFSETX,SENSORYOFFSETY,SENSORYOFFSETZ);
-fZSensorOffset.SetXYZ(SENSORZOFFSETX,SENSORZOFFSETY,SENSORZOFFSETZ);
+	LoadMap();
+	fSensorOffsetX.SetXYZ(SENSORXOFFSETX,SENSORXOFFSETY,SENSORXOFFSETZ); 
+    fSensorOffsetY.SetXYZ(SENSORYOFFSETX,SENSORYOFFSETY,SENSORYOFFSETZ); 
+    fSensorOffsetZ.SetXYZ(SENSORZOFFSETX,SENSORZOFFSETY,SENSORZOFFSETZ); 
 }
 
-ExperimentalPoint::~ExperimentalPoint(void){
-//cout << "Inside ExperimentalPoint::Destructor()" << endl;
-}
+ExperimentalPoint::~ExperimentalPoint(void){}
 
 void ExperimentalPoint::CalculateCentralPosition(void){ // taking into account the level and the quadrant 
  
 	 //Calculate position with respect to the Mapper
 	double x,y,z;
-
 	TString label = fGrid+fGrid+Form("%d",fLocation); // AA1
 	x = fmapPosition[label].X() ; 
 	y = fmapPosition[label].Y() ;
@@ -59,25 +55,29 @@ if (Grid=="D") {
 
 //Read a line and fill parameter
 void ExperimentalPoint::ReadLineAndTreat(int MagnetQuadrant, TString Grid, int Location, int Level, double Bx, double By, double Bz){
-
 	fGrid = Grid ;
 	fMagnetQuadrant = MagnetQuadrant ; 
 	fLocation = Location ; 
 	fLevel = Level; 
     
     CalculateCentralPosition() ; 
-    fXPosition = fPosition + fXSensorOffset; 
-    fYPosition = fPosition + fYSensorOffset; 
-    fZPosition = fPosition + fZSensorOffset; 
+    fSensorPositionX = fPosition + fSensorOffsetX; 
+    fSensorPositionY = fPosition + fSensorOffsetY; 
+    fSensorPositionZ = fPosition + fSensorOffsetZ; 
     fBField.SetXYZ(Bx/10.,By/10.,Bz/10.); // turn to millitesla 
-   
+    CheckTag(); 
+    ShowParameters();
+
     //correct for rotations 
-    double angle = CalculateRotationAngle(MagnetQuadrant, Grid); 
-    //cout << MagnetQuadrant << " " << Grid <<  " rotation angle "  << angle << endl ;
-    fXPosition.RotateZ(angle*TMath::DegToRad()); 
-    fYPosition.RotateZ(angle*TMath::DegToRad()); 
-    fZPosition.RotateZ(angle*TMath::DegToRad()); 
+    double angle = CalculateRotationAngle(MagnetQuadrant, Grid);
+    fPosition.RotateZ(angle*TMath::DegToRad()); 
+    fSensorPositionX.RotateZ(angle*TMath::DegToRad()); 
+    fSensorPositionY.RotateZ(angle*TMath::DegToRad()); 
+    fSensorPositionZ.RotateZ(angle*TMath::DegToRad()); 
+
 	fBField.RotateZ(angle*TMath::DegToRad()); 
+    CheckTag();
+    ShowParameters(); 
 
 	cin.get(); 
 }
@@ -85,44 +85,52 @@ void ExperimentalPoint::ReadLineAndTreat(int MagnetQuadrant, TString Grid, int L
 
 void ExperimentalPoint::ShowParameters(void){
 	cout<<" /////////////////////// ShowParameters /////////////////////// "<<endl;
-	cout<<endl<<"Plate label : "<<fGrid<<endl;
-	cout<<endl<<"Magnet Quadrant : "<<fMagnetQuadrant <<endl;
-	cout<<endl<<"Probe angle : "<<fProbeAngle <<endl;
-	cout<<endl<<"Magnetic Field : "<<fBField.X()<<" ; "<<fBField.Y()<<" ; "<<fBField.Z()<<endl;
-	cout<<endl<<"Position Central  : "<<fPosition.X()<<" ; "<<fPosition.Y()<<" ; "<<fPosition.Z()<<endl;
-	cout<<endl<<"Position Sensor X : "<<fXPosition.X()<<" ; "<<fXPosition.Y()<<" ; "<<fXPosition.Z()<<endl;
-	cout<<endl<<"Position Sensor Y : "<<fYPosition.X()<<" ; "<<fYPosition.Y()<<" ; "<<fYPosition.Z()<<endl;
-	cout<<endl<<"Position Sensor Z : "<<fZPosition.X()<<" ; "<<fZPosition.Y()<<" ; "<<fZPosition.Z()<<endl;
-	cout<<" //////////////////////////////////////////////////////////////// "<<endl;
+	cout<<endl<<"Grid (Pattern)              : "<<fGrid<<endl;
+	cout<<endl<<"Magnet Quadrant             : "<<fMagnetQuadrant <<endl;
+	cout<<endl<<"Probe angle (deg)           : "<<fProbeAngle <<endl;
+	cout<<endl<<"Magnetic Field (mT)         : "<<fBField.X()<<" ; "<<fBField.Y()<<" ; "<<fBField.Z()<<endl;
+	cout<<endl<<"Position Central (mm)       : "<<fPosition.X()<<" ; "<<fPosition.Y()<<" ; "<<fPosition.Z()<<endl;
+	cout<<endl<<"Position Sensor (mm)  X     : "<<fSensorPositionX.X()<<" ; "<<fSensorPositionX.Y()<<" ; "<<fSensorPositionX.Z()<<endl;
+	cout<<endl<<"Position Sensor (mm)  Y     : "<<fSensorPositionY.X()<<" ; "<<fSensorPositionY.Y()<<" ; "<<fSensorPositionY.Z()<<endl;
+	cout<<endl<<"Position Sensor (mm)  Z     : "<<fSensorPositionZ.X()<<" ; "<<fSensorPositionZ.Y()<<" ; "<<fSensorPositionZ.Z()<<endl;
+	cout<<endl<<"Sensor tag (X,Y,Z)==(0,1,2) : "<<fSensorTag<<endl;
+	cout<<endl<<" //////////////////////////////////////////////////////////////// "<<endl;
 
 }
 
+void ExperimentalPoint::CheckTag(){
+	if (fabs(fBField.X()) > 0 ) fSensorTag = 0; 
+	if (fabs(fBField.Y()) > 0 ) fSensorTag = 1; 
+    if (fabs(fBField.Z()) > 0 ) fSensorTag = 2; 
+}
+
+int ExperimentalPoint::GetTag(){
+	return fSensorTag ; 
+}
 
 //Clear all parameters
 void ExperimentalPoint::ClearParameters(){
 	fGrid = "NULL" ;
-	fMagnetQuadrant = -100 ; 
-	fProbeAngle = -100 ;
-	fBField.SetXYZ(-100,-100,-100); 
-	fPosition.SetXYZ(-100,-100,-100);
-	fXPosition.SetXYZ(-100,-100,-100);
-	fYPosition.SetXYZ(-100,-100,-100);
-	fZPosition.SetXYZ(-100,-100,-100);
+	fMagnetQuadrant = -10000 ; 
+	fProbeAngle = 0 ;
+	fBField.SetXYZ(-10000,-10000,-10000); 
+	fPosition.SetXYZ(-10000,-10000,-10000);
+	fSensorPositionX.SetXYZ(-10000,-10000,-10000);
+	fSensorPositionY.SetXYZ(-10000,-10000,-10000);
+	fSensorPositionZ.SetXYZ(-10000,-10000,-10000);
+
 }
 
 void ExperimentalPoint::LoadMap(){
-
 	TString pos; 
 	double X, Y ;
-
 	ifstream file;
-	file.open("./input/PositionMap.txt");
 
+	file.open("./input/PositionMap.txt");
 	while (file>>pos>>X>>Y){
-		cout << " pos " << pos << "  " << X << " " << Y << endl ; 
+		//cout << " pos " << pos << "  " << X << " " << Y << endl ; 
 		fmapPosition.insert ( std::pair<TString,TVector2>(pos,TVector2(X,Y)));
 	}
-
 	cout << "  finished reading the position map. " << endl ; 
 }
 

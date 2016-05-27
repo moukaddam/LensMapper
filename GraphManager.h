@@ -1,3 +1,10 @@
+/*
+Graph Manager is a class that keeps a record of all the measured values and their correspondent simulated values
+
+
+
+*/
+
 #ifndef _GRAPHMANAGER_CLASS
 #define _GRAPHMANAGER_CLASS
 
@@ -19,18 +26,15 @@ class GraphManager
 vector<Double_t> fExpX; 
 vector<Double_t> fExpY; 
 vector<Double_t> fExpZ; 
-
 vector<Double_t> fExpR;  
 vector<Double_t> fExpTheta;
 
-
 // Now we consider the same position error on all the sensors 
-vector<Double_t> fExpXErr; //New
-vector<Double_t> fExpYErr; //New
-vector<Double_t> fExpZErr; //New
-
-vector<Double_t> fExpRErr;   //New
-vector<Double_t> fExpThetaErr;  //New
+vector<Double_t> fExpXErr; 
+vector<Double_t> fExpYErr;
+vector<Double_t> fExpZErr; 
+vector<Double_t> fExpRErr;   
+vector<Double_t> fExpThetaErr; 
 
 //Experimental Field
 vector<Double_t> fExpBx;
@@ -38,13 +42,12 @@ vector<Double_t> fExpBy;
 vector<Double_t> fExpBz;
 vector<Double_t> fExpBmag ;
 
-vector<Double_t> fExpBxErr;    //New
-vector<Double_t> fExpByErr;    //New
-vector<Double_t> fExpBzErr;    //New
-vector<Double_t> fExpBmagErr;  //New
+vector<Double_t> fExpBxErr;    
+vector<Double_t> fExpByErr;    
+vector<Double_t> fExpBzErr;   
+vector<Double_t> fExpBmagErr;
 
-
-//Simulated field
+//Simulated field 
 vector<Double_t> fSimBx;
 vector<Double_t> fSimBy;
 vector<Double_t> fSimBz;

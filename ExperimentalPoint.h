@@ -13,8 +13,6 @@
 #include "fstream"
 using namespace std;
 
-
-
 #define SENSORXOFFSETX  +2.1
 #define SENSORXOFFSETY  +0.0
 #define SENSORXOFFSETZ  -1.8
@@ -40,16 +38,17 @@ double fMagnetQuadrant ; // Q12 , Q23, Q34, Q41 (will be fixed by the flat tip) 
 double fProbeAngle ; // 0, 90, 180, 260  (counter clock wise )
 int fLocation ; // an integer corresponding to the location 
 int fLevel ; // an integer corresponding to the level of the mapper  (1 to 8, 1 being the top)
+int fSensorTag ; // 0,1,2 --> X,Y,Z (sensor will change orientation in some mapperPlate vs Lens configurations)
 
 // NEW this will be used to correct the sensor position
 TVector3 fPosition; //central position
-TVector3 fXSensorOffset ; 
-TVector3 fXPosition; //position after conversion
-TVector3 fYSensorOffset ; 
-TVector3 fYPosition; //position after conversion
-TVector3 fZSensorOffset ; 
-TVector3 fZPosition; //position after conversion
-TVector3 fBField; //magnetic field 
+TVector3 fSensorOffsetX ; // offset of sensor from the central position 
+TVector3 fSensorPositionX; //position of sensor X
+TVector3 fSensorOffsetY ; // offset of sensor from the central position 
+TVector3 fSensorPositionY; //position of sensor Y
+TVector3 fSensorOffsetZ ; // offset of sensor from the central position 
+TVector3 fSensorPositionZ; //position of sensor Z
+TVector3 fBField; //magnetic field, it will be filled with one value, but keeping it as a vector will make it easy to handle rotations
 
 //Methodes
 ExperimentalPoint(void);
@@ -57,9 +56,11 @@ ExperimentalPoint(void);
 
 void ClearParameters(void);
 void ShowParameters(void);
-void ReadLineAndTreat(int MagnetQuadrant, TString Grid, int Location, int Level , double Bx, double By, double Bz);
 void CalculateCentralPosition();
+void ReadLineAndTreat(int MagnetQuadrant, TString Grid, int Location, int Level , double Bx, double By, double Bz);
 double CalculateRotationAngle(int MagnetQuadrant, TString Grid); // returns  angfle in radian 
+void CheckTag(); // correct the tag
+int GetTag(); // returns the tag of direction 
 
 void LoadMap(); // load the map for positions in the mapper plate, Shaun Georges's drawings are used (can be found on the vault)
 };
