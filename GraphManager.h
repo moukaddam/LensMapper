@@ -37,28 +37,18 @@ vector<Double_t> fExpRErr;
 vector<Double_t> fExpThetaErr; 
 
 //Experimental Field
-vector<Double_t> fExpBx;
-vector<Double_t> fExpBy;
-vector<Double_t> fExpBz;
-vector<Double_t> fExpBmag ;
-
-vector<Double_t> fExpBxErr;    
-vector<Double_t> fExpByErr;    
-vector<Double_t> fExpBzErr;   
-vector<Double_t> fExpBmagErr;
+vector<Double_t> fExpB ; 
+vector<Double_t> fExpBErr;
 
 //Simulated field 
-vector<Double_t> fSimBx;
-vector<Double_t> fSimBy;
-vector<Double_t> fSimBz;
-vector<Double_t> fSimBmag ;
+vector<Double_t> fSimB;
 
 
 //Methodes
 GraphManager(void );
 ~GraphManager(void);
 
-void FillVectors(Int_t datatype, Double_t x, Double_t y, Double_t z, Double_t r, Double_t theta, Double_t bx, Double_t by, Double_t bz);
+void FillVectors(Int_t datatype, Double_t x, Double_t y, Double_t z, Double_t r, Double_t theta, Double_t b);
 void ShowVectorSizes(void) ;
 void ShowVectorsContent(void) ;
 void Clear(void) ;

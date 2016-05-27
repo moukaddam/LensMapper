@@ -106,14 +106,6 @@ Int_t d_buffer=-1;
 Int_t counter1=0; // counter on the first lines
 Int_t counter2=0; // counter on the first lines
 
-//FORMAT : A 90 12 -1 -1 -140  -0.000397326 0.000397326 -0.000341054
-TString  Grid="buffer";
-Double_t Quadrant(0);
-Double_t XR(0), YT(0), Z(0) ;
-Double_t Level(0) ;
-Int_t Position; 
-Double_t BX(0), BY(0), BZ(0);
-
 // read the first lines
 Int_t dimx_2, dimy_2, dimz_2;
 input_sim>>dimx_2>>dimy_2>>dimz_2;
@@ -133,8 +125,8 @@ getline(input_sim,s_buffer);
 cout<<counter2<<s_buffer<<endl;
 
 // read and fill
-// BX BY BZ Z are previously declared 
-Double_t X(0), Y(0), EX(-100), EY(-100), EZ(-100), Perm(0);
+Double_t X(0), Y(0), Z(0), EX(-100), EY(-100), EZ(-100), Perm(0);
+Double_t BX(0), BY(0), BZ(0);
 Int_t line=0;
 
 while ( !input_sim.eof() ) {
@@ -234,15 +226,18 @@ std::map<Double_t,GraphManager> mapExpFieldX;
 std::map<Double_t,GraphManager> mapExpFieldY;
 std::map<Double_t,GraphManager> mapExpFieldZ;   
 std::map<Double_t,GraphManager>::iterator it;
-GraphManager AllData; 
 
 //ExperimentalPoint* ExpPointMag = new ExperimentalPoint();
 ExperimentalPoint* ExpPoint[3]; 
 ExpPoint[0] = new ExperimentalPoint();  // Attention, Sensor X,Y or Z measures in all directions (not necessarly what the 
 										// name suggest). This is due to the fact that lens is rotated with respect to mapper plate in some cases
 
-// dump the first lines from the top
-s_buffer="buffer";
+//FORMAT : 1	A	1	3	-904.5	568.7	232.7
+TString  Grid=" ";
+Double_t Quadrant(0);
+Double_t Level(0);
+Int_t Position ; 
+s_buffer=" ";
 d_buffer=-1;
 counter1=0; // counter on the first lines
 
@@ -260,51 +255,52 @@ while (input_exp >> Quadrant){
 	ExpPoint[0]->ClearParameters();	
 	ExpPoint[0]->ReadLineAndTreat( Quadrant, Grid, Position, Level , BX , BY , BZ); 
 
-	mapExpField[0].FillVectors(0 ,// 0 for exp, else  simu
+	mapExpField[0].FillVectors(0,// 0 for exp, else  simu
 		ExpPoint[0]->fSensorPositionX.X(), 
 		ExpPoint[0]->fSensorPositionX.Y(),
 		ExpPoint[0]->fSensorPositionX.Z(), 
 		ExpPoint[0]->fSensorPositionX.Perp(),
 		ExpPoint[0]->fSensorPositionX.Phi()*TMath::RadToDeg(),
-		ExpPoint[0]->fBField.X(),0,0);
+		ExpPoint[0]->fBField.X());
 
-	mapExpField[1].FillVectors(0 ,// 0 for exp, else  simu
+	mapExpField[1].FillVectors(0,// 0 for exp, else  simu
 		ExpPoint[0]->fSensorPositionY.X(), 
 		ExpPoint[0]->fSensorPositionY.Y(),
 		ExpPoint[0]->fSensorPositionY.Z(), 
 		ExpPoint[0]->fSensorPositionY.Perp(),
 		ExpPoint[0]->fSensorPositionY.Phi()*TMath::RadToDeg(),
-		0,ExpPoint[0]->fBField.Y(),0);
+		ExpPoint[0]->fBField.Y());
 
-	mapExpField[2].FillVectors(0 ,// 0 for exp, else  simu
+	mapExpField[2].FillVectors(0,// 0 for exp, else  simu
 		ExpPoint[0]->fSensorPositionZ.X(), 
 		ExpPoint[0]->fSensorPositionZ.Y(),
 		ExpPoint[0]->fSensorPositionZ.Z(), 
 		ExpPoint[0]->fSensorPositionZ.Perp(),
 		ExpPoint[0]->fSensorPositionZ.Phi()*TMath::RadToDeg(),
-		0,0,ExpPoint[0]->fBField.Z());
+		ExpPoint[0]->fBField.Z());
+
+	mapExpField[3].FillVectors(0,// 0 for exp, else  simu
+		ExpPoint[0]->fPosition.X(), 
+		ExpPoint[0]->fPosition.Y(),
+		ExpPoint[0]->fPosition.Z(), 
+		ExpPoint[0]->fSensorPositionZ.Perp(),
+		ExpPoint[0]->fSensorPositionZ.Phi()*TMath::RadToDeg(),
+		ExpPoint[0]->fBField.Mag());
+
+	mapExpField[4].FillVectors(0,// 0 for exp, else  simu
+		ExpPoint[0]->fPosition.X(), 
+		ExpPoint[0]->fPosition.Y(),
+		ExpPoint[0]->fPosition.Z(), 
+		ExpPoint[0]->fSensorPositionZ.Perp(),
+		ExpPoint[0]->fSensorPositionZ.Phi()*TMath::RadToDeg(),
+		ExpPoint[0]->fBField.Perp());
+
   }
 
 /////////////////////////////
 ///////////////////////////// Determine the error from the simulation of all experimental points ////////////////////////
 /////////////////////////////
 
-
-for (unsigned i = 0 ; i< AllData.fExpX.size() ;  i++ ){
-	// store inside the error containers eBxyz from HistBxyz
-	// these values are already corrected for offset
-	double X = AllData.fExpX.at(i) ;
-	double Y = AllData.fExpY.at(i) ;
-	double Z = AllData.fExpZ.at(i) ;
-	//cout << "X Y Z " << X <<"  "<< Y <<"  "<< Z <<endl;
-	AllData.fExpBxErr.push_back(SimBxManager->GetInterpolationOnePointError(X,Y,Z));
-	AllData.fExpByErr.push_back(SimByManager->GetInterpolationOnePointError(X,Y,Z));
-	AllData.fExpBzErr.push_back(SimBzManager->GetInterpolationOnePointError(X,Y,Z));
-
-	AllData.fSimBx.push_back(SimBxManager->GetInterpolationOnePoint(X,Y,Z));
-	AllData.fSimBy.push_back(SimByManager->GetInterpolationOnePoint(X,Y,Z));
-	AllData.fSimBz.push_back(SimBzManager->GetInterpolationOnePoint(X,Y,Z));
-	}
 /*
 for(it = mapExpFieldMag.begin(); it != mapExpFieldMag.end(); ++it){
 
@@ -324,7 +320,6 @@ for(it = mapExpFieldMag.begin(); it != mapExpFieldMag.end(); ++it){
 		(*it).second.fSimBz.push_back(SimBzManager->GetInterpolationOnePoint(X,Y,Z)); // CHECK make the same for mag and tan..
 		}
 }
-*/
 
 for(it = mapExpFieldX.begin(); it != mapExpFieldX.end(); ++it){
 
@@ -334,13 +329,12 @@ for(it = mapExpFieldX.begin(); it != mapExpFieldX.end(); ++it){
 		double Y = (*it).second.fExpY.at(i) ;
 		double Z = (*it).second.fExpZ.at(i) ;
 		//cout << "X Y Z " << X <<"  "<< Y <<"  "<< Z <<endl;
-		(*it).second.fExpBxErr.push_back(SimBxManager->GetInterpolationOnePointError(X,Y,Z));// CHECK make the same for mag and tan..
-		(*it).second.fSimBx.push_back(SimBxManager->GetInterpolationOnePoint(X,Y,Z));
+		(*it).second.fExpBErr.push_back(SimBxManager->GetInterpolationOnePointError(X,Y,Z));// CHECK make the same for mag and tan..
+		(*it).second.fSimB.push_back(SimBxManager->GetInterpolationOnePoint(X,Y,Z));
 		//SimBxManager->GetInterpolationOnePointNoOffset(X,Y,Z);
 		}
 }
 
-/*
 for(it = mapExpFieldY.begin(); it != mapExpFieldY.end(); ++it){
 
 	for (unsigned i = 0 ; i<(*it).second.fExpY.size() ;  i++ ){
@@ -381,9 +375,11 @@ for(it = mapExpFieldZ.begin(); it != mapExpFieldZ.end(); ++it) {
 
 ///////////////////////////// Create histograms with Graphmanager ////////////////////////
 
+mapExpField.at(0).GetExp1dGraphPolar("Bx",22.5);
+
+
 //mapExpFieldMag.at(-41.7).GetExp1dGraphPolar("Bmag",22.5);
 //mapExpFieldX.at(-41.7).GetExp1dGraphPolar("Bx",22.5);
-mapExpFieldX.at(49.7).GetExp1dGraphPolar("Bx",22.5);
 //mapExpFieldY.at(-41.7).GetExp1dGraphPolar("By",22.5);
 //mapExpFieldZ.at(-41.7).GetExp1dGraphPolar("Bz",22.5);
 
