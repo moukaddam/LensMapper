@@ -1,7 +1,15 @@
 #ifndef _GRAPHMANAGER_CLASS
 #define _GRAPHMANAGER_CLASS
 
-#include "Defines.h"
+#include "TGraphErrors.h"
+#include "TGraph2DErrors.h"
+
+#include "stdio.h"
+#include "iostream"
+#include "vector"
+
+using namespace std;
+
 
 class GraphManager
 {

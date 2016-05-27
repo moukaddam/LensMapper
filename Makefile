@@ -92,9 +92,9 @@ distclean:
 	$(CXX) $(CXXFLAGS) -c $<
 
 # dependances
-ExperimentalPoint.o:		ExperimentalPoint.h			ExperimentalPoint.cpp	Defines.h
-SimulationPoint.o:			SimulationPoint.h			SimulationPoint.cpp		Defines.h
-GraphManager.o:				GraphManager.h				GraphManager.cpp	    Defines.h
-HistManager.o:				HistManager.h				HistManager.cpp	        Defines.h
+ExperimentalPoint.o:		ExperimentalPoint.h			ExperimentalPoint.cpp	
+SimulationPoint.o:			SimulationPoint.h			SimulationPoint.cpp	
+GraphManager.o:				GraphManager.h				GraphManager.cpp	   
+HistManager.o:				HistManager.h				HistManager.cpp	       
 #OptimizeParameters.o:		OptimizeParameters.h		OptimizeParameters.cpp	Defines.h
-Mapper.o:			        													Defines.h
+Mapper.o:			        													

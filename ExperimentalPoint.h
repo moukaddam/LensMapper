@@ -1,8 +1,18 @@
 #ifndef _EXPERIMENTALPOINT_CLASS
 #define _EXPERIMENTALPOINT_CLASS
 
-#include "Defines.h"
+
 #include "TVector2.h"
+#include "TVector3.h"
+#include "TMath.h"
+
+#include "map"
+#include "stdio.h"
+#include "stdlib.h"
+#include "iostream"
+#include "fstream"
+using namespace std;
+
 
 
 #define SENSORXOFFSETX  +2.1
@@ -39,7 +49,6 @@ TVector3 fYSensorOffset ;
 TVector3 fYPosition; //position after conversion
 TVector3 fZSensorOffset ; 
 TVector3 fZPosition; //position after conversion
-
 TVector3 fBField; //magnetic field 
 
 //Methodes
@@ -49,11 +58,10 @@ ExperimentalPoint(void);
 void ClearParameters(void);
 void ShowParameters(void);
 void ReadLineAndTreat(int MagnetQuadrant, TString Grid, int Location, int Level , double Bx, double By, double Bz);
-
 void CalculateCentralPosition();
 double CalculateRotationAngle(int MagnetQuadrant, TString Grid); // returns  angfle in radian 
 
-void LoadMap();
+void LoadMap(); // load the map for positions in the mapper plate, Shaun Georges's drawings are used (can be found on the vault)
 };
 
 #endif

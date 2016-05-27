@@ -1,7 +1,14 @@
 #ifndef _SIMULATIONPOINT_CLASS
 #define _SIMULATIONPOINT_CLASS
 
-#include "Defines.h"
+#include "TVector3.h"
+#include "TMath.h"
+
+#include "stdio.h"
+#include "iostream"
+
+using namespace std;
+
 
 class SimulationPoint
 {

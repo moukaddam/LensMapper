@@ -1,7 +1,21 @@
 #ifndef _HISTMANAGER_CLASS
 #define _HISTMANAGER_CLASS
 
-#include "Defines.h"
+
+#include "TH2D.h"
+#include "TH3D.h"
+#include "TGraph.h"
+#include "TGraph2D.h"
+#include "TGraphAsymmErrors.h"
+#include "TMath.h"
+#include "TVector3.h"
+
+#include "stdio.h"
+#include "iostream"
+#include "fstream"
+
+using namespace std;
+
 
 class HistManager
 {
