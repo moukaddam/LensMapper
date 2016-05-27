@@ -2,35 +2,32 @@
 
 GraphManager::GraphManager(void)
 {
-//cout << "Inside GraphManager::GraphManager()" << endl;
 Clear();
 }
 
-GraphManager::~GraphManager(void)
+GraphManager::~GraphManager(void){}
+
+void  GraphManager::FillValue(Double_t x, Double_t y, Double_t z, Double_t r, Double_t theta, Double_t b, Double_t bsim )
 {
-//cout << "Inside GraphManager::Destructor()" << endl;
+	fExpX.push_back(x) ;
+	fExpY.push_back(y) ;
+	fExpZ.push_back(z) ;
+	fExpR.push_back(r) ;
+	fExpTheta.push_back(theta) ;
+	fExpB.push_back(b) ;
+	fSimB.push_back(bsim) ;
 }
 
-void  GraphManager::FillVectors(Int_t datatype, Double_t x, Double_t y, Double_t z, Double_t r, Double_t theta, Double_t b)
+void  GraphManager::FillValueError(Double_t x, Double_t y, Double_t z, Double_t r, Double_t theta, Double_t b)
 {
-    if (datatype==0) {
-    fExpX.push_back(x) ;
-        fExpXErr.push_back(0.5) ; //mm
-    fExpY.push_back(y) ;
-        fExpYErr.push_back(0.5) ; //mm
-    fExpZ.push_back(z) ;
-        fExpZErr.push_back(0.5) ; //mm
-    fExpR.push_back(r) ;
-        fExpYErr.push_back(0.5) ; //mm  CHECK
-    fExpTheta.push_back(theta) ;
-        fExpThetaErr.push_back(0.5) ; //degree CHECK
-       
-    
-    fExpB.push_back(b) ;
-    }
-
-
+	fExpXErr.push_back(x) ; //mm
+	fExpYErr.push_back(y) ; //mm
+	fExpZErr.push_back(z) ; //mm
+	fExpRErr.push_back(r) ; //mm 
+	fExpThetaErr.push_back(theta) ; //degree CHECK
+	fExpBErr.push_back(b) ;
 }
+
 
 
 void GraphManager::ShowVectorSizes(void)

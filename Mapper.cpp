@@ -246,54 +246,73 @@ for (int i = 0 ; i < 1 ; i++){ // number of lines to neglect
 	counter1++;
 }
 
+double R,Theta,Bexp,Bsim,Berr;
 while (input_exp >> Quadrant){
    // read one line and do some changes 
     input_exp >> Grid >> Position >> Level >> BX >> BY >> BZ;
     //cout <<  Quadrant << " " << Grid << " " << Position << " " << Level << " " << BX << " " << BY << " " << BZ << endl ; 
-    
-     // every sensor is treated separatly 
 	ExpPoint[0]->ClearParameters();	
 	ExpPoint[0]->ReadLineAndTreat( Quadrant, Grid, Position, Level , BX , BY , BZ); 
+    
+	X = ExpPoint[0]->fSensorPositionX.X() ; 
+    Y = ExpPoint[0]->fSensorPositionX.Y() ; 
+	Z = ExpPoint[0]->fSensorPositionX.Z() ; 
+	R = ExpPoint[0]->fSensorPositionX.Perp() ; 
+	Theta = ExpPoint[0]->fSensorPositionX.Phi()*TMath::RadToDeg() ; 
+	Bexp = ExpPoint[0]->fBField.X();
+	Bsim = SimBxManager->GetInterpolationOnePoint(X,Y,Z);
+	Berr = SimBxManager->GetInterpolationOnePointError(X,Y,Z); // used as an error on the experimental values 
+	//
+	mapExpField[0].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
+	mapExpField[0].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
 
-	mapExpField[0].FillVectors(0,// 0 for exp, else  simu
-		ExpPoint[0]->fSensorPositionX.X(), 
-		ExpPoint[0]->fSensorPositionX.Y(),
-		ExpPoint[0]->fSensorPositionX.Z(), 
-		ExpPoint[0]->fSensorPositionX.Perp(),
-		ExpPoint[0]->fSensorPositionX.Phi()*TMath::RadToDeg(),
-		ExpPoint[0]->fBField.X());
+	X = ExpPoint[0]->fSensorPositionY.X() ; 
+    Y = ExpPoint[0]->fSensorPositionY.Y() ; 
+	Z = ExpPoint[0]->fSensorPositionY.Z() ; 
+	R = ExpPoint[0]->fSensorPositionY.Perp() ; 
+	Theta = ExpPoint[0]->fSensorPositionY.Phi()*TMath::RadToDeg() ; 
+	Bexp = ExpPoint[0]->fBField.Y();
+	Bsim = SimByManager->GetInterpolationOnePoint(X,Y,Z);
+	Berr = SimByManager->GetInterpolationOnePointError(X,Y,Z); // used as an error on the experimental values 
+	//
+	mapExpField[1].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
+	mapExpField[1].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
 
-	mapExpField[1].FillVectors(0,// 0 for exp, else  simu
-		ExpPoint[0]->fSensorPositionY.X(), 
-		ExpPoint[0]->fSensorPositionY.Y(),
-		ExpPoint[0]->fSensorPositionY.Z(), 
-		ExpPoint[0]->fSensorPositionY.Perp(),
-		ExpPoint[0]->fSensorPositionY.Phi()*TMath::RadToDeg(),
-		ExpPoint[0]->fBField.Y());
+	X = ExpPoint[0]->fSensorPositionZ.X() ; 
+    Y = ExpPoint[0]->fSensorPositionZ.Y() ; 
+	Z = ExpPoint[0]->fSensorPositionZ.Z() ; 
+	R = ExpPoint[0]->fSensorPositionZ.Perp() ; 
+	Theta = ExpPoint[0]->fSensorPositionZ.Phi()*TMath::RadToDeg() ; 
+	Bexp = ExpPoint[0]->fBField.Z();
+	Bsim = SimBzManager->GetInterpolationOnePoint(X,Y,Z);
+	Berr = SimBzManager->GetInterpolationOnePointError(X,Y,Z); // used as an error on the experimental values 
+	//
+	mapExpField[2].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
+	mapExpField[2].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
 
-	mapExpField[2].FillVectors(0,// 0 for exp, else  simu
-		ExpPoint[0]->fSensorPositionZ.X(), 
-		ExpPoint[0]->fSensorPositionZ.Y(),
-		ExpPoint[0]->fSensorPositionZ.Z(), 
-		ExpPoint[0]->fSensorPositionZ.Perp(),
-		ExpPoint[0]->fSensorPositionZ.Phi()*TMath::RadToDeg(),
-		ExpPoint[0]->fBField.Z());
+	X = ExpPoint[0]->fPosition.X() ; 
+    Y = ExpPoint[0]->fPosition.Y() ; 
+	Z = ExpPoint[0]->fPosition.Z() ; 
+	R = ExpPoint[0]->fPosition.Perp() ; 
+	Theta = ExpPoint[0]->fPosition.Phi()*TMath::RadToDeg() ; 
+	Bexp = ExpPoint[0]->fBField.Mag();
+	Bsim = SimBmagManager->GetInterpolationOnePoint(X,Y,Z);
+	Berr = SimBmagManager->GetInterpolationOnePointError(X,Y,Z); // used as an error on the experimental values 
+	//
+	mapExpField[3].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
+	mapExpField[3].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
 
-	mapExpField[3].FillVectors(0,// 0 for exp, else  simu
-		ExpPoint[0]->fPosition.X(), 
-		ExpPoint[0]->fPosition.Y(),
-		ExpPoint[0]->fPosition.Z(), 
-		ExpPoint[0]->fSensorPositionZ.Perp(),
-		ExpPoint[0]->fSensorPositionZ.Phi()*TMath::RadToDeg(),
-		ExpPoint[0]->fBField.Mag());
-
-	mapExpField[4].FillVectors(0,// 0 for exp, else  simu
-		ExpPoint[0]->fPosition.X(), 
-		ExpPoint[0]->fPosition.Y(),
-		ExpPoint[0]->fPosition.Z(), 
-		ExpPoint[0]->fSensorPositionZ.Perp(),
-		ExpPoint[0]->fSensorPositionZ.Phi()*TMath::RadToDeg(),
-		ExpPoint[0]->fBField.Perp());
+	X = ExpPoint[0]->fPosition.X() ; 
+    Y = ExpPoint[0]->fPosition.Y() ; 
+	Z = ExpPoint[0]->fPosition.Z() ; 
+	R = ExpPoint[0]->fPosition.Perp() ; 
+	Theta = ExpPoint[0]->fPosition.Phi()*TMath::RadToDeg() ; 
+	Bexp = ExpPoint[0]->fBField.Perp();
+	Bsim = SimBtanManager->GetInterpolationOnePoint(X,Y,Z);
+	Berr = SimBtanManager->GetInterpolationOnePointError(X,Y,Z); // used as an error on the experimental values 
+	//
+	mapExpField[4].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
+	mapExpField[4].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
 
   }
 

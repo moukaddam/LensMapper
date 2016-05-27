@@ -41,14 +41,15 @@ vector<Double_t> fExpB ;
 vector<Double_t> fExpBErr;
 
 //Simulated field 
-vector<Double_t> fSimB;
+vector<Double_t> fSimB ;
 
 
 //Methodes
 GraphManager(void );
 ~GraphManager(void);
 
-void FillVectors(Int_t datatype, Double_t x, Double_t y, Double_t z, Double_t r, Double_t theta, Double_t b);
+void FillValue(Double_t x, Double_t y, Double_t z, Double_t r, Double_t theta, Double_t b, Double_t bsim);
+void FillValueError(Double_t x, Double_t y, Double_t z, Double_t r, Double_t theta, Double_t b); // no error on simulation 
 void ShowVectorSizes(void) ;
 void ShowVectorsContent(void) ;
 void Clear(void) ;
