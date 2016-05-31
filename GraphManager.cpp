@@ -61,103 +61,118 @@ cout<<" "<<fExpBErr.at(i)<<endl;
 cout<<endl<<"========================"<<endl;
 }
 
-void GraphManager::GetExp1dGraphPolar(TString NameTitle, double angle) // NEW
-{
-	Int_t np   = fExpX.size();
-	Double_t* r_array = GetArrayFromCVector(fExpR) ;
-	Double_t* er_array = GetArrayFromCVector(fExpZErr) ;  
-	Double_t* b_array = GetArrayFromCVector(fExpB) ;
-	Double_t* eb_array = GetArrayFromCVector(fExpBErr) ;
-	Double_t* theta_array = GetArrayFromCVector(fExpTheta) ;
 
-	TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
-	fGraph->SetTitle("Experimental Data;Radius (mm);Magnetic Field (mT)");
-	fGraph->SetMarkerSize(1.2);
-	fGraph->SetMarkerStyle(20);
-	fGraph->SetMarkerColor(kBlue);
-	fGraph->SetLineColor(kBlue);
-	fGraph->SetLineWidth(2);
-	   
-	int graph_counter = 0 ; 
-	   for (Int_t N=0; N<np; N=N+1)   {
-			if( fabs(theta_array[N]-angle)<0.01 ){
-				fGraph->SetPoint(graph_counter,r_array[N],b_array[N]);    // CHECK, add new the stuff for emag
-				fGraph->SetPointError(graph_counter,er_array[N],eb_array[N]);   // CHECK, add new the stuff for emag
-				graph_counter++;
-			}
-	   }
+void GraphManager::GetExp1DGraphPolar(TString NameTitle, double zmin, double zmax, double anglemin, double anglemax) {
 
-	fGraph->SetTitle(NameTitle+Form(" Experimental Data / Depth %.2f mm / Angle %.2f degrees;Radius (mm);Magnetic Field (mT)",fExpZ.at(0),angle));
-	fGraph->SetName(NameTitle+Form("Exp_Depth_%.2fmm_Angle_%.2fdegrees",fExpZ.at(0),angle));
-	fGraph->Write();
-	
+    TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
+    fGraph->SetTitle("Experimental Data;Radius (mm);Magnetic Field (mT)");
+    fGraph->SetMarkerSize(1.2);
+    fGraph->SetMarkerStyle(20);
+    fGraph->SetMarkerColor(kBlue);
+    fGraph->SetLineColor(kBlue);
+    fGraph->SetLineWidth(2);
+       
+    int graph_counter = 0 ; 
+   for (unsigned i=0; i< fExpR.size(); i++)   {
+        if( (fExpTheta.at(i) >= anglemin && fExpTheta.at(i) <= anglemax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) ){ 
+            fGraph->SetPoint(graph_counter,fExpR.at(i),fExpB.at(i));    // CHECK, add new the stuff for emag
+            fGraph->SetPointError(graph_counter,fExpRErr.at(i),fExpBErr.at(i));   // CHECK, add new the stuff for emag
+            graph_counter++;
+        }
+   }
+
+    fGraph->SetTitle(NameTitle+Form("Experimental Data : %.2f < Depth < %.2f mm  __  %.2f#circ < Angle < %.2f#circ;Radius (mm);Magnetic Field (mT)",zmin,zmax,anglemin,anglemax));
+    fGraph->SetName(NameTitle+Form("Exp_Depth_%.2f_%.2fmm_Angle_%.2f#circ_%.2f#circ",zmin,zmax,anglemin,anglemax));
+    fGraph->Write();
+
 }
 
 
 
+void GraphManager::GetExp1DGraphX(TString NameTitle, double zmin, double zmax, double ymin, double ymax){   // do the same thing as for the polar interpolation
 
-TGraphErrors* GraphManager::GetExp1dGraphCartesian(double y){   // do the same thing as for the polar interpolation
+    TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
+    fGraph->SetTitle("Experimental Data;X (mm);Magnetic Field (mT)");
+    fGraph->SetMarkerSize(1.2);
+    fGraph->SetMarkerStyle(20);
+    fGraph->SetMarkerColor(kBlue);
+    fGraph->SetLineColor(kBlue);
+    fGraph->SetLineWidth(2);
+       
+    int graph_counter = 0 ; 
+   for (unsigned i=0; i< fExpY.size(); i++)   {
+    //cout <<  " X "  << fExpX.at(i) ;  
+        if( (fExpY.at(i) >= ymin && fExpY.at(i) <= ymax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) ){
+            cout << "  < ----- " ; 
+            fGraph->SetPoint(graph_counter,fExpX.at(i),fExpB.at(i));    // CHECK, add new the stuff for emag
+            fGraph->SetPointError(graph_counter,fExpXErr.at(i),fExpBErr.at(i));   // CHECK, add new the stuff for emag
+            graph_counter++;
+        }
+        cout << endl ; 
+   }
 
-	// get size
-	Int_t np   = fExpX.size();
-	Double_t* y_array = GetArrayFromCVector(fExpY) ;
-	Double_t* x_array = GetArrayFromCVector(fExpX) ;
-	Double_t* b_array = GetArrayFromCVector(fExpB) ;
+    fGraph->SetTitle(NameTitle+Form("Experimental Data : %.2f < Depth < %.2f mm  __  %.2f < Y < %.2f mm;X (mm);Magnetic Field (mT)",zmin,zmax,ymin,ymax));
+    fGraph->SetName(NameTitle+Form("Exp_Depth_%.2f_%.2fmm_Y_%.2f_%.2fmm",zmin,zmax,ymin,ymax));
+    fGraph->Write();
 
-	//Errors
-	Double_t *eb=0;
-	Double_t *ex=0;
-	// allocate 
-	ex = new Double_t[np];
-	eb = new Double_t[np]; // for mag   (must propagate the errors)
+}
 
-	for (Int_t N=0; N<np;N++)  {
-	    ex[N] = 1.0; // error 1mm
-	    eb[N] = 0.02; // CHECK (must propagate errors)
-	}
+void GraphManager::GetExp1DGraphY(TString NameTitle, double zmin, double zmax, double xmin, double xmax){   // do the same thing as for the polar interpolation
 
-	//inspection 
-	/*
-	for (Int_t i=0;i<np ; i++)
-	{
-	cout<<i<<":"<<x_array[i]<<" "<<y_array[i]<<" "<<bz_array[i]<<endl;
-	cout<<i<<":"<<ex[i]<<" "<<ey[i]<<" "<<ez[i]<<endl;
-	}
-	*/
+    TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
+    fGraph->SetTitle("Experimental Data;Y (mm);Magnetic Field (mT)");
+    fGraph->SetMarkerSize(1.2);
+    fGraph->SetMarkerStyle(20);
+    fGraph->SetMarkerColor(kBlue);
+    fGraph->SetLineColor(kBlue);
+    fGraph->SetLineWidth(2);
+       
+    int graph_counter = 0 ; 
+   for (unsigned i=0; i< fExpY.size(); i++)   {
+    //cout <<  " X "  << fExpX.at(i) ;  
+        if( (fExpX.at(i) >= xmin && fExpX.at(i) <= xmax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) ){
+            fGraph->SetPoint(graph_counter,fExpY.at(i),fExpB.at(i));    // CHECK, add new the stuff for emag
+            fGraph->SetPointError(graph_counter,fExpYErr.at(i),fExpBErr.at(i));   // CHECK, add new the stuff for emag
+            graph_counter++;
+        }
+        cout << endl ; 
+   }
 
-	TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
-	fGraph->SetTitle("Experimental Data;x (mm);Magnetic Field (mT)");
-	fGraph->SetMarkerSize(0.8);
-	fGraph->SetMarkerStyle(20);
-	fGraph->SetMarkerColor(kRed);
-	fGraph->SetLineColor(kBlue-3);
-	fGraph->SetLineWidth(2);
+    fGraph->SetTitle(NameTitle+Form("Experimental Data : %.2f < Depth < %.2f mm  __  %.2f < X < %.2f mm;Y (mm);Magnetic Field (mT)",zmin,zmax,xmin,xmax));
+    fGraph->SetName(NameTitle+Form("Exp_Depth_%.2f_%.2fmm_X_%.2f_%.2fmm",zmin,zmax,xmin,xmax));
+    fGraph->Write();
 
-	double yvalue = y;
-	int graph_counter = 0 ; 
-	for (Int_t N=0; N<np; N=N+1) {
-		if( fabs(y_array[N]-yvalue)<0.01 )	{
-			fGraph->SetPoint(graph_counter,x_array[N],b_array[N]);
-			fGraph->SetPointError(graph_counter,ex[N],eb[N]);
-			graph_counter++;
-		}
-	}
-
-	return fGraph ;
 }
 
 
+void GraphManager::GetExp1DGraphZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax ){   // do the same thing as for the polar interpolation
 
+    TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
+    fGraph->SetTitle("Experimental Data;Z (mm);Magnetic Field (mT)");
+    fGraph->SetMarkerSize(1.2);
+    fGraph->SetMarkerStyle(20);
+    fGraph->SetMarkerColor(kBlue);
+    fGraph->SetLineColor(kBlue);
+    fGraph->SetLineWidth(2);
+       
+    int graph_counter = 0 ; 
+   for (unsigned i=0; i< fExpY.size(); i++)   {
+    //cout <<  " X "  << fExpX.at(i) ;  
+        if( (fExpX.at(i) >= xmin && fExpX.at(i) <= xmax) && (fExpY.at(i) >= ymin && fExpY.at(i) <= ymax) ){
+            fGraph->SetPoint(graph_counter,fExpZ.at(i),fExpB.at(i));    // CHECK, add new the stuff for emag
+            fGraph->SetPointError(graph_counter,fExpZErr.at(i),fExpBErr.at(i));   // CHECK, add new the stuff for emag
+            graph_counter++;
+        }
+        //cout << endl ; 
+   }
 
-void GraphManager::GetSim1dGraphPolar(TString NameTitle, double angle) // NEW
-{
+    fGraph->SetTitle(NameTitle+Form("Experimental Data : %.2f < X < %.2f mm  __  %.2f < Y < %.2f mm;Z (mm);Magnetic Field (mT)",xmin,xmax,ymin,ymax));
+    fGraph->SetName(NameTitle+Form("Exp_X_%.2f_%.2fmm_Y_%.2f_%.2fmm",xmin,xmax,ymin,ymax));
+    fGraph->Write();
 
-// get size
-    Int_t np   = fExpX.size();
-    Double_t* r_array = GetArrayFromCVector(fExpR) ;
-    Double_t* er_array = GetArrayFromCVector(fExpZErr) ;  
-    Double_t* b_array = GetArrayFromCVector(fSimB) ;
-    Double_t* theta_array = GetArrayFromCVector(fExpTheta) ;
+}
+
+void GraphManager::GetSim1DGraphPolar(TString NameTitle, double zmin, double zmax, double anglemin, double anglemax) {
 
     TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
     fGraph->SetTitle("Simulated Data;Radius (mm);Magnetic Field (mT)");
@@ -165,108 +180,151 @@ void GraphManager::GetSim1dGraphPolar(TString NameTitle, double angle) // NEW
     fGraph->SetMarkerStyle(20);
     fGraph->SetMarkerColor(kRed);
     fGraph->SetLineColor(kRed);
-    fGraph->SetLineWidth(2);   
-   
-
-int graph_counter = 0 ; 
-   for (Int_t N=0; N<np; N=N+1)
-   {
-		if(fabs(theta_array[N]-angle)<0.01) 
-			{
-			fGraph->SetPoint(graph_counter,r_array[N],b_array[N]);    
-			fGraph->SetPointError(graph_counter,er_array[N],0); // simulated values => no errors
-		    graph_counter++;
-			}
-   }
-  
-     
-    fGraph->SetTitle(NameTitle+Form(" Simulated Data / Depth %.2f mm / Angle %.2f degrees;Radius (mm);Magnetic Field (mT)",fExpZ.at(0),angle));
-	fGraph->SetName(NameTitle+Form("Sim_Depth_%.2fmm_Angle_%.2fdegrees",fExpZ.at(0),angle));
-	fGraph->Write();
-	
-}
-
-
-TGraph2DErrors* GraphManager::GetExp2dGraph(void /*ADD an option to select which physical quantity ? */)
-{
-
-    Int_t np   = fExpX.size();
-    Double_t* x_array = GetArrayFromCVector(fExpX) ;
-    Double_t* y_array = GetArrayFromCVector(fExpY) ;
-    Double_t* b_array = GetArrayFromCVector(fExpB) ;
+    fGraph->SetLineWidth(2);
        
-    //Errors
-    Double_t *eb=0;
-    Double_t *ex=0, *ey=0; 
-    ex = new Double_t[np];
-    ey = new Double_t[np];
-    eb = new Double_t[np]; // for mag   (must propagate the errors)
-    //fill
-    for (Int_t N=0; N<np;N++)
-    {
-    ex[N] = 1.0; // error 1mm
-    ey[N] = 1.0;
-    eb[N] = 0.02; // CHECK (must propagate errors)
-    }
-
-//inspection 
-/*
-for (Int_t i=0;i<np ; i++)
-{
-cout<<i<<":"<<x_array[i]<<" "<<y_array[i]<<" "<<bz_array[i]<<endl;
-cout<<i<<":"<<ex[i]<<" "<<ey[i]<<" "<<ez[i]<<endl;
-}
-*/
-
-    TGraph2DErrors *f2dGraph = new TGraph2DErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
-    f2dGraph->SetTitle("TGraph2D example Exp");
-    f2dGraph->SetMarkerSize(0.8);
-    f2dGraph->SetMarkerStyle(20);
-    f2dGraph->SetMarkerColor(kRed);
-    f2dGraph->SetLineColor(kBlue-3);
-    f2dGraph->SetLineWidth(2);
-   
-   for (Int_t N=0; N<np; N++) {
-      f2dGraph->SetPoint(N,x_array[N],y_array[N],b_array[N]);
-      f2dGraph->SetPointError(N,ex[N],ey[N],eb[N]);
+    int graph_counter = 0 ; 
+   for (unsigned i=0; i< fExpR.size(); i++) {
+        if( (fExpTheta.at(i) >= anglemin && fExpTheta.at(i) <= anglemax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) ){
+            fGraph->SetPoint(graph_counter,fExpR.at(i),fSimB.at(i));    
+            fGraph->SetPointError(graph_counter,fExpRErr.at(i),0);  
+            graph_counter++;
         }
+   }
 
-   return f2dGraph ;
+    fGraph->SetTitle(NameTitle+Form("Simulated Data : %.2f < Depth < %.2f mm  __  %.2f#circ < Angle < %.2f#circ;Radius (mm);Magnetic Field (mT)",zmin,zmax,anglemin,anglemax));
+    fGraph->SetName(NameTitle+Form("Sim_Depth_%.2f_%.2fmm_Angle_%.2f#circ_%.2f#circ",zmin,zmax,anglemin,anglemax));
+    fGraph->Write();
+
 }
 
 
+void GraphManager::GetSim1DGraphX(TString NameTitle, double zmin, double zmax, double ymin, double ymax){   // do the same thing as for the polar interpolation
 
-Double_t* GraphManager::GetArrayFromCVector(vector<Double_t> vec)
-{  
-unsigned size = vec.size();
-Double_t *array = new Double_t[size];
+    TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
+    fGraph->SetTitle("Simulated Data;X (mm);Magnetic Field (mT)");
+    fGraph->SetMarkerSize(1.2);
+    fGraph->SetMarkerStyle(20);
+    fGraph->SetMarkerColor(kBlue);
+    fGraph->SetLineColor(kBlue);
+    fGraph->SetLineWidth(2);
+       
+    int graph_counter = 0 ; 
+   for (unsigned i=0; i< fExpY.size(); i++)   {
+    //cout <<  " X "  << fExpX.at(i) ;  
+        if( (fExpY.at(i) >= ymin && fExpY.at(i) <= ymax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) ){ 
+            fGraph->SetPoint(graph_counter,fExpX.at(i),fSimB.at(i)); 
+            fGraph->SetPointError(graph_counter,fExpXErr.at(i),0);  
+            graph_counter++;
+        }
+   }
 
-for (unsigned i = 0 ; i<size ; i++)
-array[i] = vec.at(i) ;
+    fGraph->SetTitle(NameTitle+Form("Simulated Data : %.2f < Depth < %.2f mm  __  %.2f < Y < %.2f mm;X (mm);Magnetic Field (mT)",zmin,zmax,ymin,ymax));
+    fGraph->SetName(NameTitle+Form("Sim_Depth_%.2f_%.2fmm_Y_%.2f_%.2fmm",zmin,zmax,ymin,ymax));
+    fGraph->Write();
 
-return array ;
-
-};
-
-double GraphManager::GetExpBField(double angle, double radius,TString NameTitle)
-{
-	double output = 0;	
-   	Int_t np   = fExpX.size();
-
-	Double_t* r_array = GetArrayFromCVector(fExpR) ;
-	Double_t* theta_array = GetArrayFromCVector(fExpTheta) ;
-	Double_t* b_array = GetArrayFromCVector(fExpB);
-
-   	for (Int_t N=0; N<np; N++) 
-	{
-		if( fabs(theta_array[N]-angle)<0.01 && fabs(r_array[N]-radius)<0.01 )
-		{
-		output = b_array[N];
-		}
-	}
-
-	return output;
 }
+
+void GraphManager::GetSim1DGraphY(TString NameTitle, double zmin, double zmax, double xmin, double xmax){   // do the same thing as for the polar interpolation
+
+    TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
+    fGraph->SetTitle("Simulated Data;Y (mm);Magnetic Field (mT)");
+    fGraph->SetMarkerSize(1.2);
+    fGraph->SetMarkerStyle(20);
+    fGraph->SetMarkerColor(kBlue);
+    fGraph->SetLineColor(kBlue);
+    fGraph->SetLineWidth(2);
+       
+    int graph_counter = 0 ; 
+   for (unsigned i=0; i< fExpY.size(); i++)   {
+    //cout <<  " X "  << fExpX.at(i) ;  
+        if( (fExpX.at(i) >= xmin && fExpX.at(i) <= xmax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) ){
+            fGraph->SetPoint(graph_counter,fExpY.at(i),fSimB.at(i));    // CHECK, add new the stuff for emag
+            fGraph->SetPointError(graph_counter,fExpYErr.at(i),0);   // CHECK, add new the stuff for emag
+            graph_counter++;
+        } 
+   }
+
+    fGraph->SetTitle(NameTitle+Form("Simulated Data : %.2f < Depth < %.2f mm  __  %.2f < X < %.2f mm;Y (mm);Magnetic Field (mT)",zmin,zmax,xmin,xmax));
+    fGraph->SetName(NameTitle+Form("Sim_Depth_%.2f_%.2fmm_X_%.2f_%.2fmm",zmin,zmax,xmin,xmax));
+    fGraph->Write();
+
+}
+
+
+void GraphManager::GetSim1DGraphZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax ){   // do the same thing as for the polar interpolation
+
+    TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
+    fGraph->SetTitle("Simulated Data;Z (mm);Magnetic Field (mT)");
+    fGraph->SetMarkerSize(1.2);
+    fGraph->SetMarkerStyle(20);
+    fGraph->SetMarkerColor(kBlue);
+    fGraph->SetLineColor(kBlue);
+    fGraph->SetLineWidth(2);
+       
+    int graph_counter = 0 ; 
+   for (unsigned i=0; i< fExpY.size(); i++)   {
+    //cout <<  " X "  << fExpX.at(i) ;  
+        if( (fExpX.at(i) >= xmin && fExpX.at(i) <= xmax) && (fExpY.at(i) >= ymin && fExpY.at(i) <= ymax) ){
+            fGraph->SetPoint(graph_counter,fExpZ.at(i),fSimB.at(i));    
+            fGraph->SetPointError(graph_counter,fExpZErr.at(i),0);   
+            graph_counter++;
+        } 
+   }
+
+    fGraph->SetTitle(NameTitle+Form("Simulated Data : %.2f < X < %.2f mm  __  %.2f < Y < %.2f mm;Z (mm);Magnetic Field (mT)",xmin,xmax,ymin,ymax));
+    fGraph->SetName(NameTitle+Form("Sim_X_%.2f_%.2fmm_Y_%.2f_%.2fmm",xmin,xmax,ymin,ymax));
+    fGraph->Write();
+
+}
+
+void GraphManager::GetExp2DGraph(TString NameTitle, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax) {
+
+    TGraph2DErrors *fGraph = new TGraph2DErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
+    fGraph->SetTitle("Exp Data;Y (mm);X (mm);Magnetic Field (mT)");
+    fGraph->SetMarkerSize(1.2);
+    fGraph->SetMarkerStyle(20);
+    fGraph->SetMarkerColor(kBlue);
+    fGraph->SetLineColor(kBlue);
+    fGraph->SetLineWidth(2);
+       
+    int graph_counter = 0 ; 
+   for (unsigned i=0; i< fExpY.size(); i++)   {
+        if( (fExpX.at(i) >= xmin && fExpX.at(i) <= xmax) && (fExpY.at(i) >= ymin && fExpY.at(i) <= ymax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) ) {
+            fGraph->SetPoint(graph_counter,fExpX.at(i),fExpY.at(i),fExpB.at(i));    
+            fGraph->SetPointError(graph_counter,fExpXErr.at(i),fExpYErr.at(i),fExpBErr.at(i)); 
+            graph_counter++;
+        } 
+   }
+
+    fGraph->SetTitle(NameTitle+Form("Experimental Data : %.2f < X < %.2f mm  __  %.2f < Y < %.2f mm;Y (mm);X (mm);Magnetic Field (mT)",xmin,xmax,ymin,ymax));
+    fGraph->SetName(NameTitle+Form("Sim_X_%.2f_%.2fmm_Y_%.2f_%.2fmm",xmin,xmax,ymin,ymax));
+    fGraph->Write();
+
+}
+
+
+int GraphManager::GetExpBFieldPointXYZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax  ) {
+   
+   for (unsigned i=0; i< fExpY.size(); i++)   {
+    //cout <<  " X "  << fExpX.at(i) ;  
+        if( (fExpX.at(i) >= xmin && fExpX.at(i) <= xmax) && (fExpY.at(i) >= ymin && fExpY.at(i) <= ymax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) ){
+            return (int) i ; 
+        } 
+   }
+   return -1 ; 
+}
+
+int GraphManager::GetExpBFieldPoinRTZ(TString NameTitle, double rmin, double rmax, double tmin, double tmax, double zmin, double zmax  ) {
+   
+   for (unsigned i=0; i< fExpY.size(); i++)   {
+    //cout <<  " X "  << fExpX.at(i) ;  
+        if( (fExpR.at(i) >= rmin && fExpR.at(i) <= rmax) && (fExpTheta.at(i) >= tmin && fExpTheta.at(i) <= tmax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) ){
+            return (int) i ; 
+        } 
+   }
+   return -1 ; 
+}
+
 			
 
 void GraphManager::Clear(void) //NEW

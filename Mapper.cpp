@@ -61,43 +61,49 @@ int mapping(){
 SimulationPoint* SimPoint = new SimulationPoint();
 
 // create a TH3D
-TH3D *f3DHistBx = new TH3D("f3DHistBX", "Bx"         , 111,-111, 111, 111,-111, 111, 151, -151, 151); 
-TH3D *f3DHistBy = new TH3D("f3DHistBY", "By"         , 111,-111, 111, 111,-111, 111, 151, -151, 151);  
-TH3D *f3DHistBz = new TH3D("f3DHistBZ", "Bz"         , 111,-111, 111, 111,-111, 111, 151, -151, 151);  
-TH3D *f3DHistBmag = new TH3D("f3DHistBMAG", "Bmag"   , 111,-111, 111, 111,-111, 111, 151, -151, 151);     
-TH3D *f3DHistBtan = new TH3D("f3DHistBTAN", "Btan"   , 111,-111, 111, 111,-111, 111, 151, -151, 151);  
-TH3D *f3DHistBdiff = new TH3D("f3DHistBDIFF", "Bdiff", 111,-111, 111, 111,-111, 111, 151, -151, 151); 
+TH3D *f3DHistBx = new TH3D("f3DHistBX", "Bx"         , 111,-111, 111, 111,-111, 111, 106, -106, 106); 
+TH3D *f3DHistBy = new TH3D("f3DHistBY", "By"         , 111,-111, 111, 111,-111, 111, 106, -106, 106);  
+TH3D *f3DHistBz = new TH3D("f3DHistBZ", "Bz"         , 111,-111, 111, 111,-111, 111, 106, -106, 106);  
+TH3D *f3DHistBmag = new TH3D("f3DHistBMAG", "Bmag"   , 111,-111, 111, 111,-111, 111, 106, -106, 106);     
+TH3D *f3DHistBtan = new TH3D("f3DHistBTAN", "Btan"   , 111,-111, 111, 111,-111, 111, 106, -106, 106);  
+TH3D *f3DHistBdiff = new TH3D("f3DHistBDIFF", "Bdiff", 111,-111, 111, 111,-111, 111, 106, -106, 106); 
 //TH3D *f3DHistBmag_nim = new TH3D("f3DHistBMAG", "Bmag", 160 , -400, 400, 160, -400, 400, 30, -100, 50);       // for the nim paper 
     
     
 ///////////////////////////// OPEN INPUT AND OUTPUT FILES ///////////////////////
-
+TString fullpathtofile;  
 // name of files
-TString ExpData ="tableExp.dat";
-TString SimData ="30degcut.txt";
+TString ExpData ="tableExpGridB.dat";
+//TString SimData ="SPICEField3D.v51.3.21.TABLE";
+TString SimData ="SPICEField3Dv5220.dat";
 
 // open the data file
-   ifstream input_exp;
-   input_exp.open(Form("./input/%s",ExpData.Data() ) );
-   cout<<"opening file : "<<ExpData.Data()<<endl;
-	if (!input_exp) { cout<<"problem opening experimental data file! -->exit "<<endl; exit(-1);}
-	else cout<<"Experimental file is opened "<<endl;
+ifstream input_exp;
+fullpathtofile = Form("./input/%s",ExpData.Data() ) ; 
+cout<<"opening file : |"<<fullpathtofile<< "| ... ";
+input_exp.open( fullpathtofile.Data() );
+if (!input_exp) { cout<<"problem opening experimental data file " << fullpathtofile << endl; exit(-1);}
+else cout<<"Experimental file is opened "<<endl;
 
-	//open the field files from comsol  
-   ifstream input_sim;
-   input_sim.open(Form("./input/%s",SimData.Data() ) ); // from local input if not go seek in data 1
-   if(!input_sim) input_sim.open(Form("/data1/moukaddam/MagnetsMapping/%s",SimData.Data() ) );
-   cout<<"opening file : "<<SimData.Data()<<endl;
-	if (!input_sim) { cout<<"problem opening simulation data file! -->exit "<<endl; exit(-1);}
-	else cout<<" Simulation file is opened "<<endl;
+//open the field files from comsol  
+ifstream input_sim;
+fullpathtofile = Form("./input/%s",SimData.Data() ) ; 
+cout<<"opening file : |"<<fullpathtofile<< "| ... ";
+input_sim.open(fullpathtofile.Data() ) ; // from local input if not go seek in data 1
+if(!input_sim.is_open()) {
+	cout<<"problem opening simulation data file |"<< fullpathtofile <<"|"<< endl;
+	fullpathtofile = Form("/data1/moukaddam/MagnetsMapping/%s",SimData.Data()) ;
+	cout<<"trying main directory, opening file : |"<<fullpathtofile<< "| ... ";
+}
+if (!input_sim.is_open()) { cout<<"problem opening simulation data file |"<< fullpathtofile <<"|"<< endl; exit(-1);}
+else cout<<" Simulation file " <<  fullpathtofile <<  " is opened " <<endl;
 
 // create root output file 
-	TString  filename = "./output/Compare_" + ExpData + "_" + SimData + ".root";
-	TFile outputFile(filename,"RECREATE");
-  
-    
- ///////////////////////////// 
- /////////////////////////////  READ THE SIMULATION FILE ///////////////////////
+TString  filename = "./output/compare_" + ExpData + "_" + SimData + ".root";
+TFile outputFile(filename,"RECREATE");
+
+///////////////////////////// 
+/////////////////////////////  READ THE SIMULATION FILE ///////////////////////
 ///////////////////////////// 
 
 // dump the first lines from the top
@@ -316,6 +322,29 @@ while (input_exp >> Quadrant){
 
   }
 
+
+///////////////////////////// Create histograms with Graphmanager ////////////////////////
+mapExpField.at(0).GetExp1DGraphPolar("Bx",49,50,-69,-67);
+mapExpField.at(0).GetExp1DGraphPolar("Bx",49,50,-48,-45);
+mapExpField.at(0).GetExp1DGraphPolar("Bx",49,50,-26,-23);
+
+mapExpField.at(0).GetSim1DGraphPolar("Bx",49,50,-69,-67);
+mapExpField.at(0).GetSim1DGraphPolar("Bx",49,50,-48,-45);
+mapExpField.at(0).GetSim1DGraphPolar("Bx",49,50,-26,-23); 
+
+mapExpField.at(3).GetExp2DGraph("Bmag",-100,+100,-100,+100,-100,+100) ;
+
+
+//Close the file on disk
+	outputFile.Close();
+
+ return 0;
+}
+
+
+
+
+
 /////////////////////////////
 ///////////////////////////// Determine the error from the simulation of all experimental points ////////////////////////
 /////////////////////////////
@@ -389,117 +418,4 @@ for(it = mapExpFieldZ.begin(); it != mapExpFieldZ.end(); ++it) {
 		}
 }
 */
-
-
-
-///////////////////////////// Create histograms with Graphmanager ////////////////////////
-
-mapExpField.at(0).GetExp1dGraphPolar("Bx",22.5);
-
-
-//mapExpFieldMag.at(-41.7).GetExp1dGraphPolar("Bmag",22.5);
-//mapExpFieldX.at(-41.7).GetExp1dGraphPolar("Bx",22.5);
-//mapExpFieldY.at(-41.7).GetExp1dGraphPolar("By",22.5);
-//mapExpFieldZ.at(-41.7).GetExp1dGraphPolar("Bz",22.5);
-
-//mapExpFieldMag.at(-41.7).GetExp1dGraphPolar("Bmag",45);
-//mapExpFieldX.at(-41.7).GetExp1dGraphPolar("Bx",45);
-//mapExpFieldY.at(-41.7).GetExp1dGraphPolar("By",45);
-//mapExpFieldZ.at(-41.7).GetExp1dGraphPolar("Bz",45);
-
-//mapExpFieldMag.at(-41.7).GetExp1dGraphPolar("Bmag",67.5);
-//mapExpFieldX.at(-41.7).GetExp1dGraphPolar("Bx",67.5);
-//mapExpFieldY.at(-41.7).GetExp1dGraphPolar("By",67.5);
-//mapExpFieldZ.at(-41.7).GetExp1dGraphPolar("Bz",67.5);
-
-
-//mapExpFieldMag.at(-41.7).GetSim1dGraphPolar("Bmag",22.5);
-//mapExpFieldX.at(-41.7).GetSim1dGraphPolar("Bx",22.5);
-//mapExpFieldY.at(-41.7).GetSim1dGraphPolar("By",22.5);
-//mapExpFieldZ.at(-41.7).GetSim1dGraphPolar("Bz",22.5);
-
-//mapExpFieldMag.at(-41.7).GetSim1dGraphPolar("Bmag",45);
-//mapExpFieldX.at(-41.7).GetSim1dGraphPolar("Bx",45);
-//mapExpFieldY.at(-41.7).GetSim1dGraphPolar("By",45);
-//mapExpFieldZ.at(-41.7).GetSim1dGraphPolar("Bz",45);
-
-//mapExpFieldMag.at(-41.7).GetSim1dGraphPolar("Bmag",67.5);
-//mapExpFieldX.at(-41.7).GetSim1dGraphPolar("Bx",67.5);
-//mapExpFieldY.at(-41.7).GetSim1dGraphPolar("By",67.5);
-//mapExpFieldZ.at(-41.7).GetSim1dGraphPolar("Bz",67.5);
-
-
-
-
-//mapExpFieldMag.at(-61.7).GetExp1dGraphPolar("Bmag",22.5);
-//mapExpFieldX.at(-61.7).GetExp1dGraphPolar("Bx",22.5);
-//mapExpFieldY.at(-61.7).GetExp1dGraphPolar("By",22.5);
-//mapExpFieldZ.at(-61.7).GetExp1dGraphPolar("Bz",22.5);
-
-//mapExpFieldMag.at(-61.7).GetExp1dGraphPolar("Bmag",45);
-//mapExpFieldX.at(-61.7).GetExp1dGraphPolar("Bx",45);
-//mapExpFieldY.at(-61.7).GetExp1dGraphPolar("By",45);
-//mapExpFieldZ.at(-61.7).GetExp1dGraphPolar("Bz",45);
-
-//mapExpFieldMag.at(-61.7).GetExp1dGraphPolar("Bmag",67.5);
-//mapExpFieldX.at(-61.7).GetExp1dGraphPolar("Bx",67.5);
-//mapExpFieldY.at(-61.7).GetExp1dGraphPolar("By",67.5);
-//mapExpFieldZ.at(-61.7).GetExp1dGraphPolar("Bz",67.5);
-
-
-//mapExpFieldMag.at(-61.7).GetSim1dGraphPolar("Bmag",22.5);
-//mapExpFieldX.at(-61.7).GetSim1dGraphPolar("Bx",22.5);
-//mapExpFieldY.at(-61.7).GetSim1dGraphPolar("By",22.5);
-//mapExpFieldZ.at(-61.7).GetSim1dGraphPolar("Bz",22.5);
-
-//mapExpFieldMag.at(-61.7).GetSim1dGraphPolar("Bmag",45);
-//mapExpFieldX.at(-61.7).GetSim1dGraphPolar("Bx",45);
-//mapExpFieldY.at(-61.7).GetSim1dGraphPolar("By",45);
-//mapExpFieldZ.at(-61.7).GetSim1dGraphPolar("Bz",45);
-
-//mapExpFieldMag.at(-61.7).GetSim1dGraphPolar("Bmag",67.5);
-//mapExpFieldX.at(-61.7).GetSim1dGraphPolar("Bx",67.5);
-//mapExpFieldY.at(-61.7).GetSim1dGraphPolar("By",67.5);
-//mapExpFieldZ.at(-61.7).GetSim1dGraphPolar("Bz",67.5);
-
-
-
-//mapExpFieldMag.at(-81.7).GetExp1dGraphPolar("Bmag",22.5);
-//mapExpFieldX.at(-81.7).GetExp1dGraphPolar("Bx",22.5);
-//mapExpFieldY.at(-81.7).GetExp1dGraphPolar("By",22.5);
-//mapExpFieldZ.at(-81.7).GetExp1dGraphPolar("Bz",22.5);
-
-//mapExpFieldMag.at(-81.7).GetExp1dGraphPolar("Bmag",45);
-//mapExpFieldX.at(-81.7).GetExp1dGraphPolar("Bx",45);
-//mapExpFieldY.at(-81.7).GetExp1dGraphPolar("By",45);
-//mapExpFieldZ.at(-81.7).GetExp1dGraphPolar("Bz",45);
-
-//mapExpFieldMag.at(-81.7).GetExp1dGraphPolar("Bmag",67.5);
-//mapExpFieldX.at(-81.7).GetExp1dGraphPolar("Bx",67.5);
-//mapExpFieldY.at(-81.7).GetExp1dGraphPolar("By",67.5);
-//mapExpFieldZ.at(-81.7).GetExp1dGraphPolar("Bz",67.5);
-
-
-//mapExpFieldMag.at(-81.7).GetSim1dGraphPolar("Bmag",22.5);
-//mapExpFieldX.at(-81.7).GetSim1dGraphPolar("Bx",22.5);
-//mapExpFieldY.at(-81.7).GetSim1dGraphPolar("By",22.5);
-//mapExpFieldZ.at(-81.7).GetSim1dGraphPolar("Bz",22.5);
-
-//mapExpFieldMag.at(-81.7).GetSim1dGraphPolar("Bmag",45);
-//mapExpFieldX.at(-81.7).GetSim1dGraphPolar("Bx",45);
-//mapExpFieldY.at(-81.7).GetSim1dGraphPolar("By",45);
-//mapExpFieldZ.at(-81.7).GetSim1dGraphPolar("Bz",45);
-
-//mapExpFieldMag.at(-81.7).GetSim1dGraphPolar("Bmag",67.5);
-//mapExpFieldX.at(-81.7).GetSim1dGraphPolar("Bx",67.5);
-//mapExpFieldY.at(-81.7).GetSim1dGraphPolar("By",67.5);
-//mapExpFieldZ.at(-81.7).GetSim1dGraphPolar("Bz",67.5);
-
-//Close the file on disk
-	outputFile.Close();
-	cout << " T.H.E  E.N.D " << endl;
-
- return 0;
-}
-
 

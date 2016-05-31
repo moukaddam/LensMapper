@@ -54,21 +54,22 @@ void ShowVectorSizes(void) ;
 void ShowVectorsContent(void) ;
 void Clear(void) ;
 
-//1D
-void GetExp1dGraphPolar(TString NameTitle, double angle) ; // NEW
-void GetSim1dGraphPolar(TString NameTitle, double angle ); // NEW
+// Returns the index of the first point validating specific position requirements 
+int GetExpBFieldPointXYZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax  ) ;
+int GetExpBFieldPoinRTZ(TString NameTitle, double rmin, double rmax, double tmin, double tmax, double zmin, double zmax  ) ;
 
-TGraphErrors* GetExp1dGraphCartesian(double y) ;  // CHECK 
+//1D
+void GetExp1DGraphPolar(TString NameTitle, double zmin, double zmax, double anglmin, double anglemax) ; 
+void GetSim1DGraphPolar(TString NameTitle, double zmin, double zmax, double anglemin, double anglemax) ; 
+void GetExp1DGraphX(TString NameTitle, double zmin, double zmax, double ymin, double ymax );
+void GetExp1DGraphY(TString NameTitle, double zmin, double zmax, double xmin, double xmax );
+void GetExp1DGraphZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax );
+void GetSim1DGraphX(TString NameTitle, double zmin, double zmax, double ymin, double ymax );
+void GetSim1DGraphY(TString NameTitle, double zmin, double zmax, double xmin, double xmax );
+void GetSim1DGraphZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax );
 
 //2D 
-TGraph2DErrors* GetExp2dGraph(void /*ADD an option to select which physical quantity ? */);
-
-// this function gets a specific experimental value at a specific polar position
-double GetExpBField(double angle, double radius, TString NameTitle); 
-
-//Helper Methods
-Double_t* GetArrayFromCVector(vector<Double_t> vec) ;
-
+void GetExp2DGraph(TString NameTitle, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax) ;
 
  };
 
