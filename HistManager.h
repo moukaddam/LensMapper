@@ -1,7 +1,6 @@
 #ifndef _HISTMANAGER_CLASS
 #define _HISTMANAGER_CLASS
 
-
 #include "TH2D.h"
 #include "TH3D.h"
 #include "TGraph.h"
@@ -9,6 +8,7 @@
 #include "TGraphAsymmErrors.h"
 #include "TMath.h"
 #include "TVector3.h"
+#include "TCanvas.h"
 
 #include "stdio.h"
 #include "iostream"
@@ -23,9 +23,10 @@ class HistManager
 
 //3D histogram
 TH3D *fSim3dHistogram ;
-double fdx;
-double fdy;
-double fdz;  
+
+double fXErr;
+double fYErr;
+double fZErr;  
 
 double fOffsetx;
 double fOffsety;
@@ -36,29 +37,21 @@ HistManager(TH3D* hist3d, double dx, double dy, double dz);
 ~HistManager(void);
 
 void SetOffsets(double offsetx, double offsety, double offsetz) ;
-
-TGraphAsymmErrors* GetCartesianInterpolation(double angle /*degree*/, double level_z_diretion, int number_of_interpolation_points, TString NameTitle) ;
-
-void    GetPolarInterpolation(double angle /*degree*/, double level_z_diretion, int number_of_interpolation_points, TString NameTitle, int draw_error) ;
-TGraph* GetPolarInterpolationOffsetX(double theta, double z_level, int offset, int number_of_interpolation_points, TString NameTitle);
-TGraph* GetPolarInterpolationOffsetY(double theta, double z_level, int offset, int number_of_interpolation_points, TString NameTitle);
-TGraph* GetPolarInterpolationOffsetZ(double theta, double z_level, double offset, int number_of_interpolation_points, TString NameTitle);
-void    GetPolarInterpolationOffsetXYZ(double theta, double z_level, int number_of_interpolation_points, TString NameTitle); //NEW
-TGraph* GetPolarInterpolationTan(double radius, double level_z_direction, TString NameTitle) ;
-TGraph2D* GetPolarInterpolation2D(double level_z_direction, int number_of_interpolation_points, TString NameTitle) ;
-
-int GetTotalOffsetGraph(double angle,double z_level,double x_offset,double y_offset,TString NameTitle);
-TH2D* GetXYMagnetisationOffsetGraph(double angle,double radius,double z_level,double exp,TString NameTitle);
-int GetMagnetisationOffset(double angle,double radius,double z_level,double magnetisation,double expbfield,TString NameTitle);
-
-// good for contour plots
-TH2D* GetMagnitisation2D(double z_level,double xlow,double xhigh,double ylow,double yhigh, int contour, TString Bdirection);
-
-
-double GetInterpolationOnePoint(double X, double Y, double Z) ; // Get values at point X Y Z  //NEW
-double GetInterpolationOnePointError(double X, double Y, double Z) ; // Get values at point X Y Z  // NEW
-
 void Clear(void) ;
+
+double GetPoint(double X, double Y, double Z) ; // no offset considered 
+double GetPointError(double X, double Y, double Z) ; // no offset considered 
+double GetPointErrorX(double X, double Y, double Z) ; // no offset considered 
+double GetPointErrorY(double X, double Y, double Z) ; // no offset considered 
+double GetPointErrorZ(double X, double Y, double Z) ; // no offset considered
+
+void DrawPolar       (TString NameTitle, int samples, bool DrawError, double theta , double z_level) ;
+void DrawPolarOffsetX(TString NameTitle, int samples, bool DrawError, double offset, double theta, double z_level); // adding the offset on the X-axis
+void DrawPolarOffsetY(TString NameTitle, int samples, bool DrawError, double offset, double theta, double z_level); // adding the offset on the Y-axis
+void DrawCartesianFixedY  (TString NameTitle, int samples, bool DrawError, double y , double z_level) ; // no offset needed in this case
+void DrawCartesianFixedX  (TString NameTitle, int samples, bool DrawError, double x , double z_level) ; // no offset needed in this case
+void Draw2DGraph     (TString NameTitle, int points, double xlow, double xhigh, double ylow, double yhigh, double z) ; // write a TGraph2D, 
+void Draw2DHist      (TString NameTitle, int points, double xlow, double xhigh, double ylow, double yhigh, double z, int contour=50); // returns a 2D histogram, good for contour plots
 
  };
 

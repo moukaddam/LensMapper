@@ -150,75 +150,61 @@ while ( !input_sim.eof() ) {
 
 		// fill in TH3D all the simulation data
 		Int_t binNumber = f3DHistBx->FindBin(X,Y,Z);
-		f3DHistBmag->SetBinContent(binNumber,SimPoint->fBFieldMag);
-		f3DHistBtan->SetBinContent(binNumber,SimPoint->fBFieldTan);
-		f3DHistBdiff->SetBinContent(binNumber,SimPoint->fBFieldDiff); //fBFieldMag-fBFieldTan 
 		f3DHistBx->SetBinContent(binNumber,BX);
 		f3DHistBy->SetBinContent(binNumber,BY);
-		f3DHistBz->SetBinContent(binNumber,BZ);			
-		
+		f3DHistBz->SetBinContent(binNumber,BZ);	
+		f3DHistBmag->SetBinContent(binNumber,SimPoint->fBFieldMag);
+		f3DHistBtan->SetBinContent(binNumber,SimPoint->fBFieldTan);
+		f3DHistBdiff->SetBinContent(binNumber,SimPoint->fBFieldDiff); //fBFieldMag-fBFieldTan 		
 		//count the lines for inspection
 		line++;
 	   if (line%100000 == 0) {
 		   cout<<"line : "<<line << "  ... Still reading ..."<<endl;
 		   //cout<< X<<"   "<<Y <<"   "<<Z <<"   "<<BX <<"   "<<BY<<"   "<<BZ <<"   "<< EX<<"   "<< EY<<"   "<< EZ<<"   "<< Perm<<endl ;
-		   }
-		   
-	}  // end of loop while
-
+	   }
+}  // end of loop while
 //count the lines 
 cout<<" "<<line << " total number of lines "<<endl;
 
 ///////////////////////////// Create histograms with Histmanager //////////////////////// 
 //Bx
-HistManager *SimBxManager = new HistManager(f3DHistBx, 1/*mm*/, 1/*mm*/, 1 /*mm*/);
-SimBxManager->SetOffsets(SENSORXOFFSETX, SENSORXOFFSETY, SENSORXOFFSETZ) ;
-SimBxManager->GetMagnitisation2D(-30,-100,+100,-100,+100, 50, "bx");
-SimBxManager->GetPolarInterpolation(22.5 , -30 , 100 , "Bx", 0 /*1 for error bars*/); // angle, z level, offset(mm), # of points
-SimBxManager->GetPolarInterpolation(45 , -30 , 100 , "Bx", 0 /*1 for error bars*/);// angle, z level, offset(mm), # of points
-SimBxManager->GetPolarInterpolation(67.5 , -30 , 100 , "Bx", 0 /*1 for error bars*/); // angle, z level, offset(mm), # of points
-//SimBxManager->GetPolarInterpolation(22.5 , -61.7 , 100 , "Bx", 0 /*1 for error bars*/); // angle, z level, offset(mm), # of points
-//SimBxManager->GetPolarInterpolation(45 , -61.7 , 100 , "Bx", 0 /*1 for error bars*/);// angle, z level, offset(mm), # of points
-//SimBxManager->GetPolarInterpolation(67.5 , -61.7 , 100 , "Bx", 0 /*1 for error bars*/); // angle, z level, offset(mm), # of points
-//SimBxManager->GetPolarInterpolation(22.5 , -81.7 , 100 , "Bx", 0 /*1 for error bars*/); // angle, z level, offset(mm), # of points
-//SimBxManager->GetPolarInterpolation(45 , -81.7 , 100 , "Bx", 0 /*1 for error bars*/);// angle, z level, offset(mm), # of points
-//SimBxManager->GetPolarInterpolation(67.5 , -81.7 , 100 , "Bx", 0 /*1 for error bars*/); // angle, z level, offset(mm), # of points
+HistManager *SimBxManager = new HistManager(f3DHistBx, 0.4/*mm*/, 0.4/*mm*/, 0.4/*mm*/);
+SimBxManager->Draw2DHist ("bx",200,-100,+100,-100,+100,-30) ;  
+SimBxManager->Draw2DGraph("bx",200,-100,+100,-100,+100,-30) ;  
+SimBxManager->DrawPolarOffsetX("Bx", 100, true, 2.1, 22.5, -30); 
+SimBxManager->DrawPolarOffsetX("Bx (no offset)", 100, false, 0.0, 22.5, -30);
+SimBxManager->DrawPolarOffsetX("Bx", 100, false, 2.1, 45.0, -30);
+SimBxManager->DrawPolarOffsetX("Bx", 100, true, 2.1, 67.5, -30);
+SimBxManager->DrawCartesianFixedY("Bx cartesian ", 100, false, 20,-30) ; 
+SimBxManager->DrawCartesianFixedX("Bx cartesian ", 100, false, 20,-30) ;
 
 //By 
-HistManager *SimByManager = new HistManager(f3DHistBy, 1/*mm*/, 1/*mm*/, 1/*mm*/);
-SimByManager->SetOffsets( SENSORYOFFSETX, SENSORYOFFSETY, SENSORYOFFSETZ) ;
-SimByManager->GetPolarInterpolation(22.5 , -30 , 100 , "By", 0 /*1 for error bars*/);// angle, z level, offset(mm), # of points
-SimByManager->GetPolarInterpolation(45 , -30 , 100 , "By", 0 /*1 for error bars*/); // angle, z level, offset(mm), # of points
-SimByManager->GetPolarInterpolation(67.5 , -30 , 100 , "By", 0 /*1 for error bars*/); // angle, z level, offset(mm), # of points
-//SimByManager->GetPolarInterpolation(22.5 , -61.7 , 100 , "By", 0 /*1 for error bars*/);// angle, z level, offset(mm), # of points
-//SimByManager->GetPolarInterpolation(45 , -61.7 , 100 , "By", 0 /*1 for error bars*/); // angle, z level, offset(mm), # of points
-//SimByManager->GetPolarInterpolation(67.5 , -61.7 , 100 , "By", 0 /*1 for error bars*/); // angle, z level, offset(mm), # of points
-//SimByManager->GetPolarInterpolation(22.5 , -81.7 , 100 , "By", 0 /*1 for error bars*/);// angle, z level, offset(mm), # of points
-//SimByManager->GetPolarInterpolation(45 , -81.7 , 100 , "By", 0 /*1 for error bars*/); // angle, z level, offset(mm), # of points
-//SimByManager->GetPolarInterpolation(67.5 , -81.7 , 100 , "By", 0 /*1 for error bars*/); // angle, z level, offset(mm), # of points
+HistManager *SimByManager = new HistManager(f3DHistBy, 0.4/*mm*/, 0.4/*mm*/, 0.4/*mm*/);
+SimByManager->DrawPolarOffsetX("By", 100, true, 2.1, 22.5, -30);
+SimByManager->DrawPolarOffsetX("By", 100, true, 2.1, 45.0, -30);
+SimByManager->DrawPolarOffsetX("By", 100, false, 2.1, 67.5, -30); 
 
 //Bz
-HistManager *SimBzManager = new HistManager(f3DHistBz, 1/*mm*/, 1/*mm*/, 1/*mm*/);
-SimBzManager->SetOffsets( SENSORZOFFSETX, SENSORZOFFSETY, SENSORZOFFSETZ) ;
-SimBzManager->GetPolarInterpolation(22.5 , -30 , 100 , "Bz", 0 /*1 for error bars*/); // angle, z level, offset(mm), # of points
-SimBzManager->GetPolarInterpolation(45 , -30 , 100 , "Bz", 0 /*1 for error bars*/); // angle, z level, offset(mm), # of points
-SimBzManager->GetPolarInterpolation(67.5 , -30 , 100 , "Bz", 0 /*1 for error bars*/); // angle, z level, offset(mm), # of points
-//SimBzManager->GetPolarInterpolation(22.5 , -61.7 , 100 , "Bz", 0 /*1 for error bars*/); // angle, z level, offset(mm), # of points
-//SimBzManager->GetPolarInterpolation(45 , -61.7 , 100 , "Bz", 0 /*1 for error bars*/); // angle, z level, offset(mm), # of points
-//SimBzManager->GetPolarInterpolation(67.5 , -61.7 , 100 , "Bz", 0 /*1 for error bars*/); // angle, z level, offset(mm), # of points
-//SimBzManager->GetPolarInterpolation(22.5 , -81.7 , 100 , "Bz", 0 /*1 for error bars*/); // angle, z level, offset(mm), # of points
-//SimBzManager->GetPolarInterpolation(45 , -81.7 , 100 , "Bz", 0 /*1 for error bars*/); // angle, z level, offset(mm), # of points
-//SimBzManager->GetPolarInterpolation(67.5 , -81.7 , 100 , "Bz", 0 /*1 for error bars*/); // angle, z level, offset(mm), # of points
+HistManager *SimBzManager = new HistManager(f3DHistBz, 0.4/*mm*/, 0.4/*mm*/, 0.4/*mm*/);
+SimBzManager->DrawPolarOffsetY("Bz", 100, false, 2.1, 22.5, -30);
+SimBzManager->DrawPolarOffsetY("Bz", 100, true, 2.1, 45.0, -30); 
+SimBzManager->DrawPolarOffsetY("Bz", 100, true, 2.1, 67.5, -30); 
 
 //Mag
-HistManager *SimBmagManager = new HistManager(f3DHistBmag, 1/*mm*/, 1/*mm*/, 1/*mm*/);
-SimBmagManager->GetMagnitisation2D(-30,-106,+106,-106,+106, 50, "bmag");
+HistManager *SimBmagManager = new HistManager(f3DHistBmag, 0.4/*mm*/, 0.4/*mm*/, 0.4/*mm*/);
+SimBmagManager->Draw2DHist("bmag",200,-100,+100,-100,+100,-30);
+SimBmagManager->Draw2DHist("bmag",300,-100,+100,-100,+100,-30);
+SimBmagManager->Draw2DHist("bmag",500,-100,+100,-100,+100,-30);
+
 //tan
-HistManager *SimBtanManager = new HistManager(f3DHistBtan, 1/*mm*/, 1/*mm*/, 1/*mm*/);
-SimBtanManager->GetMagnitisation2D(-30,-106,+106,-106,+106, 50, "btan");
+HistManager *SimBtanManager = new HistManager(f3DHistBtan, 0.4/*mm*/, 0.4/*mm*/, 0.4/*mm*/);
+SimBtanManager->Draw2DHist("btan",100,-100,+100,-100,+100,-30);
+SimBtanManager->Draw2DHist("btan",200,-100,+100,-100,+100,-30);
+SimBtanManager->Draw2DHist("btan",300,-100,+100,-100,+100,-30);
+
 //diff
-HistManager *SimBdifManager = new HistManager(f3DHistBdiff, 1/*mm*/, 1/*mm*/, 1/*mm*/);
-SimBdifManager->GetMagnitisation2D(-30,-106,+106,-106,+106, 50, "bdif");
+HistManager *SimBdifManager = new HistManager(f3DHistBdiff, 0.4/*mm*/, 0.4/*mm*/, 0.4/*mm*/);
+SimBdifManager->Draw2DHist("bdif",200,-100,+100,-100,+100,-30);
 
 
 ///////////////////////////// 
@@ -266,8 +252,8 @@ while (input_exp >> Quadrant){
 	R = ExpPoint[0]->fSensorPositionX.Perp() ; 
 	Theta = ExpPoint[0]->fSensorPositionX.Phi()*TMath::RadToDeg() ; 
 	Bexp = ExpPoint[0]->fBField.X();
-	Bsim = SimBxManager->GetInterpolationOnePoint(X,Y,Z);
-	Berr = SimBxManager->GetInterpolationOnePointError(X,Y,Z); // used as an error on the experimental values 
+	Bsim = SimBxManager->GetPoint(X,Y,Z);
+	Berr = SimBxManager->GetPointError(X,Y,Z); // used as an error on the experimental values 
 	//
 	mapExpField[0].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
 	mapExpField[0].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
@@ -278,8 +264,8 @@ while (input_exp >> Quadrant){
 	R = ExpPoint[0]->fSensorPositionY.Perp() ; 
 	Theta = ExpPoint[0]->fSensorPositionY.Phi()*TMath::RadToDeg() ; 
 	Bexp = ExpPoint[0]->fBField.Y();
-	Bsim = SimByManager->GetInterpolationOnePoint(X,Y,Z);
-	Berr = SimByManager->GetInterpolationOnePointError(X,Y,Z); // used as an error on the experimental values 
+	Bsim = SimByManager->GetPoint(X,Y,Z);
+	Berr = SimByManager->GetPointError(X,Y,Z); // used as an error on the experimental values 
 	//
 	mapExpField[1].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
 	mapExpField[1].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
@@ -290,8 +276,8 @@ while (input_exp >> Quadrant){
 	R = ExpPoint[0]->fSensorPositionZ.Perp() ; 
 	Theta = ExpPoint[0]->fSensorPositionZ.Phi()*TMath::RadToDeg() ; 
 	Bexp = ExpPoint[0]->fBField.Z();
-	Bsim = SimBzManager->GetInterpolationOnePoint(X,Y,Z);
-	Berr = SimBzManager->GetInterpolationOnePointError(X,Y,Z); // used as an error on the experimental values 
+	Bsim = SimBzManager->GetPoint(X,Y,Z);
+	Berr = SimBzManager->GetPointError(X,Y,Z); // used as an error on the experimental values 
 	//
 	mapExpField[2].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
 	mapExpField[2].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
@@ -302,8 +288,8 @@ while (input_exp >> Quadrant){
 	R = ExpPoint[0]->fPosition.Perp() ; 
 	Theta = ExpPoint[0]->fPosition.Phi()*TMath::RadToDeg() ; 
 	Bexp = ExpPoint[0]->fBField.Mag();
-	Bsim = SimBmagManager->GetInterpolationOnePoint(X,Y,Z);
-	Berr = SimBmagManager->GetInterpolationOnePointError(X,Y,Z); // used as an error on the experimental values 
+	Bsim = SimBmagManager->GetPoint(X,Y,Z);
+	Berr = SimBmagManager->GetPointError(X,Y,Z); // used as an error on the experimental values 
 	//
 	mapExpField[3].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
 	mapExpField[3].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
@@ -314,13 +300,13 @@ while (input_exp >> Quadrant){
 	R = ExpPoint[0]->fPosition.Perp() ; 
 	Theta = ExpPoint[0]->fPosition.Phi()*TMath::RadToDeg() ; 
 	Bexp = ExpPoint[0]->fBField.Perp();
-	Bsim = SimBtanManager->GetInterpolationOnePoint(X,Y,Z);
-	Berr = SimBtanManager->GetInterpolationOnePointError(X,Y,Z); // used as an error on the experimental values 
+	Bsim = SimBtanManager->GetPoint(X,Y,Z);
+	Berr = SimBtanManager->GetPointError(X,Y,Z); // used as an error on the experimental values 
 	//
 	mapExpField[4].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
 	mapExpField[4].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
 
-  }
+}
 
 
 ///////////////////////////// Create histograms with Graphmanager ////////////////////////
@@ -340,82 +326,3 @@ mapExpField.at(3).GetExp2DGraph("Bmag",-100,+100,-100,+100,-100,+100) ;
 
  return 0;
 }
-
-
-
-
-
-/////////////////////////////
-///////////////////////////// Determine the error from the simulation of all experimental points ////////////////////////
-/////////////////////////////
-
-/*
-for(it = mapExpFieldMag.begin(); it != mapExpFieldMag.end(); ++it){
-
-	for (unsigned i = 0 ; i<(*it).second.fExpX.size() ;  i++ ){
-		// store inside the error containers eBxyz from HistBxyz
-		// these values are already corrected for offset
-		double X = (*it).second.fExpX.at(i) ;
-		double Y = (*it).second.fExpY.at(i) ;
-		double Z = (*it).second.fExpZ.at(i) ;
-		//cout << "X Y Z " << X <<"  "<< Y <<"  "<< Z <<endl;
-		(*it).second.fExpBxErr.push_back(SimBxManager->GetInterpolationOnePointError(X,Y,Z));
-		(*it).second.fExpByErr.push_back(SimByManager->GetInterpolationOnePointError(X,Y,Z));
-		(*it).second.fExpBzErr.push_back(SimBzManager->GetInterpolationOnePointError(X,Y,Z)); // CHECK make the same for mag and tan..
-
-		(*it).second.fSimBx.push_back(SimBxManager->GetInterpolationOnePoint(X,Y,Z));
-		(*it).second.fSimBy.push_back(SimByManager->GetInterpolationOnePoint(X,Y,Z));
-		(*it).second.fSimBz.push_back(SimBzManager->GetInterpolationOnePoint(X,Y,Z)); // CHECK make the same for mag and tan..
-		}
-}
-
-for(it = mapExpFieldX.begin(); it != mapExpFieldX.end(); ++it){
-
-	for (unsigned i = 0 ; i<(*it).second.fExpX.size() ;  i++ ) {
-		// these values are already corrected for offset
-		double X = (*it).second.fExpX.at(i) ; 
-		double Y = (*it).second.fExpY.at(i) ;
-		double Z = (*it).second.fExpZ.at(i) ;
-		//cout << "X Y Z " << X <<"  "<< Y <<"  "<< Z <<endl;
-		(*it).second.fExpBErr.push_back(SimBxManager->GetInterpolationOnePointError(X,Y,Z));// CHECK make the same for mag and tan..
-		(*it).second.fSimB.push_back(SimBxManager->GetInterpolationOnePoint(X,Y,Z));
-		//SimBxManager->GetInterpolationOnePointNoOffset(X,Y,Z);
-		}
-}
-
-for(it = mapExpFieldY.begin(); it != mapExpFieldY.end(); ++it){
-
-	for (unsigned i = 0 ; i<(*it).second.fExpY.size() ;  i++ ){
-		// store inside the error containers eBxyz from HistBxyz
-		double X = (*it).second.fExpX.at(i) ;
-		double Y = (*it).second.fExpY.at(i) ;
-		double Z = (*it).second.fExpZ.at(i) ;
-		
-		(*it).second.fExpByErr.push_back(SimByManager->GetInterpolationOnePointError(X,Y,Z));// CHECK make the same for mag and tan..
-		(*it).second.fSimBy.push_back(SimByManager->GetInterpolationOnePoint(X,Y,Z));
-	
-		}
-}
-
-
-
-//Loop on the map 
-for(it = mapExpFieldZ.begin(); it != mapExpFieldZ.end(); ++it) {
-	//cout << "Key: " << (*it).first <<endl;
-	//Loop on the points stored (XYZ)
-	//cout << "x: " << (*it).second.fExpX.size() <<endl;
-
-	for (unsigned i = 0 ; i<(*it).second.fExpZ.size() ;  i++ )
-		{
-		// store inside the error containers eBxyz from HistBxyz
-		double X = (*it).second.fExpX.at(i) ;
-		double Y = (*it).second.fExpY.at(i) ;
-		double Z = (*it).second.fExpZ.at(i) ;
-		
-		(*it).second.fExpBzErr.push_back(SimBzManager->GetInterpolationOnePointError(X,Y,Z)); // CHECK make the same for mag and tan..
-		(*it).second.fSimBz.push_back(SimBzManager->GetInterpolationOnePoint(X,Y,Z));
-
-		}
-}
-*/
-
