@@ -54,6 +54,9 @@ void ShowVectorSizes(void) ;
 void ShowVectorsContent(void) ;
 void Clear(void) ;
 
+double GetSumChi2() ; // not normalised 
+int GetNpoints() { return fExpX.size(); } ; // all have the same size
+
 // Returns the index of the first point validating specific position requirements 
 int GetExpBFieldPointXYZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax  ) ;
 int GetExpBFieldPoinRTZ(TString NameTitle, double rmin, double rmax, double tmin, double tmax, double zmin, double zmax  ) ;

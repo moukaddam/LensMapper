@@ -350,8 +350,32 @@ void GraphManager::Clear(void) //NEW
 //Simulation
  fSimB.clear();
 
-
 }
+
+
+double GraphManager::GetSumChi2() {
+
+    double sumchi2 = 0 ; 
+    double chi2 = 0 ; 
+
+    for (unsigned i=0 ; i < fSimB.size() ; i++)  {
+        chi2 = (fSimB.at(i) - fExpB.at(i))/fExpBErr.at(i); 
+        chi2 = chi2*chi2 ;
+        sumchi2 = sumchi2 + chi2;
+    }
+    
+    return sumchi2 ;  
+}
+
+
+
+
+
+
+
+
+
+
 
 
 /* //////////////////////////////////////////////////

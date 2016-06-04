@@ -24,37 +24,33 @@
 
 
 // functions 
-int optimizing(void) ;
-int mapping(void);
+//int optimizing(void) ;
+double mapping(TString, TString);
 
 
-int main() {
+int main(int argc,char *argv[]) {
+
+
+if (argc != 3 ) {
+	cout << " use only 2 arguments e.g.\n  ./bin/mapperTool    <experimental-file>  <comsol-file>" << endl ; 
+	exit(-1);
+}
 
 // optimize the values of offset 
 //optimizing();
 
-//map the measured values 
-mapping();
+//map the measured values
+//TString SimData ="SPICEField3D.v51.3.21.TABLE";
+//TString SimData ="SPICEField3Dv5220.dat";
+double chi2 = mapping(TString(argv[1]),TString(argv[2]));
+cout << " chi2 " << chi2 << endl; 
 
- return 1;
+ return 0;
 }
 
 
 
-
-int optimizing() {
-///////////////////////////// OPTIMIZE paramters ///////////////////////////
-TString file1,file2;
-file1="MEL_MagFieldExp.dat";
-file2="MEL_MagFieldTablePaths.dat";  
-//OptimizeParameters* optimizer = new OptimizeParameters(file1,file2) ;
-//delete optimizer ;
-
-return 1 ; 
-}
-
-
-int mapping(){
+double mapping(TString ExpData, TString SimData){
 
 /////////////////////// OPEN INPUT AND OUTPUT FILES ///////////////////////
 
@@ -71,27 +67,21 @@ TH3D *f3DHistBdiff = new TH3D("f3DHistBDIFF", "Bdiff", 111,-111, 111, 111,-111, 
     
     
 ///////////////////////////// OPEN INPUT AND OUTPUT FILES ///////////////////////
-TString fullpathtofile;  
-// name of files
-TString ExpData ="tableExpGridB.dat";
-//TString SimData ="SPICEField3D.v51.3.21.TABLE";
-TString SimData ="SPICEField3Dv5220.dat";
-
 // open the data file
 ifstream input_exp;
-fullpathtofile = Form("./input/%s",ExpData.Data() ) ; 
-cout<<"opening file : |"<<fullpathtofile<< "| ... ";
-input_exp.open( fullpathtofile.Data() );
+TString fullpathtofile = Form("./input/%s",ExpData.Data() ) ; cout<<"opening file : |"<<ExpData<< "| ... ";
+input_exp.open( ExpData.Data() );
 if (!input_exp) { cout<<"problem opening experimental data file " << fullpathtofile << endl; exit(-1);}
 else cout<<"Experimental file is opened "<<endl;
 
 //open the field files from comsol  
 ifstream input_sim;
 fullpathtofile = Form("./input/%s",SimData.Data() ) ; 
-cout<<"opening file : |"<<fullpathtofile<< "| ... ";
-input_sim.open(fullpathtofile.Data() ) ; // from local input if not go seek in data 1
+cout<<"opening file : |"<<SimData<< "| ... ";
+input_sim.open(SimData.Data() ) ; // from local input if not go seek in data 1
 if(!input_sim.is_open()) {
 	cout<<"problem opening simulation data file |"<< fullpathtofile <<"|"<< endl;
+	SimData.ReplaceAll("./input/","");
 	fullpathtofile = Form("/data1/moukaddam/MagnetsMapping/%s",SimData.Data()) ;
 	cout<<"trying main directory, opening file : |"<<fullpathtofile<< "| ... ";
 }
@@ -99,6 +89,8 @@ if (!input_sim.is_open()) { cout<<"problem opening simulation data file |"<< ful
 else cout<<" Simulation file " <<  fullpathtofile <<  " is opened " <<endl;
 
 // create root output file 
+ExpData.ReplaceAll("./input/","");
+SimData.ReplaceAll("./input/","");
 TString  filename = "./output/compare_" + ExpData + "_" + SimData + ".root";
 TFile outputFile(filename,"RECREATE");
 
@@ -111,25 +103,19 @@ string s_buffer="buffer";
 Int_t d_buffer=-1;
 Int_t counter1=0; // counter on the first lines
 Int_t counter2=0; // counter on the first lines
-
 // read the first lines
 Int_t dimx_2, dimy_2, dimz_2;
 input_sim>>dimx_2>>dimy_2>>dimz_2;
 cout<<"                                    "<<" X "<<"  "<<" Y "<<"  "<<" Z "<<endl;
 cout<<" Simulated Field Table dimensions : "<<dimx_2<<"  "<<dimy_2<<"  "<<dimz_2<<endl;
-
-//reset buffer
 d_buffer=-1;
 while (d_buffer != 0 && counter1< 15){ // find a solution for this with do while
 	input_sim>>d_buffer>>s_buffer;
 	counter2++;
 	}
 
-//test for table 2
-cout<<"READING FIELD TABLE"<<endl;
 getline(input_sim,s_buffer);
 cout<<counter2<<s_buffer<<endl;
-
 // read and fill
 Double_t X(0), Y(0), Z(0), EX(-100), EY(-100), EZ(-100), Perm(0);
 Double_t BX(0), BY(0), BZ(0);
@@ -165,6 +151,8 @@ while ( !input_sim.eof() ) {
 }  // end of loop while
 //count the lines 
 cout<<" "<<line << " total number of lines "<<endl;
+
+
 
 ///////////////////////////// Create histograms with Histmanager //////////////////////// 
 //Bx
@@ -207,6 +195,8 @@ HistManager *SimBdifManager = new HistManager(f3DHistBdiff, 0.4/*mm*/, 0.4/*mm*/
 SimBdifManager->Draw2DHist("bdif",200,-100,+100,-100,+100,-30);
 
 
+
+
 ///////////////////////////// 
 /////////////////////////////  READ THE DATA FILE ///////////////////////
 ///////////////////////////// 
@@ -220,10 +210,8 @@ std::map<Double_t,GraphManager> mapExpFieldZ;
 std::map<Double_t,GraphManager>::iterator it;
 
 //ExperimentalPoint* ExpPointMag = new ExperimentalPoint();
-ExperimentalPoint* ExpPoint[3]; 
-ExpPoint[0] = new ExperimentalPoint();  // Attention, Sensor X,Y or Z measures in all directions (not necessarly what the 
+ExperimentalPoint* ExpPoint = new ExperimentalPoint();  // Attention, Sensor X,Y or Z measures in all directions (not necessarly what the 
 										// name suggest). This is due to the fact that lens is rotated with respect to mapper plate in some cases
-
 //FORMAT : 1	A	1	3	-904.5	568.7	232.7
 TString  Grid=" ";
 Double_t Quadrant(0);
@@ -243,63 +231,63 @@ while (input_exp >> Quadrant){
    // read one line and do some changes 
     input_exp >> Grid >> Position >> Level >> BX >> BY >> BZ;
     //cout <<  Quadrant << " " << Grid << " " << Position << " " << Level << " " << BX << " " << BY << " " << BZ << endl ; 
-	ExpPoint[0]->ClearParameters();	
-	ExpPoint[0]->ReadLineAndTreat( Quadrant, Grid, Position, Level , BX , BY , BZ); 
+	ExpPoint->ClearParameters();	
+	ExpPoint->ReadLineAndTreat( Quadrant, Grid, Position, Level , BX , BY , BZ); 
     
-	X = ExpPoint[0]->fSensorPositionX.X() ; 
-    Y = ExpPoint[0]->fSensorPositionX.Y() ; 
-	Z = ExpPoint[0]->fSensorPositionX.Z() ; 
-	R = ExpPoint[0]->fSensorPositionX.Perp() ; 
-	Theta = ExpPoint[0]->fSensorPositionX.Phi()*TMath::RadToDeg() ; 
-	Bexp = ExpPoint[0]->fBField.X();
+	X = ExpPoint->fSensorPositionX.X() ; 
+    Y = ExpPoint->fSensorPositionX.Y() ; 
+	Z = ExpPoint->fSensorPositionX.Z() ; 
+	R = ExpPoint->fSensorPositionX.Perp() ; 
+	Theta = ExpPoint->fSensorPositionX.Phi()*TMath::RadToDeg() ; 
+	Bexp = ExpPoint->fBField.X();
 	Bsim = SimBxManager->GetPoint(X,Y,Z);
 	Berr = SimBxManager->GetPointError(X,Y,Z); // used as an error on the experimental values 
 	//
 	mapExpField[0].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
 	mapExpField[0].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
 
-	X = ExpPoint[0]->fSensorPositionY.X() ; 
-    Y = ExpPoint[0]->fSensorPositionY.Y() ; 
-	Z = ExpPoint[0]->fSensorPositionY.Z() ; 
-	R = ExpPoint[0]->fSensorPositionY.Perp() ; 
-	Theta = ExpPoint[0]->fSensorPositionY.Phi()*TMath::RadToDeg() ; 
-	Bexp = ExpPoint[0]->fBField.Y();
+	X = ExpPoint->fSensorPositionY.X() ; 
+    Y = ExpPoint->fSensorPositionY.Y() ; 
+	Z = ExpPoint->fSensorPositionY.Z() ; 
+	R = ExpPoint->fSensorPositionY.Perp() ; 
+	Theta = ExpPoint->fSensorPositionY.Phi()*TMath::RadToDeg() ; 
+	Bexp = ExpPoint->fBField.Y();
 	Bsim = SimByManager->GetPoint(X,Y,Z);
 	Berr = SimByManager->GetPointError(X,Y,Z); // used as an error on the experimental values 
 	//
 	mapExpField[1].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
 	mapExpField[1].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
 
-	X = ExpPoint[0]->fSensorPositionZ.X() ; 
-    Y = ExpPoint[0]->fSensorPositionZ.Y() ; 
-	Z = ExpPoint[0]->fSensorPositionZ.Z() ; 
-	R = ExpPoint[0]->fSensorPositionZ.Perp() ; 
-	Theta = ExpPoint[0]->fSensorPositionZ.Phi()*TMath::RadToDeg() ; 
-	Bexp = ExpPoint[0]->fBField.Z();
+	X = ExpPoint->fSensorPositionZ.X() ; 
+    Y = ExpPoint->fSensorPositionZ.Y() ; 
+	Z = ExpPoint->fSensorPositionZ.Z() ; 
+	R = ExpPoint->fSensorPositionZ.Perp() ; 
+	Theta = ExpPoint->fSensorPositionZ.Phi()*TMath::RadToDeg() ; 
+	Bexp = ExpPoint->fBField.Z();
 	Bsim = SimBzManager->GetPoint(X,Y,Z);
 	Berr = SimBzManager->GetPointError(X,Y,Z); // used as an error on the experimental values 
 	//
 	mapExpField[2].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
 	mapExpField[2].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
 
-	X = ExpPoint[0]->fPosition.X() ; 
-    Y = ExpPoint[0]->fPosition.Y() ; 
-	Z = ExpPoint[0]->fPosition.Z() ; 
-	R = ExpPoint[0]->fPosition.Perp() ; 
-	Theta = ExpPoint[0]->fPosition.Phi()*TMath::RadToDeg() ; 
-	Bexp = ExpPoint[0]->fBField.Mag();
+	X = ExpPoint->fPosition.X() ; 
+    Y = ExpPoint->fPosition.Y() ; 
+	Z = ExpPoint->fPosition.Z() ; 
+	R = ExpPoint->fPosition.Perp() ; 
+	Theta = ExpPoint->fPosition.Phi()*TMath::RadToDeg() ; 
+	Bexp = ExpPoint->fBField.Mag();
 	Bsim = SimBmagManager->GetPoint(X,Y,Z);
 	Berr = SimBmagManager->GetPointError(X,Y,Z); // used as an error on the experimental values 
 	//
 	mapExpField[3].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
 	mapExpField[3].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
 
-	X = ExpPoint[0]->fPosition.X() ; 
-    Y = ExpPoint[0]->fPosition.Y() ; 
-	Z = ExpPoint[0]->fPosition.Z() ; 
-	R = ExpPoint[0]->fPosition.Perp() ; 
-	Theta = ExpPoint[0]->fPosition.Phi()*TMath::RadToDeg() ; 
-	Bexp = ExpPoint[0]->fBField.Perp();
+	X = ExpPoint->fPosition.X() ; 
+    Y = ExpPoint->fPosition.Y() ; 
+	Z = ExpPoint->fPosition.Z() ; 
+	R = ExpPoint->fPosition.Perp() ; 
+	Theta = ExpPoint->fPosition.Phi()*TMath::RadToDeg() ; 
+	Bexp = ExpPoint->fBField.Perp();
 	Bsim = SimBtanManager->GetPoint(X,Y,Z);
 	Berr = SimBtanManager->GetPointError(X,Y,Z); // used as an error on the experimental values 
 	//
@@ -307,6 +295,7 @@ while (input_exp >> Quadrant){
 	mapExpField[4].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
 
 }
+
 
 
 ///////////////////////////// Create histograms with Graphmanager ////////////////////////
@@ -322,7 +311,37 @@ mapExpField.at(3).GetExp2DGraph("Bmag",-100,+100,-100,+100,-100,+100) ;
 
 
 //Close the file on disk
-	outputFile.Close();
+outputFile.Close();
 
- return 0;
+
+
+///////////////////////////// Get the chi2 from the measurments (Bx,By,Bz) ///////////////////////
+double sumchi2x = mapExpField.at(0).GetSumChi2(); 
+double sumchi2y = mapExpField.at(1).GetSumChi2(); 
+double sumchi2z = mapExpField.at(2).GetSumChi2(); 
+
+int ndfx = mapExpField.at(0).GetNpoints(); 
+int ndfy = mapExpField.at(1).GetNpoints(); 
+int ndfz = mapExpField.at(2).GetNpoints(); 
+
+double Allchi2 = sumchi2x + sumchi2y + sumchi2z ; 
+int Allndf = ndfx + ndfy + ndfz ; 
+
+
+ return Allchi2/Allndf;
 }
+
+
+
+/*
+int optimizing() {
+///////////////////////////// OPTIMIZE paramters ///////////////////////////
+TString file1,file2;
+file1="MEL_MagFieldExp.dat";
+file2="MEL_MagFieldTablePaths.dat";  
+//OptimizeParameters* optimizer = new OptimizeParameters(file1,file2) ;
+//delete optimizer ;
+
+return 1 ; 
+}
+*/
