@@ -13,17 +13,18 @@
 #include "fstream"
 using namespace std;
 
+// all the sensors have the same offset in z = -1.8 mm, this will be taken into account directly in the Experimental point class
 #define SENSORXOFFSETX  +2.1
 #define SENSORXOFFSETY  +0.0
-#define SENSORXOFFSETZ  -1.8
+#define SENSORXOFFSETZ  +0.0
   
 #define SENSORYOFFSETX  +0.0
 #define SENSORYOFFSETY  +2.1
-#define SENSORYOFFSETZ  -1.8
+#define SENSORYOFFSETZ  +0.0
  
 #define SENSORZOFFSETX  +0.0
 #define SENSORZOFFSETY  +0.0
-#define SENSORZOFFSETZ  -1.8
+#define SENSORZOFFSETZ  +0.0
 
 
 class ExperimentalPoint
@@ -38,7 +39,6 @@ double fMagnetQuadrant ; // Q12 , Q23, Q34, Q41 (will be fixed by the flat tip) 
 double fProbeAngle ; // 0, 90, 180, 260  (counter clock wise )
 int fLocation ; // an integer corresponding to the location 
 int fLevel ; // an integer corresponding to the level of the mapper  (1 to 8, 1 being the top)
-int fSensorTag ; // 0,1,2 --> X,Y,Z (sensor will change orientation in some mapperPlate vs Lens configurations)
 
 // NEW this will be used to correct the sensor position
 TVector3 fPosition; //central position
@@ -59,8 +59,6 @@ void ShowParameters(void);
 void CalculateCentralPosition();
 void ReadLineAndTreat(int MagnetQuadrant, TString Grid, int Location, int Level , double Bx, double By, double Bz);
 double CalculateRotationAngle(int MagnetQuadrant, TString Grid); // returns  angfle in radian 
-void CheckTag(); // correct the tag
-int GetTag(); // returns the tag of direction 
 
 void LoadMap(); // load the map for positions in the mapper plate, Shaun Georges's drawings are used (can be found on the vault)
 };

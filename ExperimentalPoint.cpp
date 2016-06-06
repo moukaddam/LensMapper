@@ -16,11 +16,22 @@ void ExperimentalPoint::CalculateCentralPosition(void){ // taking into account t
 	TString label = fGrid+fGrid+Form("%d",fLocation); // AA1
 	x = fmapPosition[label].X() ; 
 	y = fmapPosition[label].Y() ;
-	// 210.0mm is the height of the firsthole, 15mm difference between holes, 5mm is the half thickness of the plate, 11.5mm is the pedestal where the probe rests 
-	// 104.8mm is the length of the probe, "L" in the catalogue however it's not ver accurate 
-	// 193.5mm is the distance from the contact surface of the pedestal to the tip of the probe
-	z = (210 + (fLevel-1)*15 + 5 ) - 193.5  ;    
-	//cout << " x y z " << x << " " << y << " " << z << endl; 
+
+    //Calculate the sensor position wrt to the base of the poles.
+	// 210.0mm is the height of the firsthole (starting from the bottom) with respect to the base of the pole : -210 
+	// 15 mm difference between holes : -15 for every level as we go up  
+	// 5 mm is the half thickness of the plate : -5 mm
+	// 193.5mm is the distance from the contact surface of the pedestal to the tip of the probe : +193
+	// all the sensors have -1.8 mm offset  : -1.8 mm
+	z = -210 -5 -(fLevel-1)*15 +193 -1.8  ;    
+    //the base of the poles is +10 mm into the base plate
+    //the target (represents the zeo of comsol) is at +1mm into the base plate 
+    z = z + 10 - 1 ; 
+
+    // Not used :
+	// 11.5mm is the pedestal where the probe rests 
+	// 104.8mm is the length of the probe, "L" in the catalogue however it's not very accurate 
+
 	fPosition.SetXYZ(x,y,z); 
 }
 
@@ -65,7 +76,6 @@ void ExperimentalPoint::ReadLineAndTreat(int MagnetQuadrant, TString Grid, int L
     fSensorPositionY = fPosition + fSensorOffsetY; 
     fSensorPositionZ = fPosition + fSensorOffsetZ; 
     fBField.SetXYZ(Bx/10.,By/10.,Bz/10.); // turn to millitesla 
-    CheckTag(); 
     ShowParameters();
 
     //correct for rotations 
@@ -76,7 +86,6 @@ void ExperimentalPoint::ReadLineAndTreat(int MagnetQuadrant, TString Grid, int L
     fSensorPositionZ.RotateZ(angle*TMath::DegToRad()); 
 
 	fBField.RotateZ(angle*TMath::DegToRad()); 
-    CheckTag();
     ShowParameters(); 
 
 	cin.get(); 
@@ -93,19 +102,8 @@ void ExperimentalPoint::ShowParameters(void){
 	cout<<endl<<"Position Sensor (mm)  X     : "<<fSensorPositionX.X()<<" ; "<<fSensorPositionX.Y()<<" ; "<<fSensorPositionX.Z()<<endl;
 	cout<<endl<<"Position Sensor (mm)  Y     : "<<fSensorPositionY.X()<<" ; "<<fSensorPositionY.Y()<<" ; "<<fSensorPositionY.Z()<<endl;
 	cout<<endl<<"Position Sensor (mm)  Z     : "<<fSensorPositionZ.X()<<" ; "<<fSensorPositionZ.Y()<<" ; "<<fSensorPositionZ.Z()<<endl;
-	cout<<endl<<"Sensor tag (X,Y,Z)==(0,1,2) : "<<fSensorTag<<endl;
 	cout<<endl<<" //////////////////////////////////////////////////////////////// "<<endl;
 
-}
-
-void ExperimentalPoint::CheckTag(){
-	if (fabs(fBField.X()) > 0 ) fSensorTag = 0; 
-	if (fabs(fBField.Y()) > 0 ) fSensorTag = 1; 
-    if (fabs(fBField.Z()) > 0 ) fSensorTag = 2; 
-}
-
-int ExperimentalPoint::GetTag(){
-	return fSensorTag ; 
 }
 
 //Clear all parameters

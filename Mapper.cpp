@@ -11,16 +11,15 @@
 
 #define SENSORXOFFSETX  +2.1
 #define SENSORXOFFSETY  +0.0
-#define SENSORXOFFSETZ  -1.8
+#define SENSORXOFFSETZ  +0.0 // all the sensors have the same offset in z = -1.8 mm, this will be taken into account directly in the Experimental point class
   
 #define SENSORYOFFSETX  +0.0
 #define SENSORYOFFSETY  +2.1
-#define SENSORYOFFSETZ  -1.8
+#define SENSORYOFFSETZ  +0.0
  
 #define SENSORZOFFSETX  +0.0
 #define SENSORZOFFSETY  +0.0
-#define SENSORZOFFSETZ  -1.8
-
+#define SENSORZOFFSETZ  +0.0
 
 
 // functions 
@@ -89,8 +88,8 @@ if (!input_sim.is_open()) { cout<<"problem opening simulation data file |"<< ful
 else cout<<" Simulation file " <<  fullpathtofile <<  " is opened " <<endl;
 
 // create root output file 
-ExpData.ReplaceAll("./input/","");
-SimData.ReplaceAll("./input/","");
+ExpData.ReplaceAll("./input/",""); ExpData.ReplaceAll(".dat",""); ExpData.ReplaceAll(".txt","");
+SimData.ReplaceAll("./input/",""); SimData.ReplaceAll(".dat",""); SimData.ReplaceAll(".txt","");
 TString  filename = "./output/compare_" + ExpData + "_" + SimData + ".root";
 TFile outputFile(filename,"RECREATE");
 
@@ -157,42 +156,42 @@ cout<<" "<<line << " total number of lines "<<endl;
 ///////////////////////////// Create histograms with Histmanager //////////////////////// 
 //Bx
 HistManager *SimBxManager = new HistManager(f3DHistBx, 0.4/*mm*/, 0.4/*mm*/, 0.4/*mm*/);
-SimBxManager->Draw2DHist ("bx",200,-100,+100,-100,+100,-30) ;  
-SimBxManager->Draw2DGraph("bx",200,-100,+100,-100,+100,-30) ;  
-SimBxManager->DrawPolarOffsetX("Bx", 100, true, 2.1, 22.5, -30); 
-SimBxManager->DrawPolarOffsetX("Bx (no offset)", 100, false, 0.0, 22.5, -30);
-SimBxManager->DrawPolarOffsetX("Bx", 100, false, 2.1, 45.0, -30);
-SimBxManager->DrawPolarOffsetX("Bx", 100, true, 2.1, 67.5, -30);
-SimBxManager->DrawCartesianFixedY("Bx cartesian ", 100, false, 20,-30) ; 
-SimBxManager->DrawCartesianFixedX("Bx cartesian ", 100, false, 20,-30) ;
+SimBxManager->Draw2DHist ("bx",200,-100,+100,-100,+100,-44.8) ;  
+SimBxManager->Draw2DGraph("bx",200,-100,+100,-100,+100,-44.8) ;  
+SimBxManager->DrawPolarOffsetX("Bx", 100, true, 2.1, 22.5, -44.8); 
+SimBxManager->DrawPolarOffsetX("Bx (no offset)", 100, false, 0.0, 22.5, -44.8);
+SimBxManager->DrawPolarOffsetX("Bx", 100, false, 2.1, 45.0, -44.8);
+SimBxManager->DrawPolarOffsetX("Bx", 100, true, 2.1, 67.5, -44.8);
+SimBxManager->DrawCartesianFixedY("Bx cartesian ", 100, false, 20,-44.8) ; 
+SimBxManager->DrawCartesianFixedX("Bx cartesian ", 100, false, 20,-44.8) ;
 
 //By 
 HistManager *SimByManager = new HistManager(f3DHistBy, 0.4/*mm*/, 0.4/*mm*/, 0.4/*mm*/);
-SimByManager->DrawPolarOffsetX("By", 100, true, 2.1, 22.5, -30);
-SimByManager->DrawPolarOffsetX("By", 100, true, 2.1, 45.0, -30);
-SimByManager->DrawPolarOffsetX("By", 100, false, 2.1, 67.5, -30); 
+SimByManager->DrawPolarOffsetX("By", 100, true, 2.1, 22.5, -44.8);
+SimByManager->DrawPolarOffsetX("By", 100, true, 2.1, 45.0, -44.8);
+SimByManager->DrawPolarOffsetX("By", 100, false, 2.1, 67.5, -44.8); 
 
 //Bz
 HistManager *SimBzManager = new HistManager(f3DHistBz, 0.4/*mm*/, 0.4/*mm*/, 0.4/*mm*/);
-SimBzManager->DrawPolarOffsetY("Bz", 100, false, 2.1, 22.5, -30);
-SimBzManager->DrawPolarOffsetY("Bz", 100, true, 2.1, 45.0, -30); 
-SimBzManager->DrawPolarOffsetY("Bz", 100, true, 2.1, 67.5, -30); 
+SimBzManager->DrawPolarOffsetY("Bz", 100, false, 2.1, 22.5, -44.8);
+SimBzManager->DrawPolarOffsetY("Bz", 100, true, 2.1, 45.0, -44.8); 
+SimBzManager->DrawPolarOffsetY("Bz", 100, true, 2.1, 67.5, -44.8); 
 
 //Mag
 HistManager *SimBmagManager = new HistManager(f3DHistBmag, 0.4/*mm*/, 0.4/*mm*/, 0.4/*mm*/);
-SimBmagManager->Draw2DHist("bmag",200,-100,+100,-100,+100,-30);
-SimBmagManager->Draw2DHist("bmag",300,-100,+100,-100,+100,-30);
-SimBmagManager->Draw2DHist("bmag",500,-100,+100,-100,+100,-30);
+SimBmagManager->Draw2DHist("bmag",200,-100,+100,-100,+100,-44.8);
+SimBmagManager->Draw2DHist("bmag",300,-100,+100,-100,+100,-44.8);
+SimBmagManager->Draw2DHist("bmag",500,-100,+100,-100,+100,-44.8);
 
 //tan
 HistManager *SimBtanManager = new HistManager(f3DHistBtan, 0.4/*mm*/, 0.4/*mm*/, 0.4/*mm*/);
-SimBtanManager->Draw2DHist("btan",100,-100,+100,-100,+100,-30);
-SimBtanManager->Draw2DHist("btan",200,-100,+100,-100,+100,-30);
-SimBtanManager->Draw2DHist("btan",300,-100,+100,-100,+100,-30);
+SimBtanManager->Draw2DHist("btan",100,-100,+100,-100,+100,-44.8);
+SimBtanManager->Draw2DHist("btan",200,-100,+100,-100,+100,-44.8);
+SimBtanManager->Draw2DHist("btan",300,-100,+100,-100,+100,-44.8);
 
 //diff
 HistManager *SimBdifManager = new HistManager(f3DHistBdiff, 0.4/*mm*/, 0.4/*mm*/, 0.4/*mm*/);
-SimBdifManager->Draw2DHist("bdif",200,-100,+100,-100,+100,-30);
+SimBdifManager->Draw2DHist("bdif",200,-100,+100,-100,+100,-44.8);
 
 
 
@@ -299,13 +298,13 @@ while (input_exp >> Quadrant){
 
 
 ///////////////////////////// Create histograms with Graphmanager ////////////////////////
-mapExpField.at(0).GetExp1DGraphPolar("Bx",49,50,-69,-67);
-mapExpField.at(0).GetExp1DGraphPolar("Bx",49,50,-48,-45);
-mapExpField.at(0).GetExp1DGraphPolar("Bx",49,50,-26,-23);
+mapExpField.at(0).GetExp1DGraphPolar("Bx",-44.9,-44.7,-69,-67);
+mapExpField.at(0).GetExp1DGraphPolar("Bx",-44.9,-44.7,-48,-45);
+mapExpField.at(0).GetExp1DGraphPolar("Bx",-44.9,-44.7,-26,-23);
 
-mapExpField.at(0).GetSim1DGraphPolar("Bx",49,50,-69,-67);
-mapExpField.at(0).GetSim1DGraphPolar("Bx",49,50,-48,-45);
-mapExpField.at(0).GetSim1DGraphPolar("Bx",49,50,-26,-23); 
+mapExpField.at(0).GetSim1DGraphPolar("Bx",-44.9,-44.7,-69,-67);
+mapExpField.at(0).GetSim1DGraphPolar("Bx",-44.9,-44.7,-48,-45);
+mapExpField.at(0).GetSim1DGraphPolar("Bx",-44.9,-44.7,-26,-23); 
 
 mapExpField.at(3).GetExp2DGraph("Bmag",-100,+100,-100,+100,-100,+100) ;
 
