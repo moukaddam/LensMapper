@@ -1,13 +1,13 @@
-#include "GraphManager.h"
+#include "ExpManager.h"
 
-GraphManager::GraphManager(void)
+ExpManager::ExpManager(void)
 {
 Clear();
 }
 
-GraphManager::~GraphManager(void){}
+ExpManager::~ExpManager(void){}
 
-void  GraphManager::FillValue(Double_t x, Double_t y, Double_t z, Double_t r, Double_t theta, Double_t b, Double_t bsim )
+void  ExpManager::FillValue(Double_t x, Double_t y, Double_t z, Double_t r, Double_t theta, Double_t b, Double_t bsim )
 {
 	fExpX.push_back(x) ;
 	fExpY.push_back(y) ;
@@ -18,7 +18,7 @@ void  GraphManager::FillValue(Double_t x, Double_t y, Double_t z, Double_t r, Do
 	fSimB.push_back(bsim) ;
 }
 
-void  GraphManager::FillValueError(Double_t x, Double_t y, Double_t z, Double_t r, Double_t theta, Double_t b)
+void  ExpManager::FillValueError(Double_t x, Double_t y, Double_t z, Double_t r, Double_t theta, Double_t b)
 {
 	fExpXErr.push_back(x) ; //mm
 	fExpYErr.push_back(y) ; //mm
@@ -30,7 +30,7 @@ void  GraphManager::FillValueError(Double_t x, Double_t y, Double_t z, Double_t 
 
 
 
-void GraphManager::ShowVectorSizes(void)
+void ExpManager::ShowVectorSizes(void)
 {
 cout<<endl<<"-----------EXP"<<endl;
 cout<<"x : "<<fExpX.size();
@@ -43,7 +43,7 @@ cout<<endl<<"------------------------"<<endl;
 }
 
 
-void GraphManager::ShowVectorsContent(void)
+void ExpManager::ShowVectorsContent(void)
 {
 
 for(unsigned i=0 ; i< fExpX.size() ; i++)
@@ -62,7 +62,7 @@ cout<<endl<<"========================"<<endl;
 }
 
 
-void GraphManager::GetExp1DGraphPolar(TString NameTitle, double zmin, double zmax, double anglemin, double anglemax) {
+void ExpManager::GetExp1DGraphPolar(TString NameTitle, double zmin, double zmax, double anglemin, double anglemax) {
 
     TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
     fGraph->SetTitle("Experimental Data;Radius (mm);Magnetic Field (mT)");
@@ -82,14 +82,14 @@ void GraphManager::GetExp1DGraphPolar(TString NameTitle, double zmin, double zma
    }
 
     fGraph->SetTitle(NameTitle+Form("Experimental Data : %.2f < Depth < %.2f mm  __  %.2f#circ < Angle < %.2f#circ;Radius (mm);Magnetic Field (mT)",zmin,zmax,anglemin,anglemax));
-    fGraph->SetName(NameTitle+Form("Exp_Depth_%.2f_%.2fmm_Angle_%.2f#circ_%.2f#circ",zmin,zmax,anglemin,anglemax));
+    fGraph->SetName(NameTitle+Form("Exp_Depth_%.2f_%.2fmm_Angle_%.2f_%.2fdeg",zmin,zmax,anglemin,anglemax));
     fGraph->Write();
 
 }
 
 
 
-void GraphManager::GetExp1DGraphX(TString NameTitle, double zmin, double zmax, double ymin, double ymax){   // do the same thing as for the polar interpolation
+void ExpManager::GetExp1DGraphX(TString NameTitle, double zmin, double zmax, double ymin, double ymax){   // do the same thing as for the polar interpolation
 
     TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
     fGraph->SetTitle("Experimental Data;X (mm);Magnetic Field (mT)");
@@ -117,7 +117,7 @@ void GraphManager::GetExp1DGraphX(TString NameTitle, double zmin, double zmax, d
 
 }
 
-void GraphManager::GetExp1DGraphY(TString NameTitle, double zmin, double zmax, double xmin, double xmax){   // do the same thing as for the polar interpolation
+void ExpManager::GetExp1DGraphY(TString NameTitle, double zmin, double zmax, double xmin, double xmax){   // do the same thing as for the polar interpolation
 
     TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
     fGraph->SetTitle("Experimental Data;Y (mm);Magnetic Field (mT)");
@@ -145,7 +145,7 @@ void GraphManager::GetExp1DGraphY(TString NameTitle, double zmin, double zmax, d
 }
 
 
-void GraphManager::GetExp1DGraphZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax ){   // do the same thing as for the polar interpolation
+void ExpManager::GetExp1DGraphZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax ){   // do the same thing as for the polar interpolation
 
     TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
     fGraph->SetTitle("Experimental Data;Z (mm);Magnetic Field (mT)");
@@ -172,7 +172,7 @@ void GraphManager::GetExp1DGraphZ(TString NameTitle, double xmin, double xmax, d
 
 }
 
-void GraphManager::GetSim1DGraphPolar(TString NameTitle, double zmin, double zmax, double anglemin, double anglemax) {
+void ExpManager::GetSim1DGraphPolar(TString NameTitle, double zmin, double zmax, double anglemin, double anglemax) {
 
     TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
     fGraph->SetTitle("Simulated Data;Radius (mm);Magnetic Field (mT)");
@@ -192,13 +192,13 @@ void GraphManager::GetSim1DGraphPolar(TString NameTitle, double zmin, double zma
    }
 
     fGraph->SetTitle(NameTitle+Form("Simulated Data : %.2f < Depth < %.2f mm  __  %.2f#circ < Angle < %.2f#circ;Radius (mm);Magnetic Field (mT)",zmin,zmax,anglemin,anglemax));
-    fGraph->SetName(NameTitle+Form("Sim_Depth_%.2f_%.2fmm_Angle_%.2f#circ_%.2f#circ",zmin,zmax,anglemin,anglemax));
+    fGraph->SetName(NameTitle+Form("Sim_Depth_%.2f_%.2fmm_Angle_%.2f_%.2fdeg",zmin,zmax,anglemin,anglemax));
     fGraph->Write();
 
 }
 
 
-void GraphManager::GetSim1DGraphX(TString NameTitle, double zmin, double zmax, double ymin, double ymax){   // do the same thing as for the polar interpolation
+void ExpManager::GetSim1DGraphX(TString NameTitle, double zmin, double zmax, double ymin, double ymax){   // do the same thing as for the polar interpolation
 
     TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
     fGraph->SetTitle("Simulated Data;X (mm);Magnetic Field (mT)");
@@ -224,7 +224,7 @@ void GraphManager::GetSim1DGraphX(TString NameTitle, double zmin, double zmax, d
 
 }
 
-void GraphManager::GetSim1DGraphY(TString NameTitle, double zmin, double zmax, double xmin, double xmax){   // do the same thing as for the polar interpolation
+void ExpManager::GetSim1DGraphY(TString NameTitle, double zmin, double zmax, double xmin, double xmax){   // do the same thing as for the polar interpolation
 
     TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
     fGraph->SetTitle("Simulated Data;Y (mm);Magnetic Field (mT)");
@@ -251,7 +251,7 @@ void GraphManager::GetSim1DGraphY(TString NameTitle, double zmin, double zmax, d
 }
 
 
-void GraphManager::GetSim1DGraphZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax ){   // do the same thing as for the polar interpolation
+void ExpManager::GetSim1DGraphZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax ){   // do the same thing as for the polar interpolation
 
     TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
     fGraph->SetTitle("Simulated Data;Z (mm);Magnetic Field (mT)");
@@ -277,7 +277,7 @@ void GraphManager::GetSim1DGraphZ(TString NameTitle, double xmin, double xmax, d
 
 }
 
-void GraphManager::GetExp2DGraph(TString NameTitle, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax) {
+void ExpManager::GetExp2DGraph(TString NameTitle, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax) {
 
     TGraph2DErrors *fGraph = new TGraph2DErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
     fGraph->SetTitle("Exp Data;Y (mm);X (mm);Magnetic Field (mT)");
@@ -303,7 +303,7 @@ void GraphManager::GetExp2DGraph(TString NameTitle, double xmin, double xmax, do
 }
 
 
-int GraphManager::GetExpBFieldPointXYZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax  ) {
+int ExpManager::GetExpBFieldPointXYZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax  ) {
    
    for (unsigned i=0; i< fExpY.size(); i++)   {
     //cout <<  " X "  << fExpX.at(i) ;  
@@ -314,7 +314,7 @@ int GraphManager::GetExpBFieldPointXYZ(TString NameTitle, double xmin, double xm
    return -1 ; 
 }
 
-int GraphManager::GetExpBFieldPoinRTZ(TString NameTitle, double rmin, double rmax, double tmin, double tmax, double zmin, double zmax  ) {
+int ExpManager::GetExpBFieldPoinRTZ(TString NameTitle, double rmin, double rmax, double tmin, double tmax, double zmin, double zmax  ) {
    
    for (unsigned i=0; i< fExpY.size(); i++)   {
     //cout <<  " X "  << fExpX.at(i) ;  
@@ -327,7 +327,7 @@ int GraphManager::GetExpBFieldPoinRTZ(TString NameTitle, double rmin, double rma
 
 			
 
-void GraphManager::Clear(void) //NEW
+void ExpManager::Clear(void) //NEW
 { 
 //Experimental 
  fExpX.clear();
@@ -353,7 +353,7 @@ void GraphManager::Clear(void) //NEW
 }
 
 
-double GraphManager::GetSumChi2() {
+double ExpManager::GetSumChi2() {
 
     double sumchi2 = 0 ; 
     double chi2 = 0 ; 
@@ -397,7 +397,7 @@ DUMPSTER, snippet could be used later
 
 
 
-TGraph2DErrors* GraphManager::GetSim2dGraph(Int_t u, Int_t v)
+TGraph2DErrors* ExpManager::GetSim2dGraph(Int_t u, Int_t v)
 {
 
 // get size
@@ -510,7 +510,7 @@ TGraph2DErrors* GraphManager::GetSim2dGraph(Int_t u, Int_t v)
 
 
 
-TGraphErrors* GraphManager::GetSim1dGraph(TString NameTitle, double angle )
+TGraphErrors* ExpManager::GetSim1dGraph(TString NameTitle, double angle )
 {
 
 

@@ -1,5 +1,5 @@
-#ifndef _HISTMANAGER_CLASS
-#define _HISTMANAGER_CLASS
+#ifndef _SimManager_CLASS
+#define _SimManager_CLASS
 
 #include "TH2D.h"
 #include "TH3D.h"
@@ -17,7 +17,7 @@
 using namespace std;
 
 
-class HistManager
+class SimManager
 {
  public:
 
@@ -33,8 +33,8 @@ double fOffsety;
 double fOffsetz;  
 
 //Methodes
-HistManager(TH3D* hist3d, double dx, double dy, double dz);
-~HistManager(void);
+SimManager(TH3D* hist3d, double dx, double dy, double dz);
+~SimManager(void);
 
 void SetOffsets(double offsetx, double offsety, double offsetz) ;
 void Clear(void) ;

@@ -5,8 +5,8 @@ Graph Manager is a class that keeps a record of all the measured values and thei
 
 */
 
-#ifndef _GRAPHMANAGER_CLASS
-#define _GRAPHMANAGER_CLASS
+#ifndef _ExpManager_CLASS
+#define _ExpManager_CLASS
 
 #include "TGraphErrors.h"
 #include "TGraph2DErrors.h"
@@ -18,7 +18,7 @@ Graph Manager is a class that keeps a record of all the measured values and thei
 using namespace std;
 
 
-class GraphManager
+class ExpManager
 {
  public:
 
@@ -45,8 +45,8 @@ vector<Double_t> fSimB ;
 
 
 //Methodes
-GraphManager(void );
-~GraphManager(void);
+ExpManager(void );
+~ExpManager(void);
 
 void FillValue(Double_t x, Double_t y, Double_t z, Double_t r, Double_t theta, Double_t b, Double_t bsim);
 void FillValueError(Double_t x, Double_t y, Double_t z, Double_t r, Double_t theta, Double_t b); // no error on simulation 

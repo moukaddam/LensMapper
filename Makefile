@@ -61,10 +61,10 @@ BIN		= ./bin
 
 # CHANGE ADD/REMOVE CLASSES OR TOOLS
 SRCS	=     ExperimentalPoint.cpp SimulationPoint.cpp \
-				GraphManager.cpp HistManager.cpp Mapper.cpp
+				ExpManager.cpp SimManager.cpp Mapper.cpp
 
 OBJECTS	=     ExperimentalPoint.o SimulationPoint.o \
-				GraphManager.o   HistManager.o  Mapper.o
+				ExpManager.o   SimManager.o  Mapper.o
 
 
 # CHANGE NAME OF THE EXCUTION 
@@ -94,7 +94,6 @@ distclean:
 # dependances
 ExperimentalPoint.o:		ExperimentalPoint.h			ExperimentalPoint.cpp	
 SimulationPoint.o:			SimulationPoint.h			SimulationPoint.cpp	
-GraphManager.o:				GraphManager.h				GraphManager.cpp	   
-HistManager.o:				HistManager.h				HistManager.cpp	       
-#OptimizeParameters.o:		OptimizeParameters.h		OptimizeParameters.cpp	Defines.h
+ExpManager.o:				ExpManager.h				ExpManager.cpp	   
+SimManager.o:				SimManager.h				SimManager.cpp	       
 Mapper.o:			        													

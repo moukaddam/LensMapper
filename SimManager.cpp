@@ -1,30 +1,30 @@
-#include "HistManager.h"
+#include "SimManager.h"
 
-HistManager::HistManager(TH3D* hist3d, double xerr, double yerr, double zerr){
-	//cout << "Inside HistManager::HistManager()" << endl;
+SimManager::SimManager(TH3D* hist3d, double xerr, double yerr, double zerr){
+	//cout << "Inside SimManager::SimManager()" << endl;
 	fSim3dHistogram = hist3d;
 	fXErr = xerr;
 	fYErr = yerr;
 	fZErr = zerr;
 }
 
-HistManager::~HistManager(void){
-	//cout << "Inside HistManager::Destructor()" << endl;
+SimManager::~SimManager(void){
+	//cout << "Inside SimManager::Destructor()" << endl;
 }
 
 
-void HistManager::SetOffsets(double X , double Y, double Z){
+void SimManager::SetOffsets(double X , double Y, double Z){
 	fOffsetx = X ;
 	fOffsety = Y ;
 	fOffsetz = Z ;
 }
 
-void HistManager::Clear(void){
+void SimManager::Clear(void){
  fSim3dHistogram->Reset();
 }
 
 
-double HistManager::GetPoint(double X , double Y, double Z) {
+double SimManager::GetPoint(double X , double Y, double Z) {
 	// interpolate
 	double Xmin = fSim3dHistogram->GetXaxis()->GetXmin(); 
 	double Ymin = fSim3dHistogram->GetYaxis()->GetXmin(); 
@@ -43,9 +43,9 @@ double HistManager::GetPoint(double X , double Y, double Z) {
 }
 
 
-double HistManager::GetPointError(double X, double Y, double Z){  // returns the maximum error found 
+double SimManager::GetPointError(double X, double Y, double Z){  // returns the maximum error found 
 
-	//cout << "HistManager::GetPointError  ";
+	//cout << "SimManager::GetPointError  ";
 	//cout << "X Y Z : "<<X<<"  "<<Y<<"  "<<Z<<endl;
 	//cout << "fXErr fYErr fZErr : "<<fXErr<<"  "<<fYErr<<"  "<<fZErr<<endl;
 
@@ -99,9 +99,9 @@ double HistManager::GetPointError(double X, double Y, double Z){  // returns the
 }
 
 
-double HistManager::GetPointErrorX(double X, double Y, double Z){  // returns the maximum error found 
+double SimManager::GetPointErrorX(double X, double Y, double Z){  // returns the maximum error found 
 
-	//cout << "HistManager::GetPointError  ";
+	//cout << "SimManager::GetPointError  ";
 	//cout << "X Y Z : "<<X<<"  "<<Y<<"  "<<Z<<endl;
 	//cout << "fXErr fYErr fZErr : "<<fXErr<<"  "<<fYErr<<"  "<<fZErr<<endl;
 
@@ -120,7 +120,7 @@ double HistManager::GetPointErrorX(double X, double Y, double Z){  // returns th
 	return max(data_error_plus,data_error_minus);
 }
 
-double HistManager::GetPointErrorY(double X, double Y, double Z){  // returns the maximum error found 
+double SimManager::GetPointErrorY(double X, double Y, double Z){  // returns the maximum error found 
 
     double data = -1;
 	double data_plus = -1, data_minus = -1, data_error_plus = -1, data_error_minus = -1;
@@ -137,7 +137,7 @@ double HistManager::GetPointErrorY(double X, double Y, double Z){  // returns th
 	return max(data_error_plus,data_error_minus);
 }
 
-double HistManager::GetPointErrorZ(double X, double Y, double Z){  // returns the maximum error found 
+double SimManager::GetPointErrorZ(double X, double Y, double Z){  // returns the maximum error found 
 
     double data = -1;
 	double data_plus = -1, data_minus = -1, data_error_plus = -1, data_error_minus = -1;
@@ -156,9 +156,9 @@ double HistManager::GetPointErrorZ(double X, double Y, double Z){  // returns th
 }
 
 
-void HistManager::DrawPolar(TString title, int samples, bool DrawError, double theta , double z){
+void SimManager::DrawPolar(TString title, int samples, bool DrawError, double theta , double z){
 
-    //cout << " HistManager::DrawPolarInterpolation " <<endl ; 
+    //cout << " SimManager::DrawPolarInterpolation " <<endl ; 
 	double data = -1, data_plus_x = -1, data_minus_x = -1, data_error_plus_x = -1, data_error_minus_x = -1;
 	double data_plus_y = -1, data_minus_y = -1, data_error_plus_y = -1, data_error_minus_y = -1;
 	double data_plus_z = -1, data_minus_z = -1, data_error_plus_z = -1, data_error_minus_z = -1;
@@ -214,7 +214,7 @@ void HistManager::DrawPolar(TString title, int samples, bool DrawError, double t
 	 
 }
 
-void HistManager::DrawCartesianFixedX(TString title, int samples,bool DrawError, double x , double z) {
+void SimManager::DrawCartesianFixedX(TString title, int samples,bool DrawError, double x , double z) {
 
 	double y = 0.;
 	double ymax = fSim3dHistogram->GetYaxis()->GetXmax(); // the maximum extent would be the size of the comsol simulation
@@ -244,7 +244,7 @@ void HistManager::DrawCartesianFixedX(TString title, int samples,bool DrawError,
 	graph1d->Write(); 
 }
 
-void HistManager::DrawCartesianFixedY(TString title, int samples,bool DrawError, double y , double z) {
+void SimManager::DrawCartesianFixedY(TString title, int samples,bool DrawError, double y , double z) {
 
 	double x = 0.;
 	double xmax = fSim3dHistogram->GetXaxis()->GetXmax(); // the maximum extent would be the size of the comsol simulation
@@ -276,7 +276,7 @@ void HistManager::DrawCartesianFixedY(TString title, int samples,bool DrawError,
 
 
 
-void HistManager::DrawPolarOffsetX(TString NameTitle, int samples, bool DrawError, double offset, double theta, double z) {
+void SimManager::DrawPolarOffsetX(TString NameTitle, int samples, bool DrawError, double offset, double theta, double z) {
 
 	double r = 0;
 	double rmax = fSim3dHistogram->GetXaxis()->GetXmax(); // the maximum extent would be the diagonal of the comsol 
@@ -304,7 +304,7 @@ void HistManager::DrawPolarOffsetX(TString NameTitle, int samples, bool DrawErro
 		 r = r + dr;	
 	}
 	
-	graph1d->SetName(NameTitle+(Form("Angle_%.2f#circ _Z_%.2fmm_OffsetX_%.2fmm",theta, z,offset)));
+	graph1d->SetName(NameTitle+(Form("Angle_%.2fdeg _Z_%.2fmm_OffsetX_%.2fmm",theta, z,offset)));
 	graph1d->SetTitle(NameTitle+Form(" Magnetic Field  (X offset) as a function of Radius at Angle=%.2f#circ",theta));
 	graph1d->GetXaxis()->SetTitle("Radius (mm)") ; 	graph1d->GetXaxis()->CenterTitle();
 	graph1d->GetYaxis()->SetTitle("X Magnetic Field Strength (mT)") ; 	graph1d->GetYaxis()->CenterTitle();
@@ -312,7 +312,7 @@ void HistManager::DrawPolarOffsetX(TString NameTitle, int samples, bool DrawErro
  
 }
 
-void HistManager::DrawPolarOffsetY(TString NameTitle, int samples, bool DrawError, double offset, double theta, double z) {
+void SimManager::DrawPolarOffsetY(TString NameTitle, int samples, bool DrawError, double offset, double theta, double z) {
 
 	double r = 0;
 	double rmax = fSim3dHistogram->GetXaxis()->GetXmax(); // the maximum extent would be the diagonal of the comsol 
@@ -342,7 +342,7 @@ void HistManager::DrawPolarOffsetY(TString NameTitle, int samples, bool DrawErro
 		 r = r + dr;	
 	}
 	
-	graph1d->SetName(NameTitle+(Form("Angle_%.2f#circ _Z_%.2fmm_OffsetY_%.2fmm",theta, z,offset)));
+	graph1d->SetName(NameTitle+(Form("Angle_%.2fdeg_Z_%.2fmm_OffsetY_%.2fmm",theta, z,offset)));
 	graph1d->SetTitle(NameTitle+Form(" Magnetic Field (Y offset) as a function of Radius at Angle=%.2f#circ",theta));
 	graph1d->GetXaxis()->SetTitle("Radius (mm)") ; 	graph1d->GetXaxis()->CenterTitle();
 	graph1d->GetYaxis()->SetTitle("Y Magnetic Field Strength (mT)") ; 	graph1d->GetYaxis()->CenterTitle();
@@ -350,7 +350,7 @@ void HistManager::DrawPolarOffsetY(TString NameTitle, int samples, bool DrawErro
 	
 }
 
-void HistManager::Draw2DGraph(TString NameTitle, int points , double xlow,double xhigh,double ylow,double yhigh, double z){
+void SimManager::Draw2DGraph(TString NameTitle, int points , double xlow,double xhigh,double ylow,double yhigh, double z){
 	
 	TGraph2D* graph2d = new TGraph2D();
 	int graph_counter=0; 
@@ -371,7 +371,7 @@ void HistManager::Draw2DGraph(TString NameTitle, int points , double xlow,double
 	graph2d->Write();
 }
 
-void HistManager::Draw2DHist(TString NameTitle, int points, double xlow,double xhigh,double ylow,double yhigh, double z, int contour){
+void SimManager::Draw2DHist(TString NameTitle, int points, double xlow,double xhigh,double ylow,double yhigh, double z, int contour){
 
 	double stepx = fabs(xhigh-xlow)/points;
 	double stepy = fabs(yhigh-ylow)/points;
