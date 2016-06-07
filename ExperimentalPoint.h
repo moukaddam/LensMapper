@@ -13,18 +13,17 @@
 #include "fstream"
 using namespace std;
 
-// all the sensors have the same offset in z = -1.8 mm, this will be taken into account directly in the Experimental point class
-#define SENSORXOFFSETX  +2.1
+#define SENSORXOFFSETX  -2.1
 #define SENSORXOFFSETY  +0.0
-#define SENSORXOFFSETZ  +0.0
+#define SENSORXOFFSETZ  +0.0 //all the sensors have the same offset in z = -1.8 mm, this will be taken into account directly in the ExperimentalPoint class
   
 #define SENSORYOFFSETX  +0.0
 #define SENSORYOFFSETY  +2.1
-#define SENSORYOFFSETZ  +0.0
+#define SENSORYOFFSETZ  +0.0 //idem
  
 #define SENSORZOFFSETX  +0.0
 #define SENSORZOFFSETY  +0.0
-#define SENSORZOFFSETZ  +0.0
+#define SENSORZOFFSETZ  +0.0 //idem
 
 
 class ExperimentalPoint

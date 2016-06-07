@@ -35,7 +35,7 @@ void ExperimentalPoint::CalculateCentralPosition(void){ // taking into account t
 	fPosition.SetXYZ(x,y,z); 
 }
 
-double ExperimentalPoint::CalculateRotationAngle(int MagnetQuadrant, TString Grid){ // returns  angfle in radian 
+double ExperimentalPoint::CalculateRotationAngle(int MagnetQuadrant, TString Grid){ // returns  angle in radian 
 
 if (Grid=="B") {
 	if (MagnetQuadrant==1)	return 0 ; 
@@ -75,7 +75,7 @@ void ExperimentalPoint::ReadLineAndTreat(int MagnetQuadrant, TString Grid, int L
     fSensorPositionX = fPosition + fSensorOffsetX; 
     fSensorPositionY = fPosition + fSensorOffsetY; 
     fSensorPositionZ = fPosition + fSensorOffsetZ; 
-    fBField.SetXYZ(Bx/10.,By/10.,Bz/10.); // turn to millitesla 
+    fBField.SetXYZ(Bx/10.,By/10.,Bz/10.); // turn to millitesla, By need to be multiplied by (-) to account for the axis change between simulation/experiment and the way the mapper is set
     ShowParameters();
 
     //correct for rotations 
