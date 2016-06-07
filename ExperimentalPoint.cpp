@@ -75,7 +75,7 @@ void ExperimentalPoint::ReadLineAndTreat(int MagnetQuadrant, TString Grid, int L
     fSensorPositionX = fPosition + fSensorOffsetX; 
     fSensorPositionY = fPosition + fSensorOffsetY; 
     fSensorPositionZ = fPosition + fSensorOffsetZ; 
-    fBField.SetXYZ(Bx/10.,By/10.,Bz/10.); // turn to millitesla, By need to be multiplied by (-) to account for the axis change between simulation/experiment and the way the mapper is set
+    fBField.SetXYZ(Bx/10.,-By/10.,Bz/10.); // turn to millitesla, By need to be multiplied by (-) to account for the axis change between simulation/experiment and the way the mapper is set
     ShowParameters();
 
     //correct for rotations 
@@ -94,16 +94,14 @@ void ExperimentalPoint::ReadLineAndTreat(int MagnetQuadrant, TString Grid, int L
 
 void ExperimentalPoint::ShowParameters(void){
 	cout<<" /////////////////////// ShowParameters /////////////////////// "<<endl;
-	cout<<endl<<"Grid (Pattern)              : "<<fGrid<<endl;
-	cout<<endl<<"Magnet Quadrant             : "<<fMagnetQuadrant <<endl;
-	cout<<endl<<"Probe angle (deg)           : "<<fProbeAngle <<endl;
-	cout<<endl<<"Magnetic Field (mT)         : "<<fBField.X()<<" ; "<<fBField.Y()<<" ; "<<fBField.Z()<<endl;
-	cout<<endl<<"Position Central (mm)       : "<<fPosition.X()<<" ; "<<fPosition.Y()<<" ; "<<fPosition.Z()<<endl;
-	cout<<endl<<"Position Sensor (mm)  X     : "<<fSensorPositionX.X()<<" ; "<<fSensorPositionX.Y()<<" ; "<<fSensorPositionX.Z()<<endl;
-	cout<<endl<<"Position Sensor (mm)  Y     : "<<fSensorPositionY.X()<<" ; "<<fSensorPositionY.Y()<<" ; "<<fSensorPositionY.Z()<<endl;
-	cout<<endl<<"Position Sensor (mm)  Z     : "<<fSensorPositionZ.X()<<" ; "<<fSensorPositionZ.Y()<<" ; "<<fSensorPositionZ.Z()<<endl;
-	cout<<endl<<" //////////////////////////////////////////////////////////////// "<<endl;
-
+	cout<<"Grid (Pattern)              : "<<fGrid<<endl;
+	cout<<"Magnet Quadrant             : "<<fMagnetQuadrant <<endl;
+	cout<<"Probe angle (deg)           : "<<fProbeAngle <<endl;
+	cout<<"Magnetic Field (mT)         : "<<fBField.X()<<" ; "<<fBField.Y()<<" ; "<<fBField.Z()<<endl;
+	cout<<"Position Central (mm)       : "<<fPosition.X()<<" ; "<<fPosition.Y()<<" ; "<<fPosition.Z()<<endl;
+	cout<<"Position Sensor (mm)  X     : "<<fSensorPositionX.X()<<" ; "<<fSensorPositionX.Y()<<" ; "<<fSensorPositionX.Z()<<endl;
+	cout<<"Position Sensor (mm)  Y     : "<<fSensorPositionY.X()<<" ; "<<fSensorPositionY.Y()<<" ; "<<fSensorPositionY.Z()<<endl;
+	cout<<"Position Sensor (mm)  Z     : "<<fSensorPositionZ.X()<<" ; "<<fSensorPositionZ.Y()<<" ; "<<fSensorPositionZ.Z()<<endl;
 }
 
 //Clear all parameters
