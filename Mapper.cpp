@@ -8,20 +8,6 @@
 #include "ExpManager.h"
 #include "SimManager.h"
 
-
-#define SENSORXOFFSETX  +2.1
-#define SENSORXOFFSETY  +0.0
-#define SENSORXOFFSETZ  +0.0 // all the sensors have the same offset in z = -1.8 mm, this will be taken into account directly in the Experimental point class
-  
-#define SENSORYOFFSETX  +0.0
-#define SENSORYOFFSETY  +2.1
-#define SENSORYOFFSETZ  +0.0
- 
-#define SENSORZOFFSETX  +0.0
-#define SENSORZOFFSETY  +0.0
-#define SENSORZOFFSETZ  +0.0
-
-
 // functions 
 //int optimizing(void) ;
 double mapping(TString, TString);
@@ -158,40 +144,42 @@ cout<<" "<<line << " total number of lines "<<endl;
 SimManager *SimBxManager = new SimManager(f3DHistBx, 0.4/*mm*/, 0.4/*mm*/, 0.4/*mm*/);
 SimBxManager->Draw2DHist ("bx",200,-100,+100,-100,+100,-44.8) ;  
 SimBxManager->Draw2DGraph("bx",200,-100,+100,-100,+100,-44.8) ;  
-SimBxManager->DrawPolarOffsetX("Bx", 100, true, 2.1, 22.5, -44.8); 
-SimBxManager->DrawPolarOffsetX("Bx (no offset)", 100, false, 0.0, 22.5, -44.8);
-SimBxManager->DrawPolarOffsetX("Bx", 100, false, 2.1, 45.0, -44.8);
-SimBxManager->DrawPolarOffsetX("Bx", 100, true, 2.1, 67.5, -44.8);
-SimBxManager->DrawCartesianFixedY("Bx cartesian ", 100, false, 20,-44.8) ; 
-SimBxManager->DrawCartesianFixedX("Bx cartesian ", 100, false, 20,-44.8) ;
-
+//SimBxManager->DrawPolarOffsetX("Bx", 100, true, 2.1, 22.5, -44.8); 
+SimBxManager->DrawPolarOffsetX("Bx", 100, true, 2.1, 45.0, -44.8);
+//SimBxManager->DrawPolarOffsetX("Bx", 100, true, 2.1, 67.5, -44.8);
+//SimBxManager->DrawCartesianFixedY("BxCartesian", 100, true, 20,-44.8) ; 
+//SimBxManager->DrawCartesianFixedX("BxCartesian", 100, true, 20,-44.8) ;
+SimBxManager->DrawPolarOffsetX("Bx", 100, true, 2.1, 90+45.0, -44.8);
+SimBxManager->DrawPolarOffsetX("Bx", 100, true, 2.1, 180+45.0, -44.8); 
+SimBxManager->DrawPolarOffsetX("Bx", 100, true, 2.1, -90+45.0, -44.8);
 //By 
 SimManager *SimByManager = new SimManager(f3DHistBy, 0.4/*mm*/, 0.4/*mm*/, 0.4/*mm*/);
-SimByManager->DrawPolarOffsetX("By", 100, true, 2.1, 22.5, -44.8);
+//SimByManager->DrawPolarOffsetX("By", 100, true, 2.1, 22.5, -44.8);
 SimByManager->DrawPolarOffsetX("By", 100, true, 2.1, 45.0, -44.8);
-SimByManager->DrawPolarOffsetX("By", 100, false, 2.1, 67.5, -44.8); 
-
+//SimByManager->DrawPolarOffsetX("By", 100, true, 2.1, 67.5, -44.8); 
+SimByManager->DrawPolarOffsetX("By", 100, true, 2.1, 90+45.0, -44.8);
+SimByManager->DrawPolarOffsetX("By", 100, true, 2.1, 180+45.0, -44.8); 
+SimByManager->DrawPolarOffsetX("By", 100, true, 2.1, -90+45.0, -44.8);
 //Bz
 SimManager *SimBzManager = new SimManager(f3DHistBz, 0.4/*mm*/, 0.4/*mm*/, 0.4/*mm*/);
-SimBzManager->DrawPolarOffsetY("Bz", 100, false, 2.1, 22.5, -44.8);
+//SimBzManager->DrawPolarOffsetY("Bz", 100, true, 2.1, 22.5, -44.8);
 SimBzManager->DrawPolarOffsetY("Bz", 100, true, 2.1, 45.0, -44.8); 
-SimBzManager->DrawPolarOffsetY("Bz", 100, true, 2.1, 67.5, -44.8); 
+//SimBzManager->DrawPolarOffsetY("Bz", 100, true, 2.1, 67.5, -44.8);
+SimBzManager->DrawPolarOffsetX("Bz", 100, true, 2.1, 90+45.0, -44.8);
+SimBzManager->DrawPolarOffsetX("Bz", 100, true, 2.1, 180+45.0, -44.8); 
+SimBzManager->DrawPolarOffsetX("Bz", 100, true, 2.1, -90+45.0, -44.8);
 
 //Mag
 SimManager *SimBmagManager = new SimManager(f3DHistBmag, 0.4/*mm*/, 0.4/*mm*/, 0.4/*mm*/);
-SimBmagManager->Draw2DHist("bmag",200,-100,+100,-100,+100,-44.8);
 SimBmagManager->Draw2DHist("bmag",300,-100,+100,-100,+100,-44.8);
-SimBmagManager->Draw2DHist("bmag",500,-100,+100,-100,+100,-44.8);
 
 //tan
 SimManager *SimBtanManager = new SimManager(f3DHistBtan, 0.4/*mm*/, 0.4/*mm*/, 0.4/*mm*/);
-SimBtanManager->Draw2DHist("btan",100,-100,+100,-100,+100,-44.8);
-SimBtanManager->Draw2DHist("btan",200,-100,+100,-100,+100,-44.8);
 SimBtanManager->Draw2DHist("btan",300,-100,+100,-100,+100,-44.8);
 
 //diff
 SimManager *SimBdifManager = new SimManager(f3DHistBdiff, 0.4/*mm*/, 0.4/*mm*/, 0.4/*mm*/);
-SimBdifManager->Draw2DHist("bdif",200,-100,+100,-100,+100,-44.8);
+SimBdifManager->Draw2DHist("bdif",300,-100,+100,-100,+100,-44.8);
 
 
 
@@ -201,11 +189,7 @@ SimBdifManager->Draw2DHist("bdif",200,-100,+100,-100,+100,-44.8);
 ///////////////////////////// 
 
 //create the map holding all the slices in z
-std::map<Double_t,ExpManager> mapExpField; 
-std::map<Double_t,ExpManager> mapExpFieldMag;
-std::map<Double_t,ExpManager> mapExpFieldX;
-std::map<Double_t,ExpManager> mapExpFieldY;
-std::map<Double_t,ExpManager> mapExpFieldZ;   
+std::map<Double_t,ExpManager> mapExpField;   
 std::map<Double_t,ExpManager>::iterator it;
 
 //ExperimentalPoint* ExpPointMag = new ExperimentalPoint();
@@ -227,9 +211,10 @@ for (int i = 0 ; i < 1 ; i++){ // number of lines to neglect
 
 double R,Theta,Bexp,Bsim,Berr;
 while (input_exp >> Quadrant){
-   // read one line and do some changes 
-    input_exp >> Grid >> Position >> Level >> BX >> BY >> BZ;
-    //cout <<  Quadrant << " " << Grid << " " << Position << " " << Level << " " << BX << " " << BY << " " << BZ << endl ; 
+	input_exp >> Grid >> Position >> Level >> BX >> BY >> BZ;
+	//skip lines starting by zero
+    if (Quadrant == 0) continue ; 
+
 	ExpPoint->ClearParameters();	
 	ExpPoint->ReadLineAndTreat( Quadrant, Grid, Position, Level , BX , BY , BZ); 
     
@@ -298,15 +283,25 @@ while (input_exp >> Quadrant){
 
 
 ///////////////////////////// Create histograms with ExpManager ////////////////////////
-mapExpField.at(0).GetExp1DGraphPolar("Bx",-44.9,-44.7,-69,-67);
-mapExpField.at(0).GetExp1DGraphPolar("Bx",-44.9,-44.7,-48,-45);
-mapExpField.at(0).GetExp1DGraphPolar("Bx",-44.9,-44.7,-26,-23);
+mapExpField.at(0).GetExp1DGraphPolar("Bx",-44.9,-44.7,67.5-5,67.5+5);
+mapExpField.at(0).GetExp1DGraphPolar("Bx",-44.9,-44.7,45.0-5,45.0+5);
+mapExpField.at(0).GetExp1DGraphPolar("Bx",-44.9,-44.7,22.5-5,22.5+5);
+mapExpField.at(0).GetSim1DGraphPolar("Bx",-44.9,-44.7,67.5-5,67.5+5);
+mapExpField.at(0).GetSim1DGraphPolar("Bx",-44.9,-44.7,45.0-5,45.0+5);
+mapExpField.at(0).GetSim1DGraphPolar("Bx",-44.9,-44.7,22.5-5,22.5+5); 
 
-mapExpField.at(0).GetSim1DGraphPolar("Bx",-44.9,-44.7,-69,-67);
-mapExpField.at(0).GetSim1DGraphPolar("Bx",-44.9,-44.7,-48,-45);
-mapExpField.at(0).GetSim1DGraphPolar("Bx",-44.9,-44.7,-26,-23); 
+mapExpField.at(1).GetExp1DGraphPolar("By",-44.9,-44.7,67.5-5,67.5+5);
+mapExpField.at(1).GetExp1DGraphPolar("By",-44.9,-44.7,45.0-5,45.0+5);
+mapExpField.at(1).GetExp1DGraphPolar("By",-44.9,-44.7,22.5-5,22.5+5);
+mapExpField.at(1).GetSim1DGraphPolar("By",-44.9,-44.7,67.5-5,67.5+5);
+mapExpField.at(1).GetSim1DGraphPolar("By",-44.9,-44.7,45.0-5,45.0+5);
+mapExpField.at(1).GetSim1DGraphPolar("By",-44.9,-44.7,22.5-5,22.5+5); 
 
+mapExpField.at(0).GetExp2DGraph("Bx",-100,+100,-100,+100,-100,+100) ;
+mapExpField.at(1).GetExp2DGraph("By",-100,+100,-100,+100,-100,+100) ;
 mapExpField.at(3).GetExp2DGraph("Bmag",-100,+100,-100,+100,-100,+100) ;
+
+mapExpField.at(0).DrawMap("Bx",-100,+100,-100,+100,-100,+100) ;  
 
 
 //Close the file on disk

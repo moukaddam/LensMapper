@@ -10,6 +10,7 @@ Graph Manager is a class that keeps a record of all the measured values and thei
 
 #include "TGraphErrors.h"
 #include "TGraph2DErrors.h"
+#include "TMultiGraph.h"
 
 #include "stdio.h"
 #include "iostream"
@@ -73,6 +74,9 @@ void GetSim1DGraphZ(TString NameTitle, double xmin, double xmax, double ymin, do
 
 //2D 
 void GetExp2DGraph(TString NameTitle, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax) ;
+
+void DrawMap(TString NameTitle, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax) ;
+
 
  };
 

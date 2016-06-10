@@ -75,8 +75,8 @@ void ExpManager::GetExp1DGraphPolar(TString NameTitle, double zmin, double zmax,
     int graph_counter = 0 ; 
    for (unsigned i=0; i< fExpR.size(); i++)   {
         if( (fExpTheta.at(i) >= anglemin && fExpTheta.at(i) <= anglemax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) ){ 
-            fGraph->SetPoint(graph_counter,fExpR.at(i),fExpB.at(i));    // CHECK, add new the stuff for emag
-            fGraph->SetPointError(graph_counter,fExpRErr.at(i),fExpBErr.at(i));   // CHECK, add new the stuff for emag
+            fGraph->SetPoint(graph_counter,fExpR.at(i),fExpB.at(i));    
+            fGraph->SetPointError(graph_counter,fExpRErr.at(i),fExpBErr.at(i));   
             graph_counter++;
         }
    }
@@ -290,16 +290,58 @@ void ExpManager::GetExp2DGraph(TString NameTitle, double xmin, double xmax, doub
     int graph_counter = 0 ; 
    for (unsigned i=0; i< fExpY.size(); i++)   {
         if( (fExpX.at(i) >= xmin && fExpX.at(i) <= xmax) && (fExpY.at(i) >= ymin && fExpY.at(i) <= ymax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) ) {
-            fGraph->SetPoint(graph_counter,fExpX.at(i),fExpY.at(i),fExpB.at(i));    
-            fGraph->SetPointError(graph_counter,fExpXErr.at(i),fExpYErr.at(i),fExpBErr.at(i)); 
+            fGraph->SetPoint(graph_counter,fExpY.at(i),fExpX.at(i),fExpB.at(i));    
+            fGraph->SetPointError(graph_counter,fExpYErr.at(i),fExpXErr.at(i),fExpBErr.at(i)); 
             graph_counter++;
         } 
    }
 
     fGraph->SetTitle(NameTitle+Form("Experimental Data : %.2f < X < %.2f mm  __  %.2f < Y < %.2f mm;Y (mm);X (mm);Magnetic Field (mT)",xmin,xmax,ymin,ymax));
-    fGraph->SetName(NameTitle+Form("Sim_X_%.2f_%.2fmm_Y_%.2f_%.2fmm",xmin,xmax,ymin,ymax));
+    fGraph->SetName(NameTitle+Form("Exp_X_%.2f_%.2fmm_Y_%.2f_%.2fmm",xmin,xmax,ymin,ymax));
     fGraph->Write();
 
+}
+
+void ExpManager::DrawMap(TString NameTitle, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax) {
+
+    TMultiGraph *mg = new TMultiGraph();
+    
+    //Draw a cross
+    TGraphErrors *frame = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
+    frame->SetPoint(0,+0,+100);
+    frame->SetPoint(1,+0,-100);
+    frame->SetPoint(2,0,0); 
+    frame->SetPoint(3,-100,0); 
+    frame->SetPoint(4,+100,0);
+    frame->SetPoint(5,+0,+0); 
+    frame->SetPoint(6,+0,-100);
+    frame->SetMarkerColor(kWhite);
+    frame->SetDrawOption("ap");
+    
+    //Draw the map 
+    TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
+    fGraph->SetMarkerSize(1.2);
+    fGraph->SetMarkerStyle(20);
+    fGraph->SetMarkerColor(kBlue);
+    fGraph->SetLineColor(kBlue);
+    fGraph->SetLineWidth(1);
+    //fGraph->SetDrawOption("ap");
+    
+    int graph_counter = 0 ; 
+   for (unsigned i=0; i< fExpY.size(); i++)   {
+        if( (fExpX.at(i) >= xmin && fExpX.at(i) <= xmax) && (fExpY.at(i) >= ymin && fExpY.at(i) <= ymax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) ) {
+            fGraph->SetPoint(graph_counter,fExpX.at(i),fExpY.at(i));    
+            fGraph->SetPointError(graph_counter,fExpXErr.at(i),fExpYErr.at(i)); 
+            graph_counter++;
+        } 
+   }
+
+    //fGraph->Write();
+    mg->SetTitle(NameTitle+Form("Map : %.2f < X < %.2f mm    %.2f < Y < %.2f mm    %.2f < Z < %.2f mm;X (mm);Y (mm)",xmin,xmax,ymin,ymax,zmin,zmax));
+    mg->SetName(NameTitle+Form("Map__X_%.2f_%.2fmm__Y_%.2f_%.2fmm__Z_%.2f_%.2fmm",xmin,xmax,ymin,ymax,zmin,zmax));
+    mg->Add(frame); 
+    mg->Add(fGraph);
+    mg->Write();
 }
 
 

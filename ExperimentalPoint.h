@@ -34,8 +34,7 @@ private:
  public:
 //members
 TString  fGrid ; // A, B, C, D (will decide if the reading is Cartezian or not)  (counter clock wise )
-double fMagnetQuadrant ; // Q12 , Q23, Q34, Q41 (will be fixed by the flat tip) or 0, 1, 2, 3 (counter clock wise )
-double fProbeAngle ; // 0, 90, 180, 260  (counter clock wise )
+int fMagnetQuadrant ; // Q12 , Q23, Q34, Q41 (will be fixed by the flat tip) or 0, 1, 2, 3 (counter clock wise )
 int fLocation ; // an integer corresponding to the location 
 int fLevel ; // an integer corresponding to the level of the mapper  (1 to 8, 1 being the top)
 
