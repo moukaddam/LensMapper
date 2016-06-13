@@ -61,7 +61,35 @@ if (Grid=="D") {
 	if (MagnetQuadrant==3)	return +270 ; 
 	}
 
+return 0; 
+
 } 
+
+
+TVector3 ExperimentalPoint::GetOffset(TString Grid, double angle, TString Direction){
+
+int quad = 0 ;
+angle = angle*TMath::DegToRad();  
+if (TMath::Cos(angle) >=0 && TMath::Sin(angle)>=0 ) quad = 1;
+if (TMath::Cos(angle) <=0 && TMath::Sin(angle)>=0 ) quad = 2;
+if (TMath::Cos(angle) <=0 && TMath::Sin(angle)<=0 ) quad = 3;
+if (TMath::Cos(angle) >=0 && TMath::Sin(angle)<=0 ) quad = 4;
+
+//cout << " quad " << quad << endl ; 
+
+TVector3 dir(0,0,0);
+if (Direction=="X") dir = fSensorOffsetX;
+else if (Direction=="Y") dir = fSensorOffsetY;
+	else dir = fSensorOffsetZ;
+
+double rotangle = CalculateRotationAngle(quad, Grid);
+//cout << " rotangle " << rotangle*TMath::DegToRad() << endl ; 
+//cout << " dir before " <<dir.X() << " " <<  dir.Y()<< " " << dir.Z()<< endl ; 
+dir.RotateZ(rotangle*TMath::DegToRad()); 
+//cout << " dir after " <<dir.X() << " " <<  dir.Y()<< " " << dir.Z()<< endl ; 
+
+return dir ; 
+}
 
 //Read a line and fill parameter
 void ExperimentalPoint::ReadLineAndTreat(int MagnetQuadrant, TString Grid, int Location, int Level, double Bx, double By, double Bz){
@@ -76,7 +104,7 @@ void ExperimentalPoint::ReadLineAndTreat(int MagnetQuadrant, TString Grid, int L
     if (Grid=="B" && Location>=4 && Location<=7) {
 	    // when the probe is tilted in the B grid, the sensorX receives most of the magnetic field in contrast to sensorY
 	    // to keep things in order, the sensorX value could be split into (x-component an y-component) 
-	    fBField.SetXYZ(Bx/10.,0,Bz/10.); //ignore By, it will be filled by rotation
+	    fBField.SetXYZ(Bx/10.,0,-Bz/10.); //ignore By, it will be filled by rotation
 	    fBField.RotateZ(-45*TMath::DegToRad());
 	    TVector3 SensorOffsetX = fSensorOffsetX; // copy the offset and rotate 45 degrees
 	    SensorOffsetX.RotateZ(-45*TMath::DegToRad());
@@ -87,7 +115,7 @@ void ExperimentalPoint::ReadLineAndTreat(int MagnetQuadrant, TString Grid, int L
     else if (Grid=="D" && Location>=5 && Location<=7) {
 			// when the probe is tilted in the D grid, the sensorY receives most of the magnetic field in contrast to sensorX
 			// again, the sensorY value could be split into (x-component an y-component) 
-			fBField.SetXYZ(0.,-By/10.,Bz/10.); //ignore Bx, it will be filled by rotation
+			fBField.SetXYZ(0.,-By/10.,-Bz/10.); //ignore Bx, it will be filled by rotation
 			fBField.RotateZ(-45*TMath::DegToRad());
 			TVector3 SensorOffsetY = fSensorOffsetY; // copy the offset and rotate 45 degrees
 			SensorOffsetY.RotateZ(-45*TMath::DegToRad());
@@ -96,7 +124,7 @@ void ExperimentalPoint::ReadLineAndTreat(int MagnetQuadrant, TString Grid, int L
 			fSensorPositionZ = fPosition + fSensorOffsetZ;
 		}
 		else {
-			fBField.SetXYZ(Bx/10.,-By/10.,Bz/10.); // turn to millitesla, By need to be multiplied by (-) to account for the axis change between simulation/experiment and the way the mapper is set
+			fBField.SetXYZ(Bx/10.,-By/10.,-Bz/10.); // turn to millitesla, By need to be multiplied by (-) to account for the axis change between simulation/experiment and the way the mapper is set
 			fSensorPositionX = fPosition + fSensorOffsetX; 
 			fSensorPositionY = fPosition + fSensorOffsetY; 
 			fSensorPositionZ = fPosition + fSensorOffsetZ; 
@@ -109,8 +137,8 @@ void ExperimentalPoint::ReadLineAndTreat(int MagnetQuadrant, TString Grid, int L
     fSensorPositionY.RotateZ(angle*TMath::DegToRad()); 
     fSensorPositionZ.RotateZ(angle*TMath::DegToRad()); 
 	fBField.RotateZ(angle*TMath::DegToRad()); 
-    ShowParameters();
-	cin.get(); 
+    //ShowParameters();
+	//cin.get(); 
 }
 
 

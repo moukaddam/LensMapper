@@ -57,6 +57,7 @@ void ShowParameters(void);
 void CalculateCentralPosition();
 void ReadLineAndTreat(int MagnetQuadrant, TString Grid, int Location, int Level , double Bx, double By, double Bz);
 double CalculateRotationAngle(int MagnetQuadrant, TString Grid); // returns  angfle in radian 
+TVector3 GetOffset(TString Grid, double angle, TString Direction);
 
 void LoadMap(); // load the map for positions in the mapper plate, Shaun Georges's drawings are used (can be found on the vault)
 };

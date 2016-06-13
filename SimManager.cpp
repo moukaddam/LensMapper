@@ -156,6 +156,8 @@ double SimManager::GetPointErrorZ(double X, double Y, double Z){  // returns the
 }
 
 
+
+
 void SimManager::DrawPolar(TString title, int samples, bool DrawError, double theta , double z){
 
     //cout << " SimManager::DrawPolarInterpolation " <<endl ; 
@@ -166,7 +168,7 @@ void SimManager::DrawPolar(TString title, int samples, bool DrawError, double th
 	double r = 0;
 	double rmax = fSim3dHistogram->GetXaxis()->GetXmax(); // the maximum extent would be the size of the comsol simulation
 	double dr = rmax/samples; //  this is the step
-	double theta_rad = theta * TMath::Pi() / 180 ;	
+	double theta_rad = theta * TMath::DegToRad() ;	
 	TGraphAsymmErrors* graph1d = new TGraphAsymmErrors(samples);
 		
 	//interpolate 
@@ -214,87 +216,40 @@ void SimManager::DrawPolar(TString title, int samples, bool DrawError, double th
 	 
 }
 
-void SimManager::DrawCartesianFixedX(TString title, int samples,bool DrawError, double x , double z) {
 
-	double y = 0.;
-	double ymax = fSim3dHistogram->GetYaxis()->GetXmax(); // the maximum extent would be the size of the comsol simulation
-	double dy = ymax/samples; 
-	TGraphAsymmErrors* graph1d = new TGraphAsymmErrors(samples);
-	
-	//interpolate 
-	for (int i=0 ; i<samples; i++) 	{
-		 double data = GetPoint(x,y,z)	;
-		 graph1d->SetPoint(i, y , data);
-		 if(DrawError){
-			double data_plus_y = GetPoint( x, y+fYErr , z )	; 
-			double data_minus_y = GetPoint( x , y-fYErr , z )	; 		 
-			double data_error_plus_y = fabs(data_plus_y - data) ; 
-			double data_error_minus_y = fabs(data_minus_y - data);
-		 	graph1d->SetPointEYhigh(i, data_error_plus_y);
-		 	graph1d->SetPointEYlow(i, data_error_minus_y);
-		}
-		 // increment step	
-		 y = y + dy	;
-	}
-	
-	graph1d->SetName(title+(Form("X(fixed)_%.2fmm_Z_%.2fmm_%d_points",x, z, samples)));
-	graph1d->SetTitle(Form("Total Magnetic Field as a Function of y position at fixed x = %.2fmm",x));
-	graph1d->GetXaxis()->SetTitle("y (mm)");	graph1d->GetXaxis()->CenterTitle();
-	graph1d->GetYaxis()->SetTitle("Magnetic Field Strength (mT)");	graph1d->GetYaxis()->CenterTitle();
-	graph1d->Write(); 
-}
+void SimManager::DrawPolarOffsetX(TString NameTitle, int samples, bool DrawError, TVector3 offset, double theta, double z) {
 
-void SimManager::DrawCartesianFixedY(TString title, int samples,bool DrawError, double y , double z) {
-
-	double x = 0.;
-	double xmax = fSim3dHistogram->GetXaxis()->GetXmax(); // the maximum extent would be the size of the comsol simulation
-	double dx = xmax/samples;
-	TGraphAsymmErrors* graph1d = new TGraphAsymmErrors(samples);
-	
-	//interpolate 
-	for (int i=0 ; i<samples; i++) 	{
-		 double data = GetPoint(x,y,z);
-		 graph1d->SetPoint(i, x , data);
-		if(DrawError) {
-			double data_plus_x = GetPoint(x+fXErr, y , z); 
-			double data_minus_x = GetPoint(x-fXErr , y , z); 
-			double data_error_plus_x = fabs(data_plus_x - data); 
-			double data_error_minus_x = fabs(data_minus_x - data);
-			graph1d->SetPointEYhigh(i, data_error_plus_x);
-			graph1d->SetPointEYlow(i, data_error_minus_x);
-		}
-		 // increment step	
-		 x = x + dx	;
-	}
-	
-	graph1d->SetName(title+(Form("Y(Fixed)_%.2fmm_Z_%.2fmm_%d_points",y, z, samples)));
-	graph1d->SetTitle(Form("Total Magnetic Field as a Function of x position at fixed y = %.2fmm",y));
-	graph1d->GetXaxis()->SetTitle("x (mm)");	graph1d->GetXaxis()->CenterTitle();
-	graph1d->GetYaxis()->SetTitle("Magnetic Field Strength (mT)");	graph1d->GetYaxis()->CenterTitle();
-	graph1d->Write(); 
-}
-
-
-
-void SimManager::DrawPolarOffsetX(TString NameTitle, int samples, bool DrawError, double offset, double theta, double z) {
+    //cout<< "NameTitle " << NameTitle << "   theta " << theta <<  " z " << z << endl ;
 
 	double r = 0;
 	double rmax = fSim3dHistogram->GetXaxis()->GetXmax(); // the maximum extent would be the diagonal of the comsol 
 	double dr = rmax/samples; // 110 mm
-	double theta_rad = theta * TMath::Pi() / 180 ;	
+	double theta_rad = theta * TMath::DegToRad() ;	
 	TGraphAsymmErrors*  graph1d = new TGraphAsymmErrors(samples);
 	
+	Double_t xError = fabs(offset.X()) > 0.001 ?  0.25 : fXErr; // the 0.25 is only applied if the offset is zero
+	Double_t yError = fabs(offset.Y()) > 0.001 ?  0.25 : fYErr;
+	Double_t zError = fabs(offset.Z()) > 0.001 ?  0.25 : fZErr;
+    cout<< "offsetx " << offset.X() << " xError " << xError << endl ;
+    cout<< "offsety " << offset.Y() << " yError " << yError << endl ; 
+    cout<< "offsetz " << offset.Z() << " zError " << zError << endl ; 
+
+    cin.get(); 
+
 	//interpolate 
 	for (int i=0 ; i<samples; i++)	{
 		 if (r*cos(theta_rad)>rmax || r*sin(theta_rad)>rmax) break; 
-		 double x (r*cos(theta_rad)) ; double y = (r*sin(theta_rad)) ; 
-		 double data = GetPoint(x+offset,y,z);
+
+		 double x = (r*cos(theta_rad)) ; 
+		 double y = (r*sin(theta_rad)) ; 
+         TVector3 position(x+offset.X(),y+offset.Y(),z+offset.Z()); 
+		 double data = GetPoint(position.X(),position.Y(),position.Z());
 
 		 // fill the histogram	
-		 graph1d->SetPoint(i, r , data);
+		 graph1d->SetPoint(i, position.Perp() , data);
 		if(DrawError) {
-			double data_plus_y = GetPoint( x, y+fYErr , z )	; 
-			double data_minus_y = GetPoint( x , y-fYErr , z )	; 		 
+			double data_plus_y = GetPoint( position.X()+xError, position.Y()+yError , position.Z()+zError  )	; 
+			double data_minus_y = GetPoint( position.X()-xError, position.Y()-yError , position.Z()-zError )	; 		 
 			double data_error_plus_y = fabs(data_plus_y - data) ; 
 			double data_error_minus_y = fabs(data_minus_y - data);
 			graph1d->SetPointEYhigh(i, data_error_plus_y);
@@ -304,10 +259,10 @@ void SimManager::DrawPolarOffsetX(TString NameTitle, int samples, bool DrawError
 		 r = r + dr;	
 	}
 	
-	graph1d->SetName(NameTitle+(Form("Angle_%.2fdeg _Z_%.2fmm_OffsetX_%.2fmm",theta, z,offset)));
-	graph1d->SetTitle(NameTitle+Form(" Magnetic Field  (X offset) as a function of Radius at Angle=%.2f#circ",theta));
+	graph1d->SetName(NameTitle+(Form("Angle_%.2fdeg_Z_%.2fmm_Offset_%.2f_%.2f_%.2fmm",theta, z,offset.X(),offset.Y(),offset.Z())));
+	graph1d->SetTitle(NameTitle+Form(" Magnetic Field as a function of Radius at Angle=%.2f#circ Z=%.2fmm Offset=%.2f_%.2f_%.2fmm",theta, z,offset.X(),offset.Y(),offset.Z()));
 	graph1d->GetXaxis()->SetTitle("Radius (mm)") ; 	graph1d->GetXaxis()->CenterTitle();
-	graph1d->GetYaxis()->SetTitle("X Magnetic Field Strength (mT)") ; 	graph1d->GetYaxis()->CenterTitle();
+	graph1d->GetYaxis()->SetTitle("Magnetic Field Strength (mT)") ; 	graph1d->GetYaxis()->CenterTitle();
 	graph1d->Write();
  
 }
@@ -317,7 +272,7 @@ void SimManager::DrawPolarOffsetY(TString NameTitle, int samples, bool DrawError
 	double r = 0;
 	double rmax = fSim3dHistogram->GetXaxis()->GetXmax(); // the maximum extent would be the diagonal of the comsol 
 	double dr = rmax/samples; // 110 mm
-	double theta_rad = theta * TMath::Pi() / 180 ;	
+	double theta_rad = theta * TMath::DegToRad() ;	
 	TGraphAsymmErrors* graph1d = new TGraphAsymmErrors(samples);
 	
 	//interpolate 
@@ -349,6 +304,69 @@ void SimManager::DrawPolarOffsetY(TString NameTitle, int samples, bool DrawError
 	graph1d->Write();
 	
 }
+
+
+void SimManager::DrawCartesianFixedX(TString title, int samples,bool DrawError, double x , double z) {
+
+	double y = 0.;
+	double ymax = fSim3dHistogram->GetYaxis()->GetXmax(); // the maximum extent would be the size of the comsol simulation
+	double dy = ymax/samples; 
+	TGraphAsymmErrors* graph1d = new TGraphAsymmErrors(samples);
+	
+	//interpolate 
+	for (int i=0 ; i<samples; i++) 	{
+		 double data = GetPoint(x,y,z)	;
+		 graph1d->SetPoint(i, y , data);
+		 if(DrawError){
+			double data_plus_y = GetPoint( x, y+fYErr , z )	; 
+			double data_minus_y = GetPoint( x , y-fYErr , z )	; 		 
+			double data_error_plus_y = fabs(data_plus_y - data) ; 
+			double data_error_minus_y = fabs(data_minus_y - data);
+		 	graph1d->SetPointEYhigh(i, data_error_plus_y);
+		 	graph1d->SetPointEYlow(i, data_error_minus_y);
+		}
+		 // increment step	
+		 y = y + dy	;
+	}
+	
+	graph1d->SetName(title+(Form("X(fixed)_%.2fmm_Z_%.2fmm_%d_points",x, z, samples)));
+	graph1d->SetTitle(Form("Total Magnetic Field as a Function of y position at fixed x = %.2fmm",x));
+	graph1d->GetXaxis()->SetTitle("y (mm)");	graph1d->GetXaxis()->CenterTitle();
+	graph1d->GetYaxis()->SetTitle("Magnetic Field Strength (mT)");	graph1d->GetYaxis()->CenterTitle();
+	graph1d->Write(); 
+}
+
+
+void SimManager::DrawCartesianFixedY(TString title, int samples,bool DrawError, double y , double z) {
+
+	double x = 0.;
+	double xmax = fSim3dHistogram->GetXaxis()->GetXmax(); // the maximum extent would be the size of the comsol simulation
+	double dx = xmax/samples;
+	TGraphAsymmErrors* graph1d = new TGraphAsymmErrors(samples);
+	
+	//interpolate 
+	for (int i=0 ; i<samples; i++) 	{
+		 double data = GetPoint(x,y,z);
+		 graph1d->SetPoint(i, x , data);
+		if(DrawError) {
+			double data_plus_x = GetPoint(x+fXErr, y , z); 
+			double data_minus_x = GetPoint(x-fXErr , y , z); 
+			double data_error_plus_x = fabs(data_plus_x - data); 
+			double data_error_minus_x = fabs(data_minus_x - data);
+			graph1d->SetPointEYhigh(i, data_error_plus_x);
+			graph1d->SetPointEYlow(i, data_error_minus_x);
+		}
+		 // increment step	
+		 x = x + dx	;
+	}
+	
+	graph1d->SetName(title+(Form("Y(Fixed)_%.2fmm_Z_%.2fmm_%d_points",y, z, samples)));
+	graph1d->SetTitle(Form("Total Magnetic Field as a Function of x position at fixed y = %.2fmm",y));
+	graph1d->GetXaxis()->SetTitle("x (mm)");	graph1d->GetXaxis()->CenterTitle();
+	graph1d->GetYaxis()->SetTitle("Magnetic Field Strength (mT)");	graph1d->GetYaxis()->CenterTitle();
+	graph1d->Write(); 
+}
+
 
 void SimManager::Draw2DGraph(TString NameTitle, int points , double xlow,double xhigh,double ylow,double yhigh, double z){
 	
