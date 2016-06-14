@@ -318,31 +318,30 @@ mapExpField.at(2).GetSim1DGraphPolar("Bz",-44.9,-44.7,90+67.5-5,90+67.5+5);
 
 ///////////////////////////// Get the Simulation curves 
 //Bx 
-/* 
-SimBxManager->DrawPolarOffsetX("Bx", 100, true, ExpPoint->GetOffset("B", 22.5, "X"), 22.5, -44.8);
-SimBxManager->DrawPolarOffsetX("Bx", 100, true, ExpPoint->GetOffset("B", 45.5, "X"), 45.0, -44.8);
-SimBxManager->DrawPolarOffsetX("Bx", 100, true, ExpPoint->GetOffset("B", 67.5, "X"), 67.5, -44.8);
-SimBxManager->DrawPolarOffsetX("Bx", 100, true, ExpPoint->GetOffset("B", 90+22.5, "X"), 90+22.5, -44.8);
-SimBxManager->DrawPolarOffsetX("Bx", 100, true, ExpPoint->GetOffset("B", 90+45.5, "X"), 90+45.0, -44.8);
-SimBxManager->DrawPolarOffsetX("Bx", 100, true, ExpPoint->GetOffset("B", 90+67.5, "X"), 90+67.5, -44.8);
+SimBxManager->DrawPolarOffset("Bx", 100, true, ExpPoint->GetOffset("B", 22.5, "X"), 22.5, -44.8);
+SimBxManager->DrawPolarOffset("Bx", 100, true, ExpPoint->GetOffset("B", 45.5, "X"), 45.0, -44.8);
+SimBxManager->DrawPolarOffset("Bx", 100, true, ExpPoint->GetOffset("B", 67.5, "X"), 67.5, -44.8);
+SimBxManager->DrawPolarOffset("Bx", 100, true, ExpPoint->GetOffset("B", 90+22.5, "X"), 90+22.5, -44.8);
+SimBxManager->DrawPolarOffset("Bx", 100, true, ExpPoint->GetOffset("B", 90+45.5, "X"), 90+45.0, -44.8);
+SimBxManager->DrawPolarOffset("Bx", 100, true, ExpPoint->GetOffset("B", 90+67.5, "X"), 90+67.5, -44.8);
 //SimBxManager->DrawCartesianFixedY("BxCartesian", 100, true, 20,-44.8) ; 
-//SimBxManager->DrawCartesianFixedX("BxCartesian", 100, true, 20,-44.8) ;//SimBxManager->DrawPolarOffsetX("Bx", 100, true, ExpPoint->GetOffset("B",  -90+45.0, "X"), -90+45.0, -44.8);
+//SimBxManager->DrawCartesianFixedX("BxCartesian", 100, true, 20,-44.8) ;//SimBxManager->DrawPolarOffset("Bx", 100, true, ExpPoint->GetOffset("B",  -90+45.0, "X"), -90+45.0, -44.8);
 
 //By 
-SimByManager->DrawPolarOffsetX("By", 100, true, ExpPoint->GetOffset("B", 22.5, "Y"), 22.5, -44.8);
-SimByManager->DrawPolarOffsetX("By", 100, true, ExpPoint->GetOffset("B", 45.5, "Y"), 45.0, -44.8);
-SimByManager->DrawPolarOffsetX("By", 100, true, ExpPoint->GetOffset("B", 67.5, "Y"), 67.5, -44.8);
-SimByManager->DrawPolarOffsetX("By", 100, true, ExpPoint->GetOffset("B", 90+22.5, "Y"), 90+22.5, -44.8);
-SimByManager->DrawPolarOffsetX("By", 100, true, ExpPoint->GetOffset("B", 90+45.5, "Y"), 90+45.0, -44.8);
-SimByManager->DrawPolarOffsetX("By", 100, true, ExpPoint->GetOffset("B", 90+67.5, "Y"), 90+67.5, -44.8);
-*/
+SimByManager->DrawPolarOffset("By", 100, true, ExpPoint->GetOffset("B", 22.5, "Y"), 22.5, -44.8);
+SimByManager->DrawPolarOffset("By", 100, true, ExpPoint->GetOffset("B", 45.5, "Y"), 45.0, -44.8);
+SimByManager->DrawPolarOffset("By", 100, true, ExpPoint->GetOffset("B", 67.5, "Y"), 67.5, -44.8);
+SimByManager->DrawPolarOffset("By", 100, true, ExpPoint->GetOffset("B", 90+22.5, "Y"), 90+22.5, -44.8);
+SimByManager->DrawPolarOffset("By", 100, true, ExpPoint->GetOffset("B", 90+45.5, "Y"), 90+45.0, -44.8);
+SimByManager->DrawPolarOffset("By", 100, true, ExpPoint->GetOffset("B", 90+67.5, "Y"), 90+67.5, -44.8);
+
 //Bz
-SimBzManager->DrawPolarOffsetX("Bz", 100, true, ExpPoint->GetOffset("B", 22.5, "Z"), 22.5, -44.8);
-SimBzManager->DrawPolarOffsetX("Bz", 100, true, ExpPoint->GetOffset("B", 45.5, "Z"), 45.0, -44.8);
-SimBzManager->DrawPolarOffsetX("Bz", 100, true, ExpPoint->GetOffset("B", 67.5, "Z"), 67.5, -44.8);
-SimBzManager->DrawPolarOffsetX("Bz", 100, true, ExpPoint->GetOffset("B", 90+22.5, "Z"), 90+22.5, -44.8);
-SimBzManager->DrawPolarOffsetX("Bz", 100, true, ExpPoint->GetOffset("B", 90+45.5, "Z"), 90+45.0, -44.8);
-SimBzManager->DrawPolarOffsetX("Bz", 100, true, ExpPoint->GetOffset("B", 90+67.5, "Z"), 90+67.5, -44.8);
+SimBzManager->DrawPolarOffset("Bz", 100, true, ExpPoint->GetOffset("B", 22.5, "Z"), 22.5, -44.8);
+SimBzManager->DrawPolarOffset("Bz", 100, true, ExpPoint->GetOffset("B", 45.5, "Z"), 45.0, -44.8);
+SimBzManager->DrawPolarOffset("Bz", 100, true, ExpPoint->GetOffset("B", 67.5, "Z"), 67.5, -44.8);
+SimBzManager->DrawPolarOffset("Bz", 100, true, ExpPoint->GetOffset("B", 90+22.5, "Z"), 90+22.5, -44.8);
+SimBzManager->DrawPolarOffset("Bz", 100, true, ExpPoint->GetOffset("B", 90+45.5, "Z"), 90+45.0, -44.8);
+SimBzManager->DrawPolarOffset("Bz", 100, true, ExpPoint->GetOffset("B", 90+67.5, "Z"), 90+67.5, -44.8);
 
 //2D
 //Bx
@@ -374,18 +373,3 @@ int Allndf = ndfx + ndfy + ndfz ;
 
  return Allchi2/Allndf;
 }
-
-
-
-/*
-int optimizing() {
-///////////////////////////// OPTIMIZE paramters ///////////////////////////
-TString file1,file2;
-file1="MEL_MagFieldExp.dat";
-file2="MEL_MagFieldTablePaths.dat";  
-//OptimizeParameters* optimizer = new OptimizeParameters(file1,file2) ;
-//delete optimizer ;
-
-return 1 ; 
-}
-*/

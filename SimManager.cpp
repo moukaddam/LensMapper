@@ -217,7 +217,7 @@ void SimManager::DrawPolar(TString title, int samples, bool DrawError, double th
 }
 
 
-void SimManager::DrawPolarOffsetX(TString NameTitle, int samples, bool DrawError, TVector3 offset, double theta, double z) {
+void SimManager::DrawPolarOffset(TString NameTitle, int samples, bool DrawError, TVector3 offset, double theta, double z) {
 
     //cout<< "NameTitle " << NameTitle << "   theta " << theta <<  " z " << z << endl ;
 
@@ -230,11 +230,10 @@ void SimManager::DrawPolarOffsetX(TString NameTitle, int samples, bool DrawError
 	Double_t xError = fabs(offset.X()) > 0.001 ?  0.25 : fXErr; // the 0.25 is only applied if the offset is zero
 	Double_t yError = fabs(offset.Y()) > 0.001 ?  0.25 : fYErr;
 	Double_t zError = fabs(offset.Z()) > 0.001 ?  0.25 : fZErr;
-    cout<< "offsetx " << offset.X() << " xError " << xError << endl ;
-    cout<< "offsety " << offset.Y() << " yError " << yError << endl ; 
-    cout<< "offsetz " << offset.Z() << " zError " << zError << endl ; 
-
-    cin.get(); 
+    //cout<< "offsetx " << offset.X() << " xError " << xError << endl ;
+    //cout<< "offsety " << offset.Y() << " yError " << yError << endl ; 
+    //cout<< "offsetz " << offset.Z() << " zError " << zError << endl ; 
+    //cin.get(); 
 
 	//interpolate 
 	for (int i=0 ; i<samples; i++)	{
@@ -266,45 +265,6 @@ void SimManager::DrawPolarOffsetX(TString NameTitle, int samples, bool DrawError
 	graph1d->Write();
  
 }
-
-void SimManager::DrawPolarOffsetY(TString NameTitle, int samples, bool DrawError, double offset, double theta, double z) {
-
-	double r = 0;
-	double rmax = fSim3dHistogram->GetXaxis()->GetXmax(); // the maximum extent would be the diagonal of the comsol 
-	double dr = rmax/samples; // 110 mm
-	double theta_rad = theta * TMath::DegToRad() ;	
-	TGraphAsymmErrors* graph1d = new TGraphAsymmErrors(samples);
-	
-	//interpolate 
-	for (int i=0 ; i<samples; i++){
-
-		if (r*cos(theta_rad)>rmax || r*sin(theta_rad)>rmax) break; 
-		 double x (r*cos(theta_rad)) ; double y = (r*sin(theta_rad)) ; 
-		 double data = GetPoint(x,y+offset,z);
-		 // fill the histogram
-		 data = GetPoint(r*cos(theta_rad),(r*sin(theta_rad))+offset,z);
-		 graph1d->SetPoint(i, r , data);
-
-		if(DrawError) {
-			double data_plus_x = GetPoint( x+fXErr, y , z )	; 
-			double data_minus_x = GetPoint( x+fXErr , y , z )	; 		 
-			double data_error_plus_x = fabs(data_plus_x - data) ; 
-			double data_error_minus_x = fabs(data_minus_x - data);
-			graph1d->SetPointEYhigh(i, data_error_plus_x);
-			graph1d->SetPointEYlow(i, data_error_minus_x);
-        }
-		 // increment step	
-		 r = r + dr;	
-	}
-	
-	graph1d->SetName(NameTitle+(Form("Angle_%.2fdeg_Z_%.2fmm_OffsetY_%.2fmm",theta, z,offset)));
-	graph1d->SetTitle(NameTitle+Form(" Magnetic Field (Y offset) as a function of Radius at Angle=%.2f#circ",theta));
-	graph1d->GetXaxis()->SetTitle("Radius (mm)") ; 	graph1d->GetXaxis()->CenterTitle();
-	graph1d->GetYaxis()->SetTitle("Y Magnetic Field Strength (mT)") ; 	graph1d->GetYaxis()->CenterTitle();
-	graph1d->Write();
-	
-}
-
 
 void SimManager::DrawCartesianFixedX(TString title, int samples,bool DrawError, double x , double z) {
 
