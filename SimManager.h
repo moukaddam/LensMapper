@@ -46,7 +46,7 @@ double GetPointErrorY(double X, double Y, double Z) ; // no offset considered
 double GetPointErrorZ(double X, double Y, double Z) ; // no offset considered
 
 void DrawPolar       (TString NameTitle, int samples, bool DrawError, double theta , double z_level) ;
-void DrawPolarOffsetX(TString NameTitle, int samples, bool DrawError, double offset, double theta, double z_level); // adding the offset on the X-axis
+void DrawPolarOffsetX(TString NameTitle, int samples, bool DrawError, TVector3 offset, double theta, double z_level); // adding the offset on the X-axis
 void DrawPolarOffsetY(TString NameTitle, int samples, bool DrawError, double offset, double theta, double z_level); // adding the offset on the Y-axis
 void DrawCartesianFixedY  (TString NameTitle, int samples, bool DrawError, double y , double z_level) ; // no offset needed in this case
 void DrawCartesianFixedX  (TString NameTitle, int samples, bool DrawError, double x , double z_level) ; // no offset needed in this case
