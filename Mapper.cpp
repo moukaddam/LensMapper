@@ -143,10 +143,13 @@ cout<<" "<<line << " total number of lines "<<endl;
 //Bx
 SimManager *SimBxManager = new SimManager(f3DHistBx, 0.4/*mm*/, 0.4/*mm*/, 0.4/*mm*/);
 SimBxManager->Draw2DHist ("bx",200,-100,+100,-100,+100,-44.8) ;  
-SimBxManager->Draw2DGraph("bx",200,-100,+100,-100,+100,-44.8) ;  
-//SimBxManager->DrawPolarOffsetX("Bx", 100, true, 2.1, 22.5, -44.8); 
+//SimBxManager->Draw2DGraph("bx",200,-100,+100,-100,+100,-44.8) ;  
+SimBxManager->DrawPolarOffsetX("Bx", 100, true, 2.1, 22.5, -44.8); 
+SimBxManager->DrawPolarOffsetY("Bx", 100, true, 2.1, 22.5, -44.8); 
 SimBxManager->DrawPolarOffsetX("Bx", 100, true, 2.1, 45.0, -44.8);
-//SimBxManager->DrawPolarOffsetX("Bx", 100, true, 2.1, 67.5, -44.8);
+SimBxManager->DrawPolarOffsetY("Bx", 100, true, 2.1, 45.0, -44.8);
+SimBxManager->DrawPolarOffsetX("Bx", 100, true, 2.1, 67.5, -44.8);
+SimBxManager->DrawPolarOffsetY("Bx", 100, true, 2.1, 67.5, -44.8);
 //SimBxManager->DrawCartesianFixedY("BxCartesian", 100, true, 20,-44.8) ; 
 //SimBxManager->DrawCartesianFixedX("BxCartesian", 100, true, 20,-44.8) ;
 SimBxManager->DrawPolarOffsetX("Bx", 100, true, 2.1, 90+45.0, -44.8);
