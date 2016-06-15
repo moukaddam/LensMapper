@@ -1,7 +1,10 @@
 #include "ExperimentalPoint.h"
 
-ExperimentalPoint::ExperimentalPoint(void){
+ExperimentalPoint::ExperimentalPoint(bool SetBackground){
+	fSetBackground = SetBackground ;
+	
 	LoadMap();
+	if(fSetBackground) LoadBackGround();
 	fSensorOffsetX.SetXYZ(SENSORXOFFSETX,SENSORXOFFSETY,SENSORXOFFSETZ); 
     fSensorOffsetY.SetXYZ(SENSORYOFFSETX,SENSORYOFFSETY,SENSORYOFFSETZ); 
     fSensorOffsetZ.SetXYZ(SENSORZOFFSETX,SENSORZOFFSETY,SENSORZOFFSETZ); 
@@ -33,6 +36,15 @@ void ExperimentalPoint::CalculateCentralPosition(void){ // taking into account t
 	// 104.8mm is the length of the probe, "L" in the catalogue however it's not very accurate 
 	fPosition.SetXYZ(x,y,z); 
 }
+
+void ExperimentalPoint::SubtractBackground(TString Grid, int loc, double &Bx,double &By, double &Bz){ // taking into account the level and the quadrant 
+ 
+ 	TString label = Grid+Form("%d",loc); // A1
+	Bx = Bx - fmapBackground[label].X() ; 
+	By = By - fmapBackground[label].Y() ;
+	Bz = Bz - fmapBackground[label].Z() ;
+}
+
 
 double ExperimentalPoint::CalculateRotationAngle(int MagnetQuadrant, TString Grid){ // returns  angle in radian 
 
@@ -98,6 +110,7 @@ void ExperimentalPoint::ReadLineAndTreat(int MagnetQuadrant, TString Grid, int L
 	fLocation = Location ; 
 	fLevel = Level; 
   	fGrid = Grid ;
+	if(fSetBackground) SubtractBackground(Grid, Location, Bx,By,Bz);
     CalculateCentralPosition() ; 
 
 //Correct for probe rotation
@@ -179,3 +192,20 @@ void ExperimentalPoint::LoadMap(){
 	cout << "  finished reading the position map. " << endl ; 
 }
 
+
+void ExperimentalPoint::LoadBackGround(){ // Earth Background
+	string throwline ;
+	TString grid; 
+	int loc;  // level not used
+	double Bx, By, Bz;
+	ifstream file;
+
+	file.open("./input/BackgroundField.txt");
+	getline(file,throwline);
+	while (file>>grid>>loc>>Bx>>By>>Bz){
+		grid = grid + Form("%d",loc);
+		cout << " grid " << grid << "  " << Bx << " " << By << " " << Bz << endl ; 
+		fmapBackground.insert ( std::pair<TString,TVector3>(grid,TVector3(Bx, By, Bz)));
+	}
+	cout << "  finished reading the background. " << endl ; 
+}

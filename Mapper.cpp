@@ -2,32 +2,28 @@
 
 #include "TFile.h"
 
-//#include "OptimizeParameters.h"
 #include "ExperimentalPoint.h"
 #include "SimulationPoint.h"
 #include "ExpManager.h"
 #include "SimManager.h"
 
 // functions 
-//int optimizing(void) ;
-double mapping(TString, TString);
+double mapping(TString, TString, int);
 
 
+//main 
 int main(int argc,char *argv[]) {
 
-
-if (argc != 3 ) {
-	cout << " use only 2 arguments e.g.\n  ./bin/mapperTool    <experimental-file>  <comsol-file>" << endl ; 
+if (argc < 3 || argc > 4  ) {
+	cout << " use only 3 arguments e.g.\n  ./bin/mapperTool    [experimental-file]  [comsol-file]   [ --optional-- <1> to read background ] " << endl ; 
 	exit(-1);
 }
 
-// optimize the values of offset 
-//optimizing();
+double chi2 = -1 ;
+if (argc == 3) chi2 = mapping(TString(argv[1]),TString(argv[2]),0);
+else if(TString(argv[3])!="1") chi2 = mapping(TString(argv[1]),TString(argv[2]),0);
+else chi2 = mapping(TString(argv[1]),TString(argv[2]),1);
 
-//map the measured values
-//TString SimData ="SPICEField3D.v51.3.21.TABLE";
-//TString SimData ="SPICEField3Dv5220.dat";
-double chi2 = mapping(TString(argv[1]),TString(argv[2]));
 cout << " chi2 " << chi2 << endl; 
 
  return 0;
@@ -35,7 +31,7 @@ cout << " chi2 " << chi2 << endl;
 
 
 
-double mapping(TString ExpData, TString SimData){
+double mapping(TString ExpData, TString SimData, int readbackground=0){
 
 /////////////////////// OPEN INPUT AND OUTPUT FILES ///////////////////////
 
@@ -48,7 +44,6 @@ TH3D *f3DHistBz = new TH3D("f3DHistBZ", "Bz"         , 111,-111, 111, 111,-111, 
 TH3D *f3DHistBmag = new TH3D("f3DHistBMAG", "Bmag"   , 111,-111, 111, 111,-111, 111, 106, -106, 106);     
 TH3D *f3DHistBtan = new TH3D("f3DHistBTAN", "Btan"   , 111,-111, 111, 111,-111, 111, 106, -106, 106);  
 TH3D *f3DHistBdiff = new TH3D("f3DHistBDIFF", "Bdiff", 111,-111, 111, 111,-111, 111, 106, -106, 106); 
-//TH3D *f3DHistBmag_nim = new TH3D("f3DHistBMAG", "Bmag", 160 , -400, 400, 160, -400, 400, 30, -100, 50);       // for the nim paper 
     
     
 ///////////////////////////// OPEN INPUT AND OUTPUT FILES ///////////////////////
@@ -156,9 +151,10 @@ SimManager *SimBdifManager = new SimManager(f3DHistBdiff,0.65/*mm*/,0.65/*mm*/,0
 std::map<Double_t,ExpManager> mapExpField;   
 std::map<Double_t,ExpManager>::iterator it;
 
-//ExperimentalPoint* ExpPointMag = new ExperimentalPoint();
-ExperimentalPoint* ExpPoint = new ExperimentalPoint();  // Attention, Sensor X,Y or Z measures in all directions (not necessarly what the 
-										// name suggest). This is due to the fact that lens is rotated with respect to mapper plate in some cases
+ExperimentalPoint* ExpPoint = new ExperimentalPoint(readbackground);  
+// Attention, Sensor X,Y or Z measures in all directions (not necessarly what the 
+// name suggest). This is due to the fact that lens is rotated with respect to mapper plate in some cases
+
 //FORMAT : 1	A	1	3	-904.5	568.7	232.7
 TString  Grid=" ";
 Double_t Quadrant(0);
