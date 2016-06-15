@@ -134,13 +134,12 @@ cout<<" "<<line << " total number of lines "<<endl;
 
 
 ///////////////////////////// Create histograms with SimManager //////////////////////// 
-SimManager *SimBxManager = new SimManager(f3DHistBx,0.65/*mm*/,0.65/*mm*/,0.65/*mm*/);//0.25 on position, 0.38 radius of sensor
-SimManager *SimByManager = new SimManager(f3DHistBy,0.65/*mm*/,0.65/*mm*/,0.65/*mm*/);
-SimManager *SimBzManager = new SimManager(f3DHistBz,0.65/*mm*/,0.65/*mm*/,0.65/*mm*/);
-SimManager *SimBmagManager = new SimManager(f3DHistBmag,0.65/*mm*/,0.65/*mm*/,0.65/*mm*/);
-SimManager *SimBtanManager = new SimManager(f3DHistBtan,0.65/*mm*/,0.65/*mm*/,0.65/*mm*/);
-SimManager *SimBdifManager = new SimManager(f3DHistBdiff,0.65/*mm*/,0.65/*mm*/,0.65/*mm*/);
-
+SimManager *SimBxManager = new SimManager(f3DHistBx,0.38/*mm*/,0.38/*mm*/,0.38/*mm*/);// 0.38 radius of sensor, 0.25 on sensor position(treated elsewhere)
+SimManager *SimByManager = new SimManager(f3DHistBy,0.38/*mm*/,0.38/*mm*/,0.38/*mm*/);
+SimManager *SimBzManager = new SimManager(f3DHistBz,0.38/*mm*/,0.38/*mm*/,0.38/*mm*/);
+SimManager *SimBmagManager = new SimManager(f3DHistBmag,0.38/*mm*/,0.38/*mm*/,0.38/*mm*/);
+SimManager *SimBtanManager = new SimManager(f3DHistBtan,0.38/*mm*/,0.38/*mm*/,0.38/*mm*/);
+SimManager *SimBdifManager = new SimManager(f3DHistBdiff,0.38/*mm*/,0.38/*mm*/,0.38/*mm*/);
 
 
 ///////////////////////////// 
@@ -241,25 +240,25 @@ while (input_exp >> Quadrant){
 }
 
 /*
-cout << " Grid  C X "; ExpPoint->GetOffset("C", 45, "X").Dump();
-cout << " Grid  C X "; ExpPoint->GetOffset("C", 45+90, "X").Dump(); 
-cout << " Grid  C X "; ExpPoint->GetOffset("C", 45+180, "X").Dump(); 
-cout << " Grid  C X "; ExpPoint->GetOffset("C", 45+270, "X").Dump(); 
+cout << " Grid  C X "; ExpPoint->GetOffsetDirection("C", 45, "X").Dump();
+cout << " Grid  C X "; ExpPoint->GetOffsetDirection("C", 45+90, "X").Dump(); 
+cout << " Grid  C X "; ExpPoint->GetOffsetDirection("C", 45+180, "X").Dump(); 
+cout << " Grid  C X "; ExpPoint->GetOffsetDirection("C", 45+270, "X").Dump(); 
 
-cout << " Grid  B X "; ExpPoint->GetOffset("B", 45, "X").Dump(); 
-cout << " Grid  B X "; ExpPoint->GetOffset("B", 45+90, "X").Dump(); 
-cout << " Grid  B X "; ExpPoint->GetOffset("B", 45+180, "X").Dump(); 
-cout << " Grid  B X "; ExpPoint->GetOffset("B", 45+270, "X").Dump(); 
+cout << " Grid  B X "; ExpPoint->GetOffsetDirection("B", 45, "X").Dump(); 
+cout << " Grid  B X "; ExpPoint->GetOffsetDirection("B", 45+90, "X").Dump(); 
+cout << " Grid  B X "; ExpPoint->GetOffsetDirection("B", 45+180, "X").Dump(); 
+cout << " Grid  B X "; ExpPoint->GetOffsetDirection("B", 45+270, "X").Dump(); 
 
-cout << " Grid  D X "; ExpPoint->GetOffset("D", 45, "X").Dump(); 
-cout << " Grid  D X "; ExpPoint->GetOffset("D", 45+90, "X").Dump(); 
-cout << " Grid  D X "; ExpPoint->GetOffset("D", 45+180, "X").Dump(); 
-cout << " Grid  D X "; ExpPoint->GetOffset("D", 45+270, "X").Dump(); 
+cout << " Grid  D X "; ExpPoint->GetOffsetDirection("D", 45, "X").Dump(); 
+cout << " Grid  D X "; ExpPoint->GetOffsetDirection("D", 45+90, "X").Dump(); 
+cout << " Grid  D X "; ExpPoint->GetOffsetDirection("D", 45+180, "X").Dump(); 
+cout << " Grid  D X "; ExpPoint->GetOffsetDirection("D", 45+270, "X").Dump(); 
 
-cout << " Grid  A X "; ExpPoint->GetOffset("A", 45, "X").Dump(); 
-cout << " Grid  A X "; ExpPoint->GetOffset("A", 45+90, "X").Dump(); 
-cout << " Grid  A X "; ExpPoint->GetOffset("A", 45+180, "X").Dump(); 
-cout << " Grid  A X "; ExpPoint->GetOffset("A", 45+270, "X").Dump(); 
+cout << " Grid  A X "; ExpPoint->GetOffsetDirection("A", 45, "X").Dump(); 
+cout << " Grid  A X "; ExpPoint->GetOffsetDirection("A", 45+90, "X").Dump(); 
+cout << " Grid  A X "; ExpPoint->GetOffsetDirection("A", 45+180, "X").Dump(); 
+cout << " Grid  A X "; ExpPoint->GetOffsetDirection("A", 45+270, "X").Dump(); 
 */
 
 ///////////////////////////// Create histograms with ExpManager ////////////////////////
@@ -314,31 +313,31 @@ mapExpField.at(2).GetSim1DGraphPolar("Bz",-44.9,-44.7,90+67.5-5,90+67.5+5);
 
 ///////////////////////////// Get the Simulation curves 
 //Bx 
-/* 
-SimBxManager->DrawPolarOffsetX("Bx", 100, true, ExpPoint->GetOffset("B", 22.5, "X"), 22.5, -44.8);
-SimBxManager->DrawPolarOffsetX("Bx", 100, true, ExpPoint->GetOffset("B", 45.5, "X"), 45.0, -44.8);
-SimBxManager->DrawPolarOffsetX("Bx", 100, true, ExpPoint->GetOffset("B", 67.5, "X"), 67.5, -44.8);
-SimBxManager->DrawPolarOffsetX("Bx", 100, true, ExpPoint->GetOffset("B", 90+22.5, "X"), 90+22.5, -44.8);
-SimBxManager->DrawPolarOffsetX("Bx", 100, true, ExpPoint->GetOffset("B", 90+45.5, "X"), 90+45.0, -44.8);
-SimBxManager->DrawPolarOffsetX("Bx", 100, true, ExpPoint->GetOffset("B", 90+67.5, "X"), 90+67.5, -44.8);
+
+SimBxManager->DrawPolarOffsetX("Bx", 100, true, ExpPoint->GetOffsetDirection("B", 22.5, "X"), 22.5, -44.8);
+SimBxManager->DrawPolarOffsetX("Bx", 100, true, ExpPoint->GetOffsetDirection("B", 45.5, "X"), 45.0, -44.8);
+SimBxManager->DrawPolarOffsetX("Bx", 100, true, ExpPoint->GetOffsetDirection("B", 67.5, "X"), 67.5, -44.8);
+SimBxManager->DrawPolarOffsetX("Bx", 100, true, ExpPoint->GetOffsetDirection("B", 90+22.5, "X"), 90+22.5, -44.8);
+SimBxManager->DrawPolarOffsetX("Bx", 100, true, ExpPoint->GetOffsetDirection("B", 90+45.5, "X"), 90+45.0, -44.8);
+SimBxManager->DrawPolarOffsetX("Bx", 100, true, ExpPoint->GetOffsetDirection("B", 90+67.5, "X"), 90+67.5, -44.8);
 //SimBxManager->DrawCartesianFixedY("BxCartesian", 100, true, 20,-44.8) ; 
-//SimBxManager->DrawCartesianFixedX("BxCartesian", 100, true, 20,-44.8) ;//SimBxManager->DrawPolarOffsetX("Bx", 100, true, ExpPoint->GetOffset("B",  -90+45.0, "X"), -90+45.0, -44.8);
+//SimBxManager->DrawCartesianFixedX("BxCartesian", 100, true, 20,-44.8) ;//SimBxManager->DrawPolarOffsetX("Bx", 100, true, ExpPoint->GetOffsetDirection("B",  -90+45.0, "X"), -90+45.0, -44.8);
 
 //By 
-SimByManager->DrawPolarOffsetX("By", 100, true, ExpPoint->GetOffset("B", 22.5, "Y"), 22.5, -44.8);
-SimByManager->DrawPolarOffsetX("By", 100, true, ExpPoint->GetOffset("B", 45.5, "Y"), 45.0, -44.8);
-SimByManager->DrawPolarOffsetX("By", 100, true, ExpPoint->GetOffset("B", 67.5, "Y"), 67.5, -44.8);
-SimByManager->DrawPolarOffsetX("By", 100, true, ExpPoint->GetOffset("B", 90+22.5, "Y"), 90+22.5, -44.8);
-SimByManager->DrawPolarOffsetX("By", 100, true, ExpPoint->GetOffset("B", 90+45.5, "Y"), 90+45.0, -44.8);
-SimByManager->DrawPolarOffsetX("By", 100, true, ExpPoint->GetOffset("B", 90+67.5, "Y"), 90+67.5, -44.8);
-*/
+SimByManager->DrawPolarOffsetX("By", 100, true, ExpPoint->GetOffsetDirection("B", 22.5, "Y"), 22.5, -44.8);
+SimByManager->DrawPolarOffsetX("By", 100, true, ExpPoint->GetOffsetDirection("B", 45.5, "Y"), 45.0, -44.8);
+SimByManager->DrawPolarOffsetX("By", 100, true, ExpPoint->GetOffsetDirection("B", 67.5, "Y"), 67.5, -44.8);
+SimByManager->DrawPolarOffsetX("By", 100, true, ExpPoint->GetOffsetDirection("B", 90+22.5, "Y"), 90+22.5, -44.8);
+SimByManager->DrawPolarOffsetX("By", 100, true, ExpPoint->GetOffsetDirection("B", 90+45.5, "Y"), 90+45.0, -44.8);
+SimByManager->DrawPolarOffsetX("By", 100, true, ExpPoint->GetOffsetDirection("B", 90+67.5, "Y"), 90+67.5, -44.8);
+
 //Bz
-SimBzManager->DrawPolarOffsetX("Bz", 100, true, ExpPoint->GetOffset("B", 22.5, "Z"), 22.5, -44.8);
-SimBzManager->DrawPolarOffsetX("Bz", 100, true, ExpPoint->GetOffset("B", 45.5, "Z"), 45.0, -44.8);
-SimBzManager->DrawPolarOffsetX("Bz", 100, true, ExpPoint->GetOffset("B", 67.5, "Z"), 67.5, -44.8);
-SimBzManager->DrawPolarOffsetX("Bz", 100, true, ExpPoint->GetOffset("B", 90+22.5, "Z"), 90+22.5, -44.8);
-SimBzManager->DrawPolarOffsetX("Bz", 100, true, ExpPoint->GetOffset("B", 90+45.5, "Z"), 90+45.0, -44.8);
-SimBzManager->DrawPolarOffsetX("Bz", 100, true, ExpPoint->GetOffset("B", 90+67.5, "Z"), 90+67.5, -44.8);
+SimBzManager->DrawPolarOffsetX("Bz", 100, true, ExpPoint->GetOffsetDirection("B", 22.5, "Z"), 22.5, -44.8);
+SimBzManager->DrawPolarOffsetX("Bz", 100, true, ExpPoint->GetOffsetDirection("B", 45.5, "Z"), 45.0, -44.8);
+SimBzManager->DrawPolarOffsetX("Bz", 100, true, ExpPoint->GetOffsetDirection("B", 67.5, "Z"), 67.5, -44.8);
+SimBzManager->DrawPolarOffsetX("Bz", 100, true, ExpPoint->GetOffsetDirection("B", 90+22.5, "Z"), 90+22.5, -44.8);
+SimBzManager->DrawPolarOffsetX("Bz", 100, true, ExpPoint->GetOffsetDirection("B", 90+45.5, "Z"), 90+45.0, -44.8);
+SimBzManager->DrawPolarOffsetX("Bz", 100, true, ExpPoint->GetOffsetDirection("B", 90+67.5, "Z"), 90+67.5, -44.8);
 
 //2D
 //Bx

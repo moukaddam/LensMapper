@@ -227,14 +227,11 @@ void SimManager::DrawPolarOffsetX(TString NameTitle, int samples, bool DrawError
 	double theta_rad = theta * TMath::DegToRad() ;	
 	TGraphAsymmErrors*  graph1d = new TGraphAsymmErrors(samples);
 	
-	Double_t xError = fabs(offset.X()) > 0.001 ?  0.25 : fXErr; // the 0.25 is only applied if the offset is zero
-	Double_t yError = fabs(offset.Y()) > 0.001 ?  0.25 : fYErr;
-	Double_t zError = fabs(offset.Z()) > 0.001 ?  0.25 : fZErr;
-    cout<< "offsetx " << offset.X() << " xError " << xError << endl ;
-    cout<< "offsety " << offset.Y() << " yError " << yError << endl ; 
-    cout<< "offsetz " << offset.Z() << " zError " << zError << endl ; 
-
-    cin.get(); 
+	Double_t xError = fabs(offset.X()) > 0.001 ?  0.25 : fXErr; // 0.001 is only an "epsilon" 
+	Double_t yError = fabs(offset.Y()) > 0.001 ?  0.25 : fYErr; // the 0.25 is only applied if the offset is zero and it's due to the uncertainty on the location of the sensor
+	Double_t zError = fabs(offset.Z()) > 0.001 ?  0.25 : fZErr; // the error of the sensor dimensions is 0.76mm/2, addig up 0.4+0.25 = 0.65 mm in total
+     //correct for the z case
+    if(xError==yError && yError==zError) { zError = 0.25 ; }
 
 	//interpolate 
 	for (int i=0 ; i<samples; i++)	{

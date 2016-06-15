@@ -78,7 +78,7 @@ return 0;
 } 
 
 
-TVector3 ExperimentalPoint::GetOffset(TString Grid, double angle, TString Direction){
+TVector3 ExperimentalPoint::GetOffsetDirection(TString Grid, double angle, TString Direction){
 
 int quad = 0 ;
 angle = angle*TMath::DegToRad();  
@@ -87,12 +87,10 @@ if (TMath::Cos(angle) <=0 && TMath::Sin(angle)>=0 ) quad = 2;
 if (TMath::Cos(angle) <=0 && TMath::Sin(angle)<=0 ) quad = 3;
 if (TMath::Cos(angle) >=0 && TMath::Sin(angle)<=0 ) quad = 4;
 
-//cout << " quad " << quad << endl ; 
-
 TVector3 dir(0,0,0);
 if (Direction=="X") dir = fSensorOffsetX;
 else if (Direction=="Y") dir = fSensorOffsetY;
-	else dir = fSensorOffsetZ;
+	else fSensorOffsetZ;
 
 double rotangle = CalculateRotationAngle(quad, Grid);
 //cout << " rotangle " << rotangle*TMath::DegToRad() << endl ; 
