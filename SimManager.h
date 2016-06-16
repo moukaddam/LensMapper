@@ -45,11 +45,10 @@ double GetPointErrorX(double X, double Y, double Z) ; // no offset considered
 double GetPointErrorY(double X, double Y, double Z) ; // no offset considered 
 double GetPointErrorZ(double X, double Y, double Z) ; // no offset considered
 
-void DrawPolar       (TString NameTitle, int samples, bool DrawError, double theta , double z_level) ;
-void DrawPolarOffsetX(TString NameTitle, int samples, bool DrawError, TVector3 offset, double theta, double z_level); // adding the offset on the X-axis
-void DrawPolarOffsetY(TString NameTitle, int samples, bool DrawError, double offset, double theta, double z_level); // adding the offset on the Y-axis
-void DrawCartesianFixedY  (TString NameTitle, int samples, bool DrawError, double y , double z_level) ; // no offset needed in this case
-void DrawCartesianFixedX  (TString NameTitle, int samples, bool DrawError, double x , double z_level) ; // no offset needed in this case
+void DrawPolar            (TString NameTitle, int samples, bool DrawError, double theta , double z_level) ; // no offset considered, also the maximum error is calculated, useful for comparing
+void DrawPolarOffset      (TString NameTitle, int samples, bool DrawError, TVector3 offset, double theta, double z_level); // adding the offset on the X-axis
+void DrawCartesianFixedY  (TString NameTitle, int samples, bool DrawError, TVector3 offset, double y , double z_level) ; // no offset needed in this case
+void DrawCartesianFixedX  (TString NameTitle, int samples, bool DrawError, TVector3 offset, double x , double z_level) ; // no offset needed in this case
 void Draw2DGraph     (TString NameTitle, int points, double xlow, double xhigh, double ylow, double yhigh, double z) ; // write a TGraph2D, 
 void Draw2DHist      (TString NameTitle, int points, double xlow, double xhigh, double ylow, double yhigh, double z, int contour=50); // returns a 2D histogram, good for contour plots
 

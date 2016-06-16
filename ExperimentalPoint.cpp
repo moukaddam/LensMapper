@@ -78,14 +78,7 @@ return 0;
 } 
 
 
-TVector3 ExperimentalPoint::GetOffsetDirection(TString Grid, double angle, TString Direction){
-
-int quad = 0 ;
-angle = angle*TMath::DegToRad();  
-if (TMath::Cos(angle) >=0 && TMath::Sin(angle)>=0 ) quad = 1;
-if (TMath::Cos(angle) <=0 && TMath::Sin(angle)>=0 ) quad = 2;
-if (TMath::Cos(angle) <=0 && TMath::Sin(angle)<=0 ) quad = 3;
-if (TMath::Cos(angle) >=0 && TMath::Sin(angle)<=0 ) quad = 4;
+TVector3 ExperimentalPoint::GetOffsetDirection(TString Grid, int quad, TString Direction){
 
 TVector3 dir(0,0,0);
 if (Direction=="X") dir = fSensorOffsetX;
