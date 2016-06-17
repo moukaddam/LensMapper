@@ -15,20 +15,24 @@ ExperimentalPoint::ExperimentalPoint(TString background){
 ExperimentalPoint::~ExperimentalPoint(void){}
 
 void ExperimentalPoint::CalculateCentralPosition(void){ // taking into account the level and the quadrant 
- 
 	 //Calculate position with respect to the Mapper
 	double x,y,z;
 	TString label = fGrid+fGrid+Form("%d",fLocation); // AA1
 	x = fmapPosition[label].X() ; 
 	y = fmapPosition[label].Y() ;
+	z = GetDepth(fLevel); 
+	fPosition.SetXYZ(x,y,z); 
+}
 
+double ExperimentalPoint::GetDepth(int level){ // taking into account the level and the quadrant 
+ 
     // Calculate the sensor position wrt to the base of the poles.
 	// 210.0mm is the height of the firsthole (starting from the bottom) with respect to the base of the pole : -210 
 	// 15 mm difference between holes : -15 for every level as we go up  
 	// 5 mm is the half thickness of the plate : -5 mm
 	// 193mm is the distance from the contact surface of the pedestal to the tip of the probe : +193
 	// all the sensors have -1.8 mm offset inside the stem : -1.8 mm
-	z = -210 -5 -(8-fLevel)*15 +193 -1.8  ;    
+	double z = -210 -5 -(8-level)*15 +193 -1.8  ;    
     //the base of the poles is +10 mm into the base plate
     //the target (represents the zero of comsol) is at +1mm into the base plate 
     z = z + 10 - 1 ; 
@@ -36,8 +40,9 @@ void ExperimentalPoint::CalculateCentralPosition(void){ // taking into account t
     // Not used :
 	// 11.5mm is the pedestal where the probe rests 
 	// 104.8mm is the length of the probe, "L" in the catalogue however it's not very accurate 
-	fPosition.SetXYZ(x,y,z); 
+	return z ; 
 }
+
 
 void ExperimentalPoint::SubtractBackground(TString Grid, int loc, double &Bx,double &By, double &Bz){ // taking into account the level and the quadrant 
  
@@ -96,6 +101,7 @@ dir.RotateZ(rotangle*TMath::DegToRad());
 return dir ; 
 }
 
+
 //Read a line and fill parameter
 void ExperimentalPoint::ReadLineAndTreat(int MagnetQuadrant, TString Grid, int Location, int Level, double Bx, double By, double Bz){
 
@@ -103,6 +109,10 @@ void ExperimentalPoint::ReadLineAndTreat(int MagnetQuadrant, TString Grid, int L
 	fLocation = Location ; 
 	fLevel = Level; 
   	fGrid = Grid ;
+    TString key = Grid + Form("%d%d",MagnetQuadrant,Level);
+    fmapInspect.insert (std::pair<TString,double>(key,GetDepth(Level)));
+
+
 	if(fSetBackground) SubtractBackground(Grid, Location, Bx,By,Bz);
     CalculateCentralPosition() ; 
 
@@ -197,7 +207,7 @@ void ExperimentalPoint::LoadBackGround(TString background){ // Earth Background
 	getline(file,throwline);
 	while (file>>grid>>loc>>Bx>>By>>Bz){
 		grid = grid + Form("%d",loc);
-		cout << " grid " << grid << "  " << Bx << " " << By << " " << Bz << endl ; 
+		//cout << " grid " << grid << "  " << Bx << " " << By << " " << Bz << endl ; 
 		fmapBackground.insert ( std::pair<TString,TVector3>(grid,TVector3(Bx, By, Bz)));
 	}
 	cout << "  finished reading the background. " << endl ; 

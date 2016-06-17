@@ -233,7 +233,7 @@ void ExpManager::GetSim1DGraphY(TString NameTitle, double zmin, double zmax, dou
     fGraph->SetMarkerColor(kBlue);
     fGraph->SetLineColor(kBlue);
     fGraph->SetLineWidth(2);
-       
+            
     int graph_counter = 0 ; 
    for (unsigned i=0; i< fExpY.size(); i++)   {
     //cout <<  " X "  << fExpX.at(i) ;  
@@ -282,7 +282,7 @@ void ExpManager::GetExp2DGraph(TString NameTitle, double xmin, double xmax, doub
     TGraph2DErrors *fGraph = new TGraph2DErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
     fGraph->SetTitle("Exp Data;Y (mm);X (mm);Magnetic Field (mT)");
     fGraph->SetMarkerSize(1.2);
-    fGraph->SetMarkerStyle(20);
+    fGraph->SetMarkerStyle(20); 
     fGraph->SetMarkerColor(kBlue);
     fGraph->SetLineColor(kBlue);
     fGraph->SetLineWidth(2);
@@ -365,6 +365,23 @@ int ExpManager::GetExpBFieldPoinRTZ(TString NameTitle, double rmin, double rmax,
         } 
    }
    return -1 ; 
+}
+
+
+void ExpManager::DrawGraphs(TString grid, int quad, double depth){   
+
+
+if ( grid=="B" || grid=="D" ){
+    double angle0 = (quad-1)*90 ; 
+    GetExp1DGraphPolar("Title", depth-0.1,depth+0.1, 22.5+angle0-5,22.5+angle0+5);
+    GetExp1DGraphPolar("Title", depth-0.1,depth+0.1, 45.0+angle0-5,45.0+angle0+5);
+    GetExp1DGraphPolar("Title", depth-0.1,depth+0.1, 67.5+angle0-5,67.5+angle0+5);
+    GetSim1DGraphPolar("Title", depth-0.1,depth+0.1, 22.5+angle0-5,22.5+angle0+5); 
+    GetSim1DGraphPolar("Title", depth-0.1,depth+0.1, 45.0+angle0-5,45.0+angle0+5);
+    GetSim1DGraphPolar("Title", depth-0.1,depth+0.1, 67.5+angle0-5,67.5+angle0+5);
+}
+
+
 }
 
 			

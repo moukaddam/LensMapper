@@ -23,7 +23,6 @@ double chi2 = -1 ;
 if (argc == 3) chi2 = mapping(TString(argv[1]),TString(argv[2]),"nobackground");
 else if(argc == 4) chi2 = mapping(TString(argv[1]),TString(argv[2]),TString(argv[3]));
 
-
 cout << " chi2 " << chi2 << endl; 
 
  return 0;
@@ -31,7 +30,7 @@ cout << " chi2 " << chi2 << endl;
 
 
 
-double mapping(TString ExpData, TString SimData, TString background = "nobackground"){
+double mapping(TString SimData, TString ExpData, TString background = "nobackground"){
 
 /////////////////////// OPEN INPUT AND OUTPUT FILES ///////////////////////
 
@@ -93,9 +92,10 @@ while (d_buffer != 0 && counter1< 15){ // find a solution for this with do while
 	input_sim>>d_buffer>>s_buffer;
 	counter2++;
 	}
-
 getline(input_sim,s_buffer);
-cout<<counter2<<s_buffer<<endl;
+cout<< " Number of skipped lines in comsol file : " <<counter2 << "  last line content : "<<s_buffer<<endl;
+
+
 // read and fill
 Double_t X(0), Y(0), Z(0), EX(-100), EY(-100), EZ(-100), Perm(0);
 Double_t BX(0), BY(0), BZ(0);
@@ -147,7 +147,6 @@ SimManager *SimBdifManager = new SimManager(f3DHistBdiff,0.38/*mm*/,0.38/*mm*/,0
 
 //create the map holding all the slices in z
 std::map<Double_t,ExpManager> mapExpField;   
-std::map<Double_t,ExpManager>::iterator it;
 
 ExperimentalPoint* ExpPoint = new ExperimentalPoint(background);  
 // Attention, Sensor X,Y or Z measures in all directions (not necessarly what the 
@@ -239,8 +238,16 @@ while (input_exp >> Quadrant){
 }
 
 ///////////////////////////// Create histograms with ExpManager ////////////////////////
-mapExpField.at(0).DrawMap("Bx",-100,+100,-100,+100,-100,+100) ;  
+std::map<TString,double> inspect = ExpPoint->fmapInspect ; 
+for (std::map<TString,double>::iterator it=inspect.begin(); it!=inspect.end(); ++it) {
+    cout << it->first << " => " << it->second << '\n';
+    cout << it->first[0] << "  " <<it->first[1]<< "  " << it->first[2] << '\n';
+    mapExpField.at(0).DrawGraphs(it->first[0] ,1, it->second);
+}
 
+
+
+mapExpField.at(0).DrawMap("Bx",-100,+100,-100,+100,-100,+100) ;  
 mapExpField.at(0).GetExp1DGraphPolar("Bx",-44.9,-44.7,22.5-5,22.5+5);
 mapExpField.at(0).GetExp1DGraphPolar("Bx",-44.9,-44.7,45.0-5,45.0+5);
 mapExpField.at(0).GetExp1DGraphPolar("Bx",-44.9,-44.7,67.5-5,67.5+5);

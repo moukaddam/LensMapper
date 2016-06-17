@@ -25,12 +25,14 @@ using namespace std;
 #define SENSORZOFFSETY  +0.0
 #define SENSORZOFFSETZ  +0.0 //idem
 
-
 class ExperimentalPoint
 {
 private:
 	std::map<TString,TVector2> fmapPosition;
 	std::map<TString,TVector3> fmapBackground;
+
+public:
+	std::map<TString,double> fmapInspect; // a list strings e.g. 4B1 (=quadrant grid level) that makes it easy to choose right graphs to inspect the mapping
 
  public:
 //members
@@ -60,6 +62,7 @@ void CalculateCentralPosition();
 void ReadLineAndTreat(int MagnetQuadrant, TString Grid, int Location, int Level , double Bx, double By, double Bz);
 void SubtractBackground(TString Grid, int Location, double &Bx, double &By, double &Bz);
 double CalculateRotationAngle(int MagnetQuadrant, TString Grid); // returns  angfle in radian 
+double GetDepth(int level); 
 TVector3 GetOffsetDirection(TString Grid, int MagnetQuadrant, TString Direction);
 
 void LoadMap(); // load the map for positions in the mapper plate, Shaun Georges's drawings are used (can be found on the vault)

@@ -75,6 +75,8 @@ void GetSim1DGraphX(TString NameTitle, double zmin, double zmax, double ymin, do
 void GetSim1DGraphY(TString NameTitle, double zmin, double zmax, double xmin, double xmax );
 void GetSim1DGraphZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax );
 
+void DrawGraphs(TString Grid, int Quad, double depth);
+
 //2D 
 void GetExp2DGraph(TString NameTitle, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax) ;
 
