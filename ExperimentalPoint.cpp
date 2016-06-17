@@ -1,10 +1,12 @@
 #include "ExperimentalPoint.h"
 
-ExperimentalPoint::ExperimentalPoint(bool SetBackground){
-	fSetBackground = SetBackground ;
+ExperimentalPoint::ExperimentalPoint(TString background){
 	
 	LoadMap();
-	if(fSetBackground) LoadBackGround();
+	if(background != "nobackground") {
+		LoadBackGround(background); 
+		fSetBackground=true; 
+		}
 	fSensorOffsetX.SetXYZ(SENSORXOFFSETX,SENSORXOFFSETY,SENSORXOFFSETZ); 
     fSensorOffsetY.SetXYZ(SENSORYOFFSETX,SENSORYOFFSETY,SENSORYOFFSETZ); 
     fSensorOffsetZ.SetXYZ(SENSORZOFFSETX,SENSORZOFFSETY,SENSORZOFFSETZ); 
@@ -83,7 +85,7 @@ TVector3 ExperimentalPoint::GetOffsetDirection(TString Grid, int quad, TString D
 TVector3 dir(0,0,0);
 if (Direction=="X") dir = fSensorOffsetX;
 else if (Direction=="Y") dir = fSensorOffsetY;
-	else fSensorOffsetZ;
+	else dir = fSensorOffsetZ;
 
 double rotangle = CalculateRotationAngle(quad, Grid);
 //cout << " rotangle " << rotangle*TMath::DegToRad() << endl ; 
@@ -175,7 +177,7 @@ void ExperimentalPoint::LoadMap(){
 	double X, Y ;
 	ifstream file;
 
-	file.open("./input/PositionMap.txt");
+	file.open("./input/PositionMap.dat");
 	while (file>>pos>>X>>Y){
 		//cout << " pos " << pos << "  " << X << " " << Y << endl ; 
 		fmapPosition.insert ( std::pair<TString,TVector2>(pos,TVector2(X,Y)));
@@ -184,14 +186,14 @@ void ExperimentalPoint::LoadMap(){
 }
 
 
-void ExperimentalPoint::LoadBackGround(){ // Earth Background
+void ExperimentalPoint::LoadBackGround(TString background){ // Earth Background
 	string throwline ;
 	TString grid; 
 	int loc;  // level not used
 	double Bx, By, Bz;
 	ifstream file;
-
-	file.open("./input/BackgroundField.txt");
+ 
+	file.open(background.Data());
 	getline(file,throwline);
 	while (file>>grid>>loc>>Bx>>By>>Bz){
 		grid = grid + Form("%d",loc);

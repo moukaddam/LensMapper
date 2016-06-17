@@ -51,7 +51,7 @@ TVector3 fSensorPositionZ; //position of sensor Z
 TVector3 fBField; //magnetic field, it will be filled with one value, but keeping it as a vector will make it easy to handle rotations
 
 //Methodes
-ExperimentalPoint(bool SetBackground=false);
+ExperimentalPoint(TString background=!"nobackground");
 ~ExperimentalPoint(void);
 
 void ClearParameters(void);
@@ -63,7 +63,7 @@ double CalculateRotationAngle(int MagnetQuadrant, TString Grid); // returns  ang
 TVector3 GetOffsetDirection(TString Grid, int MagnetQuadrant, TString Direction);
 
 void LoadMap(); // load the map for positions in the mapper plate, Shaun Georges's drawings are used (can be found on the vault)
-void LoadBackGround();
+void LoadBackGround(TString background);
 };
 
 #endif

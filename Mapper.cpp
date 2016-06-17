@@ -8,21 +8,21 @@
 #include "SimManager.h"
 
 // functions 
-double mapping(TString, TString, int);
+double mapping(TString, TString, TString);
 
 
 //main 
 int main(int argc,char *argv[]) {
 
 if (argc < 3 || argc > 4  ) {
-	cout << " use only 3 arguments e.g.\n  ./bin/mapperTool    [experimental-file]  [comsol-file]   [ --optional-- <1> to read background ] " << endl ; 
+	cout << " use only 3 arguments e.g.\n  ./bin/mapperTool    [experimental-file]  [comsol-file]   [ --optional-- <background-file> ] " << endl ; 
 	exit(-1);
 }
 
 double chi2 = -1 ;
-if (argc == 3) chi2 = mapping(TString(argv[1]),TString(argv[2]),0);
-else if(TString(argv[3])!="1") chi2 = mapping(TString(argv[1]),TString(argv[2]),0);
-else chi2 = mapping(TString(argv[1]),TString(argv[2]),1);
+if (argc == 3) chi2 = mapping(TString(argv[1]),TString(argv[2]),"nobackground");
+else if(argc == 4) chi2 = mapping(TString(argv[1]),TString(argv[2]),TString(argv[3]));
+
 
 cout << " chi2 " << chi2 << endl; 
 
@@ -31,7 +31,7 @@ cout << " chi2 " << chi2 << endl;
 
 
 
-double mapping(TString ExpData, TString SimData, int readbackground=0){
+double mapping(TString ExpData, TString SimData, TString background = "nobackground"){
 
 /////////////////////// OPEN INPUT AND OUTPUT FILES ///////////////////////
 
@@ -124,13 +124,12 @@ while ( !input_sim.eof() ) {
 		f3DHistBdiff->SetBinContent(binNumber,SimPoint->fBFieldDiff); //fBFieldMag-fBFieldTan 		
 		//count the lines for inspection
 		line++;
-	   if (line%100000 == 0) {
-		   cout<<"line : "<<line << "  ... Still reading ..."<<endl;
+	   if (line%5000 == 0) {
+		   printf("\r     @line : %d  ... Still reading ...",line);
 		   //cout<< X<<"   "<<Y <<"   "<<Z <<"   "<<BX <<"   "<<BY<<"   "<<BZ <<"   "<< EX<<"   "<< EY<<"   "<< EZ<<"   "<< Perm<<endl ;
 	   }
-}  // end of loop while
-//count the lines 
-cout<<" "<<line << " total number of lines "<<endl;
+}  
+cout<<" total number of lines read : "<<line<<endl;
 
 
 ///////////////////////////// Create histograms with SimManager //////////////////////// 
@@ -150,7 +149,7 @@ SimManager *SimBdifManager = new SimManager(f3DHistBdiff,0.38/*mm*/,0.38/*mm*/,0
 std::map<Double_t,ExpManager> mapExpField;   
 std::map<Double_t,ExpManager>::iterator it;
 
-ExperimentalPoint* ExpPoint = new ExperimentalPoint(readbackground);  
+ExperimentalPoint* ExpPoint = new ExperimentalPoint(background);  
 // Attention, Sensor X,Y or Z measures in all directions (not necessarly what the 
 // name suggest). This is due to the fact that lens is rotated with respect to mapper plate in some cases
 
