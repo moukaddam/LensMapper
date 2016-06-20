@@ -225,20 +225,17 @@ void SimManager::DrawPolarOffset(TString NameTitle, int samples, bool DrawError,
 	double rmax = fSim3dHistogram->GetXaxis()->GetXmax(); // the maximum extent would be the diagonal of the comsol 
 	double dr = rmax/samples; // 110 mm
 	double theta_rad = theta * TMath::DegToRad() ;	
-	TGraphAsymmErrors*  graph1d = new TGraphAsymmErrors(samples);
+	TGraphAsymmErrors*  graph1d = new TGraphAsymmErrors();
 	
-	Double_t xError = fabs(offset.X()) > 0.001 ?  0.25 : fXErr; // the 0.25 is only applied if the offset is zero
-	Double_t yError = fabs(offset.Y()) > 0.001 ?  0.25 : fYErr;
-	Double_t zError = fabs(offset.Z()) > 0.001 ?  0.25 : fZErr;
-    //cout<< "offsetx " << offset.X() << " xError " << xError << endl ;
-    //cout<< "offsety " << offset.Y() << " yError " << yError << endl ; 
-    //cout<< "offsetz " << offset.Z() << " zError " << zError << endl ; 
-    //cin.get(); 
+	Double_t xError = fabs(offset.X()) > 0.001 ?  0.25 : fXErr; // 0.001 is only an "epsilon" 
+	Double_t yError = fabs(offset.Y()) > 0.001 ?  0.25 : fYErr; // the 0.25 is only applied if the offset is zero and it's due to the uncertainty on the location of the sensor
+	Double_t zError = fabs(offset.Z()) > 0.001 ?  0.25 : fZErr; // the error of the sensor dimensions is 0.76mm/2, addig up 0.4+0.25 = 0.65 mm in total
+     //correct for the z case
+    if(xError==yError && yError==zError) { zError = 0.25 ; }
 
 	//interpolate 
 	for (int i=0 ; i<samples; i++)	{
-		 if (r*cos(theta_rad)>rmax || r*sin(theta_rad)>rmax) break; 
-
+		 
 		 double x = (r*cos(theta_rad)) ; 
 		 double y = (r*sin(theta_rad)) ; 
          TVector3 position(x+offset.X(),y+offset.Y(),z+offset.Z()); 
@@ -251,11 +248,13 @@ void SimManager::DrawPolarOffset(TString NameTitle, int samples, bool DrawError,
 			double data_minus_y = GetPoint( position.X()-xError, position.Y()-yError , position.Z()-zError )	; 		 
 			double data_error_plus_y = fabs(data_plus_y - data) ; 
 			double data_error_minus_y = fabs(data_minus_y - data);
+
 			graph1d->SetPointEYhigh(i, data_error_plus_y);
 			graph1d->SetPointEYlow(i, data_error_minus_y);
 		}
 		 // increment step	
-		 r = r + dr;	
+		 r = r + dr;
+		 if ((r+5)*cos(theta_rad)>rmax || (r+5)*sin(theta_rad)>rmax) break;	
 	}
 	
 	graph1d->SetName(NameTitle+(Form("Angle_%.2fdeg_Z_%.2fmm_Offset_%.2f_%.2f_%.2fmm",theta, z,offset.X(),offset.Y(),offset.Z())));
@@ -266,51 +265,70 @@ void SimManager::DrawPolarOffset(TString NameTitle, int samples, bool DrawError,
  
 }
 
-void SimManager::DrawCartesianFixedX(TString title, int samples,bool DrawError, double x , double z) {
+
+void SimManager::DrawCartesianFixedX(TString NameTitle, int samples, bool DrawError, TVector3 offset, double x, double z) {
 
 	double y = 0.;
 	double ymax = fSim3dHistogram->GetYaxis()->GetXmax(); // the maximum extent would be the size of the comsol simulation
 	double dy = ymax/samples; 
-	TGraphAsymmErrors* graph1d = new TGraphAsymmErrors(samples);
+	TGraphAsymmErrors* graph1d = new TGraphAsymmErrors();
 	
+	Double_t xError = fabs(offset.X()) > 0.001 ?  0.25 : fXErr; // 0.001 is only an "epsilon" 
+	Double_t yError = fabs(offset.Y()) > 0.001 ?  0.25 : fYErr; // the 0.25 is only applied if the offset is zero and it's due to the uncertainty on the location of the sensor
+	Double_t zError = fabs(offset.Z()) > 0.001 ?  0.25 : fZErr; // the error of the sensor dimensions is 0.76mm/2, addig up 0.4+0.25 = 0.65 mm in total
+     //correct for the z case
+    if(xError==yError && yError==zError) { zError = 0.25 ; }
+
 	//interpolate 
 	for (int i=0 ; i<samples; i++) 	{
-		 double data = GetPoint(x,y,z)	;
+         TVector3 position(x+offset.X(),y+offset.Y(),z+offset.Z()); 
+		 double data = GetPoint(position.X(),position.Y(),position.Z());
+		 //fill the graph 
 		 graph1d->SetPoint(i, y , data);
 		 if(DrawError){
-			double data_plus_y = GetPoint( x, y+fYErr , z )	; 
-			double data_minus_y = GetPoint( x , y-fYErr , z )	; 		 
+			double data_plus_y = GetPoint( position.X()+xError, position.Y()+yError , position.Z()+zError  )	; 
+			double data_minus_y = GetPoint( position.X()-xError, position.Y()-yError , position.Z()-zError )	; 		 
 			double data_error_plus_y = fabs(data_plus_y - data) ; 
 			double data_error_minus_y = fabs(data_minus_y - data);
-		 	graph1d->SetPointEYhigh(i, data_error_plus_y);
-		 	graph1d->SetPointEYlow(i, data_error_minus_y);
+
+			graph1d->SetPointEYhigh(i, data_error_plus_y);
+			graph1d->SetPointEYlow(i, data_error_minus_y);
 		}
 		 // increment step	
 		 y = y + dy	;
+		 if (y+5>ymax) break;
 	}
 	
-	graph1d->SetName(title+(Form("X(fixed)_%.2fmm_Z_%.2fmm_%d_points",x, z, samples)));
-	graph1d->SetTitle(Form("Total Magnetic Field as a Function of y position at fixed x = %.2fmm",x));
+	graph1d->SetName(NameTitle+(Form("_X(fixed)_%.2fmm_Z_%.2fmm_%d_points",x, z, samples)));
+	graph1d->SetTitle(NameTitle+Form(" as a Function of y position at fixed x = %.2fmm",x));
 	graph1d->GetXaxis()->SetTitle("y (mm)");	graph1d->GetXaxis()->CenterTitle();
 	graph1d->GetYaxis()->SetTitle("Magnetic Field Strength (mT)");	graph1d->GetYaxis()->CenterTitle();
 	graph1d->Write(); 
 }
 
 
-void SimManager::DrawCartesianFixedY(TString title, int samples,bool DrawError, double y , double z) {
+void SimManager::DrawCartesianFixedY(TString NameTitle, int samples, bool DrawError, TVector3 offset, double y , double z) {
 
 	double x = 0.;
 	double xmax = fSim3dHistogram->GetXaxis()->GetXmax(); // the maximum extent would be the size of the comsol simulation
 	double dx = xmax/samples;
-	TGraphAsymmErrors* graph1d = new TGraphAsymmErrors(samples);
+	TGraphAsymmErrors* graph1d = new TGraphAsymmErrors();
 	
+	Double_t xError = fabs(offset.X()) > 0.001 ?  0.25 : fXErr; // 0.001 is only an "epsilon" 
+	Double_t yError = fabs(offset.Y()) > 0.001 ?  0.25 : fYErr; // the 0.25 is only applied if the offset is zero and it's due to the uncertainty on the location of the sensor
+	Double_t zError = fabs(offset.Z()) > 0.001 ?  0.25 : fZErr; // the error of the sensor dimensions is 0.76mm/2, addig up 0.4+0.25 = 0.65 mm in total
+     //correct for the z case
+    if(xError==yError && yError==zError) { zError = 0.25 ; }
+
 	//interpolate 
 	for (int i=0 ; i<samples; i++) 	{
-		 double data = GetPoint(x,y,z);
+		 TVector3 position(x+offset.X(),y+offset.Y(),z+offset.Z()); 
+		 double data = GetPoint(position.X(),position.Y(),position.Z());
+		 //fill the graph
 		 graph1d->SetPoint(i, x , data);
 		if(DrawError) {
-			double data_plus_x = GetPoint(x+fXErr, y , z); 
-			double data_minus_x = GetPoint(x-fXErr , y , z); 
+			double data_plus_x = GetPoint( position.X()+xError, position.Y()+yError , position.Z()+zError  ); 
+			double data_minus_x = GetPoint( position.X()-xError, position.Y()-yError , position.Z()-zError ); 
 			double data_error_plus_x = fabs(data_plus_x - data); 
 			double data_error_minus_x = fabs(data_minus_x - data);
 			graph1d->SetPointEYhigh(i, data_error_plus_x);
@@ -318,10 +336,11 @@ void SimManager::DrawCartesianFixedY(TString title, int samples,bool DrawError, 
 		}
 		 // increment step	
 		 x = x + dx	;
+		 if (x+5>xmax) break;
 	}
 	
-	graph1d->SetName(title+(Form("Y(Fixed)_%.2fmm_Z_%.2fmm_%d_points",y, z, samples)));
-	graph1d->SetTitle(Form("Total Magnetic Field as a Function of x position at fixed y = %.2fmm",y));
+	graph1d->SetName(NameTitle+(Form("_Y(Fixed)_%.2fmm_Z_%.2fmm_%d_points",y, z, samples)));
+	graph1d->SetTitle(NameTitle+Form(" as a Function of x position at fixed y = %.2fmm",y));
 	graph1d->GetXaxis()->SetTitle("x (mm)");	graph1d->GetXaxis()->CenterTitle();
 	graph1d->GetYaxis()->SetTitle("Magnetic Field Strength (mT)");	graph1d->GetYaxis()->CenterTitle();
 	graph1d->Write(); 

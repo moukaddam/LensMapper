@@ -41,8 +41,7 @@ fBFieldPerp = fBField.Perp();
 fEFieldMag = fEField.Mag();
 
 //difference
-
-fBFieldDiff = fBFieldMag-fBFieldTan ;
+fBFieldDiff = fBFieldMag-fBFieldTan ; // when this = 0 it means that most of the magnetic field is tangential and is used to curve the electrons
 }
 
 
@@ -52,7 +51,6 @@ fBField.SetXYZ(Bx,By,Bz); //Simulation is offset by -4mm, this corrects for it
 fEField.SetXYZ(Ex,Ey,Ez);
 fPosition.SetXYZ(X,Y,Z);
 fPerm = Perm ;
-
 
 Treat();
 }

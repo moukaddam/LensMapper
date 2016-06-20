@@ -25,14 +25,18 @@ using namespace std;
 #define SENSORZOFFSETY  +0.0
 #define SENSORZOFFSETZ  +0.0 //idem
 
-
 class ExperimentalPoint
 {
 private:
 	std::map<TString,TVector2> fmapPosition;
+	std::map<TString,TVector3> fmapBackground;
+
+public:
+	std::map<TString,double> fmapInspect; // a list strings e.g. 4B1 (=quadrant grid level) that makes it easy to choose right graphs to inspect the mapping
 
  public:
 //members
+bool  fSetBackground ; 
 TString  fGrid ; // A, B, C, D (will decide if the reading is Cartezian or not)  (counter clock wise )
 int fMagnetQuadrant ; // Q12 , Q23, Q34, Q41 (will be fixed by the flat tip) or 0, 1, 2, 3 (counter clock wise )
 int fLocation ; // an integer corresponding to the location 
@@ -49,17 +53,20 @@ TVector3 fSensorPositionZ; //position of sensor Z
 TVector3 fBField; //magnetic field, it will be filled with one value, but keeping it as a vector will make it easy to handle rotations
 
 //Methodes
-ExperimentalPoint(void);
+ExperimentalPoint(TString background=!"nobackground");
 ~ExperimentalPoint(void);
 
 void ClearParameters(void);
 void ShowParameters(void);
 void CalculateCentralPosition();
 void ReadLineAndTreat(int MagnetQuadrant, TString Grid, int Location, int Level , double Bx, double By, double Bz);
+void SubtractBackground(TString Grid, int Location, double &Bx, double &By, double &Bz);
 double CalculateRotationAngle(int MagnetQuadrant, TString Grid); // returns  angfle in radian 
-TVector3 GetOffset(TString Grid, double angle, TString Direction);
+double GetDepth(int level); 
+TVector3 GetOffsetDirection(TString Grid, int MagnetQuadrant, TString Direction);
 
 void LoadMap(); // load the map for positions in the mapper plate, Shaun Georges's drawings are used (can be found on the vault)
+void LoadBackGround(TString background);
 };
 
 #endif

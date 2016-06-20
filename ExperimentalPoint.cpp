@@ -1,7 +1,12 @@
 #include "ExperimentalPoint.h"
 
-ExperimentalPoint::ExperimentalPoint(void){
+ExperimentalPoint::ExperimentalPoint(TString background){
+	
 	LoadMap();
+	if(background != "nobackground") {
+		LoadBackGround(background); 
+		fSetBackground=true; 
+		}
 	fSensorOffsetX.SetXYZ(SENSORXOFFSETX,SENSORXOFFSETY,SENSORXOFFSETZ); 
     fSensorOffsetY.SetXYZ(SENSORYOFFSETX,SENSORYOFFSETY,SENSORYOFFSETZ); 
     fSensorOffsetZ.SetXYZ(SENSORZOFFSETX,SENSORZOFFSETY,SENSORZOFFSETZ); 
@@ -10,20 +15,24 @@ ExperimentalPoint::ExperimentalPoint(void){
 ExperimentalPoint::~ExperimentalPoint(void){}
 
 void ExperimentalPoint::CalculateCentralPosition(void){ // taking into account the level and the quadrant 
- 
 	 //Calculate position with respect to the Mapper
 	double x,y,z;
 	TString label = fGrid+fGrid+Form("%d",fLocation); // AA1
 	x = fmapPosition[label].X() ; 
 	y = fmapPosition[label].Y() ;
+	z = GetDepth(fLevel); 
+	fPosition.SetXYZ(x,y,z); 
+}
 
+double ExperimentalPoint::GetDepth(int level){ // taking into account the level and the quadrant 
+ 
     // Calculate the sensor position wrt to the base of the poles.
 	// 210.0mm is the height of the firsthole (starting from the bottom) with respect to the base of the pole : -210 
 	// 15 mm difference between holes : -15 for every level as we go up  
 	// 5 mm is the half thickness of the plate : -5 mm
 	// 193mm is the distance from the contact surface of the pedestal to the tip of the probe : +193
 	// all the sensors have -1.8 mm offset inside the stem : -1.8 mm
-	z = -210 -5 -(8-fLevel)*15 +193 -1.8  ;    
+	double z = -210 -5 -(8-level)*15 +193 -1.8  ;    
     //the base of the poles is +10 mm into the base plate
     //the target (represents the zero of comsol) is at +1mm into the base plate 
     z = z + 10 - 1 ; 
@@ -31,8 +40,18 @@ void ExperimentalPoint::CalculateCentralPosition(void){ // taking into account t
     // Not used :
 	// 11.5mm is the pedestal where the probe rests 
 	// 104.8mm is the length of the probe, "L" in the catalogue however it's not very accurate 
-	fPosition.SetXYZ(x,y,z); 
+	return z ; 
 }
+
+
+void ExperimentalPoint::SubtractBackground(TString Grid, int loc, double &Bx,double &By, double &Bz){ // taking into account the level and the quadrant 
+ 
+ 	TString label = Grid+Form("%d",loc); // A1
+	Bx = Bx - fmapBackground[label].X() ; 
+	By = By - fmapBackground[label].Y() ;
+	Bz = Bz - fmapBackground[label].Z() ;
+}
+
 
 double ExperimentalPoint::CalculateRotationAngle(int MagnetQuadrant, TString Grid){ // returns  angle in radian 
 
@@ -66,16 +85,7 @@ return 0;
 } 
 
 
-TVector3 ExperimentalPoint::GetOffset(TString Grid, double angle, TString Direction){
-
-int quad = 0 ;
-angle = angle*TMath::DegToRad();  
-if (TMath::Cos(angle) >=0 && TMath::Sin(angle)>=0 ) quad = 1;
-if (TMath::Cos(angle) <=0 && TMath::Sin(angle)>=0 ) quad = 2;
-if (TMath::Cos(angle) <=0 && TMath::Sin(angle)<=0 ) quad = 3;
-if (TMath::Cos(angle) >=0 && TMath::Sin(angle)<=0 ) quad = 4;
-
-//cout << " quad " << quad << endl ; 
+TVector3 ExperimentalPoint::GetOffsetDirection(TString Grid, int quad, TString Direction){
 
 TVector3 dir(0,0,0);
 if (Direction=="X") dir = fSensorOffsetX;
@@ -91,6 +101,7 @@ dir.RotateZ(rotangle*TMath::DegToRad());
 return dir ; 
 }
 
+
 //Read a line and fill parameter
 void ExperimentalPoint::ReadLineAndTreat(int MagnetQuadrant, TString Grid, int Location, int Level, double Bx, double By, double Bz){
 
@@ -98,6 +109,11 @@ void ExperimentalPoint::ReadLineAndTreat(int MagnetQuadrant, TString Grid, int L
 	fLocation = Location ; 
 	fLevel = Level; 
   	fGrid = Grid ;
+    TString key = Grid + Form("%d%d",MagnetQuadrant,Level);
+    fmapInspect.insert (std::pair<TString,double>(key,GetDepth(Level)));
+
+
+	if(fSetBackground) SubtractBackground(Grid, Location, Bx,By,Bz);
     CalculateCentralPosition() ; 
 
 //Correct for probe rotation
@@ -171,7 +187,7 @@ void ExperimentalPoint::LoadMap(){
 	double X, Y ;
 	ifstream file;
 
-	file.open("./input/PositionMap.txt");
+	file.open("./input/PositionMap.dat");
 	while (file>>pos>>X>>Y){
 		//cout << " pos " << pos << "  " << X << " " << Y << endl ; 
 		fmapPosition.insert ( std::pair<TString,TVector2>(pos,TVector2(X,Y)));
@@ -179,3 +195,20 @@ void ExperimentalPoint::LoadMap(){
 	cout << "  finished reading the position map. " << endl ; 
 }
 
+
+void ExperimentalPoint::LoadBackGround(TString background){ // Earth Background
+	string throwline ;
+	TString grid; 
+	int loc;  // level not used
+	double Bx, By, Bz;
+	ifstream file;
+ 
+	file.open(background.Data());
+	getline(file,throwline);
+	while (file>>grid>>loc>>Bx>>By>>Bz){
+		grid = grid + Form("%d",loc);
+		//cout << " grid " << grid << "  " << Bx << " " << By << " " << Bz << endl ; 
+		fmapBackground.insert ( std::pair<TString,TVector3>(grid,TVector3(Bx, By, Bz)));
+	}
+	cout << "  finished reading the background. " << endl ; 
+}
