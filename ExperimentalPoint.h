@@ -32,7 +32,10 @@ private:
 	std::map<TString,TVector3> fmapBackground;
 
 public:
-	std::map<TString,double> fmapInspect; // a list strings e.g. 4B1 (=quadrant grid level) that makes it easy to choose right graphs to inspect the mapping
+	std::map<TString,double*> fmapInspect; // a list strings e.g. 4B1 (=quadrant grid level) that makes it easy to choose right graphs to inspect the mapping
+	vector<TString> flistGrid; // a list strings e.g. 4B1 (=quadrant grid level) that makes it easy to choose right graphs to inspect the mapping
+	vector<int> flistQuad; 
+	vector<double> flistDepth;
 
  public:
 //members
@@ -53,11 +56,12 @@ TVector3 fSensorPositionZ; //position of sensor Z
 TVector3 fBField; //magnetic field, it will be filled with one value, but keeping it as a vector will make it easy to handle rotations
 
 //Methodes
-ExperimentalPoint(TString background=!"nobackground");
+ExperimentalPoint(TString background="nobackground");
 ~ExperimentalPoint(void);
 
 void ClearParameters(void);
 void ShowParameters(void);
+void CheckList(TString Grid, int MagnetQuadrant, int Level);
 void CalculateCentralPosition();
 void ReadLineAndTreat(int MagnetQuadrant, TString Grid, int Location, int Level , double Bx, double By, double Bz);
 void SubtractBackground(TString Grid, int Location, double &Bx, double &By, double &Bz);

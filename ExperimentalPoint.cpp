@@ -101,6 +101,20 @@ dir.RotateZ(rotangle*TMath::DegToRad());
 return dir ; 
 }
 
+void ExperimentalPoint::CheckList(TString grid, int quad, int level){
+  
+  //Check if it's already in the list
+  for (unsigned i = 0 ; i < flistGrid.size() ; i++)
+	if(grid == flistGrid.at(i) && quad == flistQuad.at(i) && GetDepth(level) == flistDepth.at(i) ) return ;
+
+//otherwise 
+	flistGrid.push_back(grid) ;
+	flistQuad.push_back(quad) ;
+	flistDepth.push_back(GetDepth(level)); 
+
+return; 
+}
+
 
 //Read a line and fill parameter
 void ExperimentalPoint::ReadLineAndTreat(int MagnetQuadrant, TString Grid, int Location, int Level, double Bx, double By, double Bz){
@@ -110,9 +124,7 @@ void ExperimentalPoint::ReadLineAndTreat(int MagnetQuadrant, TString Grid, int L
 	fLevel = Level; 
   	fGrid = Grid ;
     TString key = Grid + Form("%d%d",MagnetQuadrant,Level);
-    fmapInspect.insert (std::pair<TString,double>(key,GetDepth(Level)));
-
-
+    CheckList(Grid, MagnetQuadrant, Level); 
 	if(fSetBackground) SubtractBackground(Grid, Location, Bx,By,Bz);
     CalculateCentralPosition() ; 
 

@@ -238,11 +238,9 @@ while (input_exp >> Quadrant){
 }
 
 ///////////////////////////// Create histograms with ExpManager ////////////////////////
-std::map<TString,double> inspect = ExpPoint->fmapInspect ; 
-for (std::map<TString,double>::iterator it=inspect.begin(); it!=inspect.end(); ++it) {
-    cout << it->first << " => " << it->second << '\n';
-    cout << it->first[0] << "  " <<it->first[1]<< "  " << it->first[2] << '\n';
-    mapExpField.at(0).DrawGraphs(it->first[0] ,1, it->second);
+for (unsigned i = 0 ; i <ExpPoint->flistGrid.size() ; i++) {
+	cout << " Drawing graphs for " << ExpPoint->flistGrid.at(i) << " " <<  ExpPoint->flistQuad.at(i) << " " << ExpPoint->flistDepth.at(i) << endl ; 
+    mapExpField.at(0).DrawGraphs(ExpPoint->flistGrid.at(i) , ExpPoint->flistQuad.at(i), ExpPoint->flistDepth.at(i));
 }
 
 
