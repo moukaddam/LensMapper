@@ -4,15 +4,15 @@ if (type=="M") Cluster(offset, height, 55);
 else 
 if (type=="L") Cluster(offset,height, 30);
 else
-if(type=="P") PShield(offset,height); 
+if (type=="P") PShield(offset,height); 
 else
-if(type=="FM") Facade(type,55,3.4);
+if (type=="FM") Facade(type,55,3.4);
 else 
 if (type=="FL") Facade(type,30,5);
 
 }
 
-void Cluster(double offset, double height, double dim /*length of secondary magnetes*/) {
+void Cluster(double offset, double height, double len /*length of secondary magnetes*/) {
 
 double scale = height/50.;
     //Draw a cross
@@ -22,9 +22,9 @@ double scale = height/50.;
     lens->SetPoint(2,17+17.32,50*scale+offset);
     lens->SetPoint(3,17+75,50*scale+offset); 
     lens->SetPoint(4,17+75,0*scale+offset);
-    lens->SetPoint(5,17+75-dim,0*scale+offset); 
-    lens->SetPoint(6,17+75-dim,50*scale+offset); 
-    lens->SetPoint(7,17+75-dim,0*scale+offset); 
+    lens->SetPoint(5,17+75-len,0*scale+offset); 
+    lens->SetPoint(6,17+75-len,50*scale+offset); 
+    lens->SetPoint(7,17+75-len,0*scale+offset); 
     lens->SetPoint(8,17,0*scale+offset); 
     lens->SetLineColor(kRed); 
     lens->SetLineStyle(kDashed);
