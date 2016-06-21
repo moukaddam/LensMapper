@@ -2,16 +2,14 @@
 
 SimManager::SimManager(TH3D* hist3d, double xerr, double yerr, double zerr){
 	//cout << "Inside SimManager::SimManager()" << endl;
+	fTitle = hist3d->GetTitle() ; 
 	fSim3dHistogram = hist3d;
 	fXErr = xerr;
 	fYErr = yerr;
 	fZErr = zerr;
 }
 
-SimManager::~SimManager(void){
-	//cout << "Inside SimManager::Destructor()" << endl;
-}
-
+SimManager::~SimManager(void){}
 
 void SimManager::SetOffsets(double X , double Y, double Z){
 	fOffsetx = X ;
@@ -205,8 +203,8 @@ void SimManager::DrawPolar(TString title, int samples, bool DrawError, double th
 		 // increment step	
 		 r = r + dr	;
 	}
-	
-	graph1d->SetName(title+(Form("Angle_%.2fdeg_Depth_%.2fmm_Interpol_%d_points",theta, z, samples)));
+
+	graph1d->SetName(title+(Form("_Sim_Depth_%.2fmm_Angle_%.2fdeg_Interpol_%d_points",z, theta, samples)));
 	graph1d->SetTitle(Form("Total Magnetic Field as a Function of Radius at Angle %.2fdeg",theta));
 	graph1d->GetXaxis()->SetTitle("Radius (mm)");
 	graph1d->GetXaxis()->CenterTitle();
@@ -257,7 +255,7 @@ void SimManager::DrawPolarOffset(TString NameTitle, int samples, bool DrawError,
 		 if ((r+5)*cos(theta_rad)>rmax || (r+5)*sin(theta_rad)>rmax) break;	
 	}
 	
-	graph1d->SetName(NameTitle+(Form("Angle_%.2fdeg_Z_%.2fmm_Offset_%.2f_%.2f_%.2fmm",theta, z,offset.X(),offset.Y(),offset.Z())));
+	graph1d->SetName(NameTitle+(Form("_Sim_Depth_%.2fmm_Angle_%.2fdeg_Offset_%.2f_%.2f_%.2fmm",z,theta,offset.X(),offset.Y(),offset.Z())));
 	graph1d->SetTitle(NameTitle+Form(" Magnetic Field as a function of Radius at Angle=%.2f#circ Z=%.2fmm Offset=%.2f_%.2f_%.2fmm",theta, z,offset.X(),offset.Y(),offset.Z()));
 	graph1d->GetXaxis()->SetTitle("Radius (mm)") ; 	graph1d->GetXaxis()->CenterTitle();
 	graph1d->GetYaxis()->SetTitle("Magnetic Field Strength (mT)") ; 	graph1d->GetYaxis()->CenterTitle();
@@ -298,8 +296,8 @@ void SimManager::DrawCartesianFixedX(TString NameTitle, int samples, bool DrawEr
 		 y = y + dy	;
 		 if (y+5>ymax) break;
 	}
-	
-	graph1d->SetName(NameTitle+(Form("_X(fixed)_%.2fmm_Z_%.2fmm_%d_points",x, z, samples)));
+
+	graph1d->SetName(NameTitle+(Form("_Sim_Depth_%.2fmm_X(fixed)_%.2fmm_%d_points",z,x, samples)));
 	graph1d->SetTitle(NameTitle+Form(" as a Function of y position at fixed x = %.2fmm",x));
 	graph1d->GetXaxis()->SetTitle("y (mm)");	graph1d->GetXaxis()->CenterTitle();
 	graph1d->GetYaxis()->SetTitle("Magnetic Field Strength (mT)");	graph1d->GetYaxis()->CenterTitle();
@@ -339,7 +337,7 @@ void SimManager::DrawCartesianFixedY(TString NameTitle, int samples, bool DrawEr
 		 if (x+5>xmax) break;
 	}
 	
-	graph1d->SetName(NameTitle+(Form("_Y(Fixed)_%.2fmm_Z_%.2fmm_%d_points",y, z, samples)));
+	graph1d->SetName(NameTitle+(Form("_Sim_Depth_%.2fmm_Y(fixed)_%.2fmm_%d_points", z, y, samples)));
 	graph1d->SetTitle(NameTitle+Form(" as a Function of x position at fixed y = %.2fmm",y));
 	graph1d->GetXaxis()->SetTitle("x (mm)");	graph1d->GetXaxis()->CenterTitle();
 	graph1d->GetYaxis()->SetTitle("Magnetic Field Strength (mT)");	graph1d->GetYaxis()->CenterTitle();
@@ -362,7 +360,7 @@ void SimManager::Draw2DGraph(TString NameTitle, int points , double xlow,double 
 		}
 	}
 
-	graph2d->SetName(NameTitle+(Form(" z_%.2fmm_Interpolpoints_%d_xstepof_%.2fmm_ystepof_%.2fmm",z, graph_counter,stepx,stepy)));
+	graph2d->SetName(NameTitle+(Form("_Sim_Depth_%.2fmm_Interpolpoints_%d_xstepof_%.2fmm_ystepof_%.2fmm",z, graph_counter,stepx,stepy)));
 	graph2d->SetTitle(NameTitle+Form(" z=%.2fmm  %.2f<x<%.2f  %.2f<y<%.2f ;x (mm);y (mm); Magnetic Field Strength (mT)", z, xlow, xhigh, ylow, yhigh) );
 	graph2d->SetDrawOption("TRI1");
 	graph2d->Write();
@@ -404,8 +402,59 @@ double levels[49] ={0.0005, 0.001, 0.01, 0.1,     //4
 	hist->SetContour(255);
 	hist->SetOption("CONT1 COLZ LIST");
 	hist->SetStats(0);
-	hist->SetName(NameTitle+(Form(" Z_%.2fmm_%d_points",z,points)));
+	hist->SetName(NameTitle+(Form("_Sim_Depth_%.2fmm_%d_points",z,points)));
 	hist->SetTitle(NameTitle+Form(" z=%.2fmm  %.2f<x<%.2f  %.2f<y<%.2f ;x (mm);y (mm); Magnetic Field Strength (mT)", z, xlow, xhigh, ylow, yhigh) );
 	hist->GetZaxis()->SetRangeUser(-700,700);
     hist->Write() ;
+}
+
+
+void SimManager::DrawGraphs(TVector3 offset, TString grid, int quad, double depth){
+
+	int signx = +1 ; 
+	int signy = +1 ; 
+	if(quad==1) {signx = +1; signy=+1;}
+	else if(quad==2) {signx = -1; signy=+1;}
+		else if(quad==3) {signx = -1; signy=-1;}
+			else if(quad==4) {signx = +1; signy=-1;}  
+
+    double angle0 = 0 ; 
+    if(quad==1) angle0 = 0 ; 
+    else if(quad==2) angle0 = 90 ; 
+        else if(quad==3) angle0 = -180 ; 
+            else if(quad==1) angle0 = -90 ; 
+
+	if ( grid=="B" || grid=="D" ){
+		DrawPolarOffset(fTitle, 100, true, offset, 22.5+angle0, depth);
+		DrawPolarOffset(fTitle, 100, true, offset, 45.0+angle0, depth);
+		DrawPolarOffset(fTitle, 100, true, offset, 67.5+angle0, depth);
+	}
+
+
+	if ( grid=="A"){
+		DrawCartesianFixedX(fTitle, 100, true, offset, signx*20, depth) ;  
+		DrawCartesianFixedX(fTitle, 100, true, offset, signx*40, depth) ; 
+		DrawCartesianFixedX(fTitle, 100, true, offset, signx*60, depth) ; 
+		DrawCartesianFixedX(fTitle, 100, true, offset, signx*80, depth) ; 
+
+		DrawCartesianFixedY(fTitle, 100, true, offset, signy*20, depth) ;  
+		DrawCartesianFixedY(fTitle, 100, true, offset, signy*40, depth) ; 
+		DrawCartesianFixedY(fTitle, 100, true, offset, signy*60, depth) ; 
+		DrawCartesianFixedY(fTitle, 100, true, offset, signy*80, depth) ; 
+	}
+
+
+	if ( grid=="C"){
+		DrawCartesianFixedX(fTitle, 100, true, offset, signx*10, depth) ;  
+		DrawCartesianFixedX(fTitle, 100, true, offset, signx*30, depth) ; 
+		DrawCartesianFixedX(fTitle, 100, true, offset, signx*50, depth) ; 
+		DrawCartesianFixedX(fTitle, 100, true, offset, signx*70, depth) ; 
+
+		DrawCartesianFixedY(fTitle, 100, true, offset, signy*10, depth) ;  
+		DrawCartesianFixedY(fTitle, 100, true, offset, signy*30, depth) ; 
+		DrawCartesianFixedY(fTitle, 100, true, offset, signy*50, depth) ; 
+		DrawCartesianFixedY(fTitle, 100, true, offset, signy*70, depth) ; 
+	}
+
+	
 }

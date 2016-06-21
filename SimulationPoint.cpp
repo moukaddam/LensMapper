@@ -1,21 +1,11 @@
 #include "SimulationPoint.h"
 
-SimulationPoint::~SimulationPoint(void)
-{
-//cout << "Inside SimulationPoint::Destructor()" << endl;
-
-}
-
-SimulationPoint::SimulationPoint(void)
-{
-//cout << "Inside SimulationPoint::SimulationPoint()" << endl;
-
-}
+SimulationPoint::~SimulationPoint(void){}
+SimulationPoint::SimulationPoint(void){}
 
 
 void SimulationPoint::Show(void)
 {
-
 cout << "fBFieldTan   "<<fBFieldTan<< endl;
 cout << "fBFieldMag   "<<fBFieldMag<< endl;
 cout<<  "Angle       "<<fBFieldUnitTheta.Phi()*TMath::RadToDeg()<<endl;
@@ -41,7 +31,7 @@ fBFieldPerp = fBField.Perp();
 fEFieldMag = fEField.Mag();
 
 //difference
-fBFieldDiff = fBFieldMag-fBFieldTan ; // when this = 0 it means that most of the magnetic field is tangential and is used to curve the electrons
+fBFieldDiff = fBFieldMag-fBFieldTan ; // when this = 0 it means that most of the magnetic field is tangential and is used to
 }
 
 

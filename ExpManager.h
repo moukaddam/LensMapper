@@ -23,6 +23,8 @@ class ExpManager
 {
  public:
 
+TString fInfo; 
+
 //Experimental Position
 vector<Double_t> fExpX; 
 vector<Double_t> fExpY; 
@@ -49,6 +51,8 @@ vector<Double_t> fSimB ;
 ExpManager(void );
 ~ExpManager(void);
 
+void SetInfo(TString info){fInfo = info;};
+
 void FillValue(Double_t x, Double_t y, Double_t z, Double_t r, Double_t theta, Double_t b, Double_t bsim);
 void FillValueError(Double_t x, Double_t y, Double_t z, Double_t r, Double_t theta, Double_t b); // no error on simulation 
 void ShowVectorSizes(void) ;
@@ -62,8 +66,8 @@ int GetNpoints() { return fExpX.size(); } ; // all have the same size
 double GetOffset(TString Grid, int Quadrant, TString Direction) ; 
 
 // Returns the index of the first point validating specific position requirements 
-int GetExpBFieldPointXYZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax  ) ;
-int GetExpBFieldPoinRTZ(TString NameTitle, double rmin, double rmax, double tmin, double tmax, double zmin, double zmax  ) ;
+int GetExpBFieldPointXYZ(double xmin, double xmax, double ymin, double ymax, double zmin, double zmax  ) ;
+int GetExpBFieldPoinRTZ(double rmin, double rmax, double tmin, double tmax, double zmin, double zmax  ) ;
 
 //1D
 void GetExp1DGraphPolar(TString NameTitle, double zmin, double zmax, double anglmin, double anglemax) ; 

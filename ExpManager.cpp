@@ -1,11 +1,11 @@
 #include "ExpManager.h"
 
-ExpManager::ExpManager(void)
-{
+ExpManager::ExpManager(void){
 Clear();
 }
 
 ExpManager::~ExpManager(void){}
+
 
 void  ExpManager::FillValue(Double_t x, Double_t y, Double_t z, Double_t r, Double_t theta, Double_t b, Double_t bsim )
 {
@@ -33,7 +33,7 @@ void  ExpManager::FillValueError(Double_t x, Double_t y, Double_t z, Double_t r,
 void ExpManager::ShowVectorSizes(void)
 {
 cout<<endl<<"-----------EXP"<<endl;
-cout<<"x : "<<fExpX.size();
+cout      <<"x : "<<fExpX.size();
 cout<<endl<<"y : "<<fExpY.size();
 cout<<endl<<"z : "<<fExpZ.size();
 cout<<endl<<"B : "<<fExpB.size();
@@ -74,6 +74,7 @@ void ExpManager::GetExp1DGraphPolar(TString NameTitle, double zmin, double zmax,
        
     int graph_counter = 0 ; 
    for (unsigned i=0; i< fExpR.size(); i++)   {
+    cout <<  fExpTheta.at(i) << " angle -- Z " << fExpZ.at(i) << endl; 
         if( (fExpTheta.at(i) >= anglemin && fExpTheta.at(i) <= anglemax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) ){ 
             fGraph->SetPoint(graph_counter,fExpR.at(i),fExpB.at(i));    
             fGraph->SetPointError(graph_counter,fExpRErr.at(i),fExpBErr.at(i));   
@@ -81,8 +82,8 @@ void ExpManager::GetExp1DGraphPolar(TString NameTitle, double zmin, double zmax,
         }
    }
 
-    fGraph->SetTitle(NameTitle+Form("Experimental Data : %.2f < Depth < %.2f mm  __  %.2f#circ < Angle < %.2f#circ;Radius (mm);Magnetic Field (mT)",zmin,zmax,anglemin,anglemax));
-    fGraph->SetName(NameTitle+Form("Exp_Depth_%.2f_%.2fmm_Angle_%.2f_%.2fdeg",zmin,zmax,anglemin,anglemax));
+    fGraph->SetTitle(NameTitle+Form(" Experimental Data : %.2f < Depth < %.2f mm  __  %.2f#circ < Angle < %.2f#circ;Radius (mm);Magnetic Field (mT)",zmin,zmax,anglemin,anglemax));
+    fGraph->SetName(NameTitle+Form("_Exp_Depth_%.2f_%.2fmm_Angle_%.2f_%.2fdeg",zmin,zmax,anglemin,anglemax));
     fGraph->Write();
 
 }
@@ -111,8 +112,8 @@ void ExpManager::GetExp1DGraphX(TString NameTitle, double zmin, double zmax, dou
         cout << endl ; 
    }
 
-    fGraph->SetTitle(NameTitle+Form("Experimental Data : %.2f < Depth < %.2f mm  __  %.2f < Y < %.2f mm;X (mm);Magnetic Field (mT)",zmin,zmax,ymin,ymax));
-    fGraph->SetName(NameTitle+Form("Exp_Depth_%.2f_%.2fmm_Y_%.2f_%.2fmm",zmin,zmax,ymin,ymax));
+    fGraph->SetTitle(NameTitle+Form(" Experimental Data : %.2f < Depth < %.2f mm  __  %.2f < Y < %.2f mm;X (mm);Magnetic Field (mT)",zmin,zmax,ymin,ymax));
+    fGraph->SetName(NameTitle+Form("_Exp_Depth_%.2f_%.2fmm_Y_%.2f_%.2fmm",zmin,zmax,ymin,ymax));
     fGraph->Write();
 
 }
@@ -138,8 +139,8 @@ void ExpManager::GetExp1DGraphY(TString NameTitle, double zmin, double zmax, dou
         cout << endl ; 
    }
 
-    fGraph->SetTitle(NameTitle+Form("Experimental Data : %.2f < Depth < %.2f mm  __  %.2f < X < %.2f mm;Y (mm);Magnetic Field (mT)",zmin,zmax,xmin,xmax));
-    fGraph->SetName(NameTitle+Form("Exp_Depth_%.2f_%.2fmm_X_%.2f_%.2fmm",zmin,zmax,xmin,xmax));
+    fGraph->SetTitle(NameTitle+Form(" Experimental Data : %.2f < Depth < %.2f mm  __  %.2f < X < %.2f mm;Y (mm);Magnetic Field (mT)",zmin,zmax,xmin,xmax));
+    fGraph->SetName(NameTitle+Form("_Exp_Depth_%.2f_%.2fmm_X_%.2f_%.2fmm",zmin,zmax,xmin,xmax));
     fGraph->Write();
 
 }
@@ -166,8 +167,8 @@ void ExpManager::GetExp1DGraphZ(TString NameTitle, double xmin, double xmax, dou
         //cout << endl ; 
    }
 
-    fGraph->SetTitle(NameTitle+Form("Experimental Data : %.2f < X < %.2f mm  __  %.2f < Y < %.2f mm;Z (mm);Magnetic Field (mT)",xmin,xmax,ymin,ymax));
-    fGraph->SetName(NameTitle+Form("Exp_X_%.2f_%.2fmm_Y_%.2f_%.2fmm",xmin,xmax,ymin,ymax));
+    fGraph->SetTitle(NameTitle+Form(" Experimental Data : %.2f < X < %.2f mm  __  %.2f < Y < %.2f mm;Z (mm);Magnetic Field (mT)",xmin,xmax,ymin,ymax));
+    fGraph->SetName(NameTitle+Form("_Exp_X_%.2f_%.2fmm_Y_%.2f_%.2fmm",xmin,xmax,ymin,ymax));
     fGraph->Write();
 
 }
@@ -191,8 +192,8 @@ void ExpManager::GetSim1DGraphPolar(TString NameTitle, double zmin, double zmax,
         }
    }
 
-    fGraph->SetTitle(NameTitle+Form("Simulated Data : %.2f < Depth < %.2f mm  __  %.2f#circ < Angle < %.2f#circ;Radius (mm);Magnetic Field (mT)",zmin,zmax,anglemin,anglemax));
-    fGraph->SetName(NameTitle+Form("Sim_Depth_%.2f_%.2fmm_Angle_%.2f_%.2fdeg",zmin,zmax,anglemin,anglemax));
+    fGraph->SetTitle(NameTitle+Form(" Simulated Data : %.2f < Depth < %.2f mm  __  %.2f#circ < Angle < %.2f#circ;Radius (mm);Magnetic Field (mT)",zmin,zmax,anglemin,anglemax));
+    fGraph->SetName(NameTitle+Form("_Sim_Depth_%.2f_%.2fmm_Angle_%.2f_%.2fdeg",zmin,zmax,anglemin,anglemax));
     fGraph->Write();
 
 }
@@ -218,8 +219,8 @@ void ExpManager::GetSim1DGraphX(TString NameTitle, double zmin, double zmax, dou
         }
    }
 
-    fGraph->SetTitle(NameTitle+Form("Simulated Data : %.2f < Depth < %.2f mm  __  %.2f < Y < %.2f mm;X (mm);Magnetic Field (mT)",zmin,zmax,ymin,ymax));
-    fGraph->SetName(NameTitle+Form("Sim_Depth_%.2f_%.2fmm_Y_%.2f_%.2fmm",zmin,zmax,ymin,ymax));
+    fGraph->SetTitle(NameTitle+Form(" Simulated Data : %.2f < Depth < %.2f mm  __  %.2f < Y < %.2f mm;X (mm);Magnetic Field (mT)",zmin,zmax,ymin,ymax));
+    fGraph->SetName(NameTitle+Form("_Sim_Depth_%.2f_%.2fmm_Y_%.2f_%.2fmm",zmin,zmax,ymin,ymax));
     fGraph->Write();
 
 }
@@ -244,8 +245,8 @@ void ExpManager::GetSim1DGraphY(TString NameTitle, double zmin, double zmax, dou
         } 
    }
 
-    fGraph->SetTitle(NameTitle+Form("Simulated Data : %.2f < Depth < %.2f mm  __  %.2f < X < %.2f mm;Y (mm);Magnetic Field (mT)",zmin,zmax,xmin,xmax));
-    fGraph->SetName(NameTitle+Form("Sim_Depth_%.2f_%.2fmm_X_%.2f_%.2fmm",zmin,zmax,xmin,xmax));
+    fGraph->SetTitle(NameTitle+Form(" Simulated Data : %.2f < Depth < %.2f mm  __  %.2f < X < %.2f mm;Y (mm);Magnetic Field (mT)",zmin,zmax,xmin,xmax));
+    fGraph->SetName(NameTitle+Form("_Sim_Depth_%.2f_%.2fmm_X_%.2f_%.2fmm",zmin,zmax,xmin,xmax));
     fGraph->Write();
 
 }
@@ -271,8 +272,8 @@ void ExpManager::GetSim1DGraphZ(TString NameTitle, double xmin, double xmax, dou
         } 
    }
 
-    fGraph->SetTitle(NameTitle+Form("Simulated Data : %.2f < X < %.2f mm  __  %.2f < Y < %.2f mm;Z (mm);Magnetic Field (mT)",xmin,xmax,ymin,ymax));
-    fGraph->SetName(NameTitle+Form("Sim_X_%.2f_%.2fmm_Y_%.2f_%.2fmm",xmin,xmax,ymin,ymax));
+    fGraph->SetTitle(NameTitle+Form(" Simulated Data : %.2f < X < %.2f mm  __  %.2f < Y < %.2f mm;Z (mm);Magnetic Field (mT)",xmin,xmax,ymin,ymax));
+    fGraph->SetName(NameTitle+Form("_Sim_X_%.2f_%.2fmm_Y_%.2f_%.2fmm",xmin,xmax,ymin,ymax));
     fGraph->Write();
 
 }
@@ -296,8 +297,8 @@ void ExpManager::GetExp2DGraph(TString NameTitle, double xmin, double xmax, doub
         } 
    }
 
-    fGraph->SetTitle(NameTitle+Form("Experimental Data : %.2f < X < %.2f mm  __  %.2f < Y < %.2f mm;Y (mm);X (mm);Magnetic Field (mT)",xmin,xmax,ymin,ymax));
-    fGraph->SetName(NameTitle+Form("Exp_X_%.2f_%.2fmm_Y_%.2f_%.2fmm",xmin,xmax,ymin,ymax));
+    fGraph->SetTitle(NameTitle+Form(" Experimental Data : %.2f < X < %.2f mm  __  %.2f < Y < %.2f mm;Y (mm);X (mm);Magnetic Field (mT)",xmin,xmax,ymin,ymax));
+    fGraph->SetName(NameTitle+Form("_Exp_X_%.2f_%.2fmm_Y_%.2f_%.2fmm",xmin,xmax,ymin,ymax));
     fGraph->Write();
 
 }
@@ -337,15 +338,15 @@ void ExpManager::DrawMap(TString NameTitle, double xmin, double xmax, double ymi
    }
 
     //fGraph->Write();
-    mg->SetTitle(NameTitle+Form("Map : %.2f < X < %.2f mm    %.2f < Y < %.2f mm    %.2f < Z < %.2f mm;X (mm);Y (mm)",xmin,xmax,ymin,ymax,zmin,zmax));
-    mg->SetName(NameTitle+Form("Map__X_%.2f_%.2fmm__Y_%.2f_%.2fmm__Z_%.2f_%.2fmm",xmin,xmax,ymin,ymax,zmin,zmax));
+    mg->SetTitle(NameTitle+Form(" Map : %.2f < X < %.2f mm    %.2f < Y < %.2f mm    %.2f < Z < %.2f mm;X (mm);Y (mm)",xmin,xmax,ymin,ymax,zmin,zmax));
+    mg->SetName(NameTitle+Form("_Map__X_%.2f_%.2fmm__Y_%.2f_%.2fmm__Z_%.2f_%.2fmm",xmin,xmax,ymin,ymax,zmin,zmax));
     mg->Add(frame); 
     mg->Add(fGraph);
     mg->Write();
 }
 
 
-int ExpManager::GetExpBFieldPointXYZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax  ) {
+int ExpManager::GetExpBFieldPointXYZ(double xmin, double xmax, double ymin, double ymax, double zmin, double zmax  ) {
    
    for (unsigned i=0; i< fExpY.size(); i++)   {
     //cout <<  " X "  << fExpX.at(i) ;  
@@ -356,7 +357,7 @@ int ExpManager::GetExpBFieldPointXYZ(TString NameTitle, double xmin, double xmax
    return -1 ; 
 }
 
-int ExpManager::GetExpBFieldPoinRTZ(TString NameTitle, double rmin, double rmax, double tmin, double tmax, double zmin, double zmax  ) {
+int ExpManager::GetExpBFieldPoinRTZ(double rmin, double rmax, double tmin, double tmax, double zmin, double zmax  ) {
    
    for (unsigned i=0; i< fExpY.size(); i++)   {
     //cout <<  " X "  << fExpX.at(i) ;  
@@ -370,16 +371,21 @@ int ExpManager::GetExpBFieldPoinRTZ(TString NameTitle, double rmin, double rmax,
 
 void ExpManager::DrawGraphs(TString grid, int quad, double depth){   
 
-
-if ( grid=="B" || grid=="D" ){
-    double angle0 = (quad-1)*90 ; 
-    GetExp1DGraphPolar("Title", depth-0.1,depth+0.1, 22.5+angle0-5,22.5+angle0+5);
-    GetExp1DGraphPolar("Title", depth-0.1,depth+0.1, 45.0+angle0-5,45.0+angle0+5);
-    GetExp1DGraphPolar("Title", depth-0.1,depth+0.1, 67.5+angle0-5,67.5+angle0+5);
-    GetSim1DGraphPolar("Title", depth-0.1,depth+0.1, 22.5+angle0-5,22.5+angle0+5); 
-    GetSim1DGraphPolar("Title", depth-0.1,depth+0.1, 45.0+angle0-5,45.0+angle0+5);
-    GetSim1DGraphPolar("Title", depth-0.1,depth+0.1, 67.5+angle0-5,67.5+angle0+5);
-}
+    if ( grid=="B" || grid=="D" ){
+        double angle0 = 0 ; 
+        if(quad==1) angle0 = 0 ; 
+        else if(quad==2) angle0 = 90 ; 
+            else if(quad==3) angle0 = -180 ; 
+                else if(quad==1) angle0 = -90 ; 
+              
+        GetExp1DGraphPolar(fInfo, depth-0.1, depth+0.1, 22.5+angle0-5, 22.5+angle0+5);
+        GetExp1DGraphPolar(fInfo, depth-0.1, depth+0.1, 45.0+angle0-5, 45.0+angle0+5);
+        GetExp1DGraphPolar(fInfo, depth-0.1, depth+0.1, 67.5+angle0-5, 67.5+angle0+5);
+        
+        GetSim1DGraphPolar(fInfo, depth-0.1, depth+0.1, 22.5+angle0-5, 22.5+angle0+5); 
+        GetSim1DGraphPolar(fInfo, depth-0.1, depth+0.1, 45.0+angle0-5, 45.0+angle0+5);
+        GetSim1DGraphPolar(fInfo, depth-0.1, depth+0.1, 67.5+angle0-5, 67.5+angle0+5);
+    }
 
 
 }
@@ -388,6 +394,8 @@ if ( grid=="B" || grid=="D" ){
 
 void ExpManager::Clear(void) //NEW
 { 
+ fInfo="";
+
 //Experimental 
  fExpX.clear();
  fExpY.clear();
@@ -418,6 +426,7 @@ double ExpManager::GetSumChi2() {
     double chi2 = 0 ; 
 
     for (unsigned i=0 ; i < fSimB.size() ; i++)  {
+
         chi2 = (fSimB.at(i) - fExpB.at(i))/fExpBErr.at(i); 
         chi2 = chi2*chi2 ;
         sumchi2 = sumchi2 + chi2;

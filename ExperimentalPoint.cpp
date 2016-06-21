@@ -220,7 +220,7 @@ void ExperimentalPoint::LoadBackGround(TString background){ // Earth Background
 	while (file>>grid>>loc>>Bx>>By>>Bz){
 		grid = grid + Form("%d",loc);
 		//cout << " grid " << grid << "  " << Bx << " " << By << " " << Bz << endl ; 
-		fmapBackground.insert ( std::pair<TString,TVector3>(grid,TVector3(Bx, By, Bz)));
+		fmapBackground.insert ( std::pair<TString,TVector3>(grid,TVector3(Bx/10.,-By/10.,-Bz/10.)));
 	}
 	cout << "  finished reading the background. " << endl ; 
 }

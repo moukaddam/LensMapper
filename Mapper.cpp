@@ -72,6 +72,10 @@ ExpData.ReplaceAll("./input/",""); ExpData.ReplaceAll(".dat",""); ExpData.Replac
 SimData.ReplaceAll("./input/",""); SimData.ReplaceAll(".dat",""); SimData.ReplaceAll(".txt","");
 TString  filename = "./output/compare_" + ExpData + "_" + SimData + ".root";
 TFile outputFile(filename,"RECREATE");
+TDirectory *quad1 = outputFile->mkdir("quad1");
+TDirectory *quad2 = outputFile->mkdir("quad2")
+TDirectory *quad3 = outputFile->mkdir("quad3")
+TDirectory *quad4 = outputFile->mkdir("quad4")
 
 ///////////////////////////// 
 /////////////////////////////  READ THE SIMULATION FILE ///////////////////////
@@ -146,7 +150,12 @@ SimManager *SimBdifManager = new SimManager(f3DHistBdiff,0.38/*mm*/,0.38/*mm*/,0
 ///////////////////////////// 
 
 //create the map holding all the slices in z
-std::map<Double_t,ExpManager> mapExpField;   
+map<Double_t,ExpManager> mapExpField;
+mapExpField[0].SetInfo("Bx"); 
+mapExpField[1].SetInfo("By");
+mapExpField[2].SetInfo("Bz");
+mapExpField[3].SetInfo("Bmag");      
+mapExpField[4].SetInfo("Btan"); // tangential field   
 
 ExperimentalPoint* ExpPoint = new ExperimentalPoint(background);  
 // Attention, Sensor X,Y or Z measures in all directions (not necessarly what the 
@@ -168,13 +177,13 @@ for (int i = 0 ; i < 1 ; i++){ // number of lines to neglect
 
 double R,Theta,Bexp,Bsim,Berr;
 while (input_exp >> Quadrant){
+	if (Quadrant == 0) continue ; 	//skip lines starting by zero
 	input_exp >> Grid >> Position >> Level >> BX >> BY >> BZ;
-	//skip lines starting by zero
-    if (Quadrant == 0) continue ; 
 
 	ExpPoint->ClearParameters();	
 	ExpPoint->ReadLineAndTreat( Quadrant, Grid, Position, Level , BX , BY , BZ); 
     
+
 	X = ExpPoint->fSensorPositionX.X() ; 
     Y = ExpPoint->fSensorPositionX.Y() ; 
 	Z = ExpPoint->fSensorPositionX.Z() ; 
@@ -186,6 +195,7 @@ while (input_exp >> Quadrant){
 	//
 	mapExpField[0].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
 	mapExpField[0].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
+
 
 	X = ExpPoint->fSensorPositionY.X() ; 
     Y = ExpPoint->fSensorPositionY.Y() ; 
@@ -199,6 +209,7 @@ while (input_exp >> Quadrant){
 	mapExpField[1].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
 	mapExpField[1].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
 
+
 	X = ExpPoint->fSensorPositionZ.X() ; 
     Y = ExpPoint->fSensorPositionZ.Y() ; 
 	Z = ExpPoint->fSensorPositionZ.Z() ; 
@@ -211,6 +222,7 @@ while (input_exp >> Quadrant){
 	mapExpField[2].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
 	mapExpField[2].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
 
+ 
 	X = ExpPoint->fPosition.X() ; 
     Y = ExpPoint->fPosition.Y() ; 
 	Z = ExpPoint->fPosition.Z() ; 
@@ -223,6 +235,7 @@ while (input_exp >> Quadrant){
 	mapExpField[3].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
 	mapExpField[3].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
 
+
 	X = ExpPoint->fPosition.X() ; 
     Y = ExpPoint->fPosition.Y() ; 
 	Z = ExpPoint->fPosition.Z() ; 
@@ -234,17 +247,25 @@ while (input_exp >> Quadrant){
 	//
 	mapExpField[4].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
 	mapExpField[4].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
-
+	
 }
 
 ///////////////////////////// Create histograms with ExpManager ////////////////////////
 for (unsigned i = 0 ; i <ExpPoint->flistGrid.size() ; i++) {
-	cout << " Drawing graphs for " << ExpPoint->flistGrid.at(i) << " " <<  ExpPoint->flistQuad.at(i) << " " << ExpPoint->flistDepth.at(i) << endl ; 
-    mapExpField.at(0).DrawGraphs(ExpPoint->flistGrid.at(i) , ExpPoint->flistQuad.at(i), ExpPoint->flistDepth.at(i));
+	
+	cout << " Drawing graphs for      Grid :" << ExpPoint->flistGrid.at(i) << "     Quad : " <<  ExpPoint->flistQuad.at(i) << "     depth : " << ExpPoint->flistDepth.at(i) << endl ; 
+   
+    mapExpField.at(0).DrawGraphs(ExpPoint->flistGrid.at(i), ExpPoint->flistQuad.at(i), ExpPoint->flistDepth.at(i));
+    mapExpField.at(1).DrawGraphs(ExpPoint->flistGrid.at(i), ExpPoint->flistQuad.at(i), ExpPoint->flistDepth.at(i));
+    mapExpField.at(2).DrawGraphs(ExpPoint->flistGrid.at(i), ExpPoint->flistQuad.at(i), ExpPoint->flistDepth.at(i));
+
+    SimBxManager->DrawGraphs(ExpPoint->GetOffsetDirection(ExpPoint->flistGrid.at(i), ExpPoint->flistQuad.at(i), "X"), ExpPoint->flistGrid.at(i), ExpPoint->flistQuad.at(i), ExpPoint->flistDepth.at(i));
+    SimByManager->DrawGraphs(ExpPoint->GetOffsetDirection(ExpPoint->flistGrid.at(i), ExpPoint->flistQuad.at(i), "Y"), ExpPoint->flistGrid.at(i), ExpPoint->flistQuad.at(i), ExpPoint->flistDepth.at(i));
+    SimBzManager->DrawGraphs(ExpPoint->GetOffsetDirection(ExpPoint->flistGrid.at(i), ExpPoint->flistQuad.at(i), "Z"), ExpPoint->flistGrid.at(i), ExpPoint->flistQuad.at(i), ExpPoint->flistDepth.at(i));
 }
 
 
-
+/*
 mapExpField.at(0).DrawMap("Bx",-100,+100,-100,+100,-100,+100) ;  
 mapExpField.at(0).GetExp1DGraphPolar("Bx",-44.9,-44.7,22.5-5,22.5+5);
 mapExpField.at(0).GetExp1DGraphPolar("Bx",-44.9,-44.7,45.0-5,45.0+5);
@@ -339,6 +360,7 @@ SimBzManager->Draw2DHist ("Bz",200,-100,+100,-100,+100,-44.8) ;
 SimBmagManager->Draw2DHist("Bmag",500,-100,+100,-100,+100,-44.8);
 SimBtanManager->Draw2DHist("Btan",500,-100,+100,-100,+100,-44.8);
 SimBdifManager->Draw2DHist("Bdif",500,-100,+100,-100,+100,-44.8);
+*/
 
 //Close the file on disk
 outputFile.Close();
@@ -354,7 +376,6 @@ int ndfz = mapExpField.at(2).GetNpoints();
 
 double Allchi2 = sumchi2x + sumchi2y + sumchi2z ; 
 int Allndf = ndfx + ndfy + ndfz ; 
-
 
  return Allchi2/Allndf;
 }
