@@ -74,7 +74,6 @@ void ExpManager::GetExp1DGraphPolar(TString NameTitle, double zmin, double zmax,
        
     int graph_counter = 0 ; 
    for (unsigned i=0; i< fExpR.size(); i++)   {
-    cout <<  fExpTheta.at(i) << " angle -- Z " << fExpZ.at(i) << endl; 
         if( (fExpTheta.at(i) >= anglemin && fExpTheta.at(i) <= anglemax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) ){ 
             fGraph->SetPoint(graph_counter,fExpR.at(i),fExpB.at(i));    
             fGraph->SetPointError(graph_counter,fExpRErr.at(i),fExpBErr.at(i));   

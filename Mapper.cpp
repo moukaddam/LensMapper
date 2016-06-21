@@ -262,9 +262,9 @@ for (unsigned i = 0 ; i <ExpPoint->flistGrid.size() ; i++) {
     
 	outputFile.cd(); 
     dirquad[quad-1]->cd();
-    TDirectory *dir = dirquad[quad-1]->GetDirectory(Form("Depth_%.2f",depth));
+    TDirectory *dir = dirquad[quad-1]->GetDirectory(Form("Depth_%.2f_Grid_",depth)+grid);
 	if (!dir) // if not found create it
-	    dir = dirquad[quad-1]->mkdir(Form("Depth_%.2f",depth)); 
+	    dir = dirquad[quad-1]->mkdir(Form("Depth_%.2f_Grid_",depth)+grid); 
 	dir->cd(); 
 
     mapExpField.at(0).DrawGraphs(ExpPoint->flistGrid.at(i), ExpPoint->flistQuad.at(i), ExpPoint->flistDepth.at(i));
