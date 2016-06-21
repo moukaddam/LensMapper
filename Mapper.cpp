@@ -1,6 +1,7 @@
 
 
 #include "TFile.h"
+#include "TDirectory.h"
 
 #include "ExperimentalPoint.h"
 #include "SimulationPoint.h"
@@ -72,10 +73,11 @@ ExpData.ReplaceAll("./input/",""); ExpData.ReplaceAll(".dat",""); ExpData.Replac
 SimData.ReplaceAll("./input/",""); SimData.ReplaceAll(".dat",""); SimData.ReplaceAll(".txt","");
 TString  filename = "./output/compare_" + ExpData + "_" + SimData + ".root";
 TFile outputFile(filename,"RECREATE");
-TDirectory *quad1 = outputFile->mkdir("quad1");
-TDirectory *quad2 = outputFile->mkdir("quad2")
-TDirectory *quad3 = outputFile->mkdir("quad3")
-TDirectory *quad4 = outputFile->mkdir("quad4")
+TDirectory *dirquad[4] ; 
+dirquad[0] = outputFile.mkdir("Quad_1");
+dirquad[1] = outputFile.mkdir("Quad_2");
+dirquad[2] = outputFile.mkdir("Quad_3");
+dirquad[3] = outputFile.mkdir("Quad_4");
 
 ///////////////////////////// 
 /////////////////////////////  READ THE SIMULATION FILE ///////////////////////
@@ -253,8 +255,18 @@ while (input_exp >> Quadrant){
 ///////////////////////////// Create histograms with ExpManager ////////////////////////
 for (unsigned i = 0 ; i <ExpPoint->flistGrid.size() ; i++) {
 	
-	cout << " Drawing graphs for      Grid :" << ExpPoint->flistGrid.at(i) << "     Quad : " <<  ExpPoint->flistQuad.at(i) << "     depth : " << ExpPoint->flistDepth.at(i) << endl ; 
-   
+    TString grid = ExpPoint->flistGrid.at(i);     
+    int quad = ExpPoint->flistQuad.at(i);    
+    double depth = ExpPoint->flistDepth.at(i);  
+    cout << " Drawing graphs for      Grid :" << grid << "     Quad : " << quad << "     depth : " << depth << endl ; 
+    
+	outputFile.cd(); 
+    dirquad[quad-1]->cd();
+    TDirectory *dir = dirquad[quad-1]->GetDirectory(Form("Depth_%.2f",depth));
+	if (!dir) // if not found create it
+	    dir = dirquad[quad-1]->mkdir(Form("Depth_%.2f",depth)); 
+	dir->cd(); 
+
     mapExpField.at(0).DrawGraphs(ExpPoint->flistGrid.at(i), ExpPoint->flistQuad.at(i), ExpPoint->flistDepth.at(i));
     mapExpField.at(1).DrawGraphs(ExpPoint->flistGrid.at(i), ExpPoint->flistQuad.at(i), ExpPoint->flistDepth.at(i));
     mapExpField.at(2).DrawGraphs(ExpPoint->flistGrid.at(i), ExpPoint->flistQuad.at(i), ExpPoint->flistDepth.at(i));
