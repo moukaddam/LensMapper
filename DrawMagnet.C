@@ -1,14 +1,22 @@
-void DrawMagnet(TString type,double offset=0, double height=50) {
+void DrawMagnet(TString type="Options",double offset=0, double height=50) {
 
-if (type=="M") Cluster(offset, height, 55); 
-else 
-if (type=="L") Cluster(offset,height, 30);
+if (type=="Option" || type=="option" ) {
+  cout << "\n\n DrawMagnet.C(\"LEL\",0,50)\tfor Low Energy Lens" << endl;
+  cout << " DrawMagnet.C(\"MEL\",0,50)\tfor Medium Energy Lens" << endl;
+  cout << " DrawMagnet.C(\"PS\",0,50)\tfor Photon Shield" << endl;
+  cout << " DrawMagnet.C(\"FLEL\",0,50)\tfor for Facade of LEL" << endl;
+  cout << " DrawMagnet.C(\"FMEL\",0,50)\tfor for Facade of MEL\n\n" << endl;
+}
 else
-if (type=="P") PShield(offset,height); 
-else
-if (type=="FM") Facade(type,55,3.4);
+if (type=="MEL") Cluster(offset, height, 55); 
 else 
-if (type=="FL") Facade(type,30,5);
+if (type=="LEL") Cluster(offset,height, 30);
+else
+if (type=="PS") PShield(offset,height); 
+else
+if (type=="FMEL") Facade(type,55,3.4);
+else 
+if (type=="FLEL") Facade(type,30,5);
 
 }
 
