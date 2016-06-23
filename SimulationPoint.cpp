@@ -14,9 +14,13 @@ fPosition.Dump();
 
 }
 
-
-void SimulationPoint::Treat()// this could be automatic
+void SimulationPoint::ReadLineAndTreat(Double_t  X, Double_t  Y, Double_t  Z , Double_t Bx, Double_t By, Double_t Bz, Double_t Ex, Double_t Ey, Double_t Ez, Double_t Perm)
 {
+fBField.SetXYZ(Bx,By,Bz); //Simulation is offset by -4mm, this corrects for it
+fEField.SetXYZ(Ex,Ey,Ez);
+fPosition.SetXYZ(X,Y,Z);
+fPerm = Perm ;
+
 // x and y -> R theta
 fPositionAngle = fPosition.Phi() * TMath::RadToDeg(); // in degrees (Phi is the azimuthal angle)
 fPositionRadius = fPosition.Perp(); // in mm 
@@ -32,17 +36,6 @@ fEFieldMag = fEField.Mag();
 
 //difference
 fBFieldDiff = fBFieldMag-fBFieldTan ; // when this = 0 it means that most of the magnetic field is tangential and is used to
-}
-
-
-void SimulationPoint::ReadLineAndTreat(Double_t  X, Double_t  Y, Double_t  Z , Double_t Bx, Double_t By, Double_t Bz, Double_t Ex, Double_t Ey, Double_t Ez, Double_t Perm)
-{
-fBField.SetXYZ(Bx,By,Bz); //Simulation is offset by -4mm, this corrects for it
-fEField.SetXYZ(Ex,Ey,Ez);
-fPosition.SetXYZ(X,Y,Z);
-fPerm = Perm ;
-
-Treat();
 }
 
 //Reset parameters

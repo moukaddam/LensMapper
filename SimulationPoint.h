@@ -38,8 +38,6 @@ SimulationPoint(void);
 ~SimulationPoint(void);
 
 void Show(void);
-
-void Treat(void);
 void ReadLineAndTreat(double  X, double  Y, double  Z , double Bx, double By, double Bz, double Ex, double Ey, double Ez, double Perm);
 void ClearParameters(void) ;
 
