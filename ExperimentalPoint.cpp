@@ -204,7 +204,7 @@ void ExperimentalPoint::LoadMap(){
 		//cout << " pos " << pos << "  " << X << " " << Y << endl ; 
 		fmapPosition.insert ( std::pair<TString,TVector2>(pos,TVector2(X,Y)));
 	}
-	cout << "  finished reading the position map. " << endl ; 
+	//cout << "  finished reading the position map. " << endl ; 
 }
 
 
@@ -222,5 +222,5 @@ void ExperimentalPoint::LoadBackGround(TString background){ // Earth Background
 		//cout << " grid " << grid << "  " << Bx << " " << By << " " << Bz << endl ; 
 		fmapBackground.insert ( std::pair<TString,TVector3>(grid,TVector3(Bx/10.,-By/10.,-Bz/10.)));
 	}
-	cout << "  finished reading the background. " << endl ; 
+	//cout << "  finished reading the background. " << endl ; 
 }

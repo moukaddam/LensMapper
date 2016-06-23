@@ -26,6 +26,7 @@ class ExpManager
 TString fInfo; 
 
 //Experimental Position
+vector<TString> fGrid;
 vector<Double_t> fExpX; 
 vector<Double_t> fExpY; 
 vector<Double_t> fExpZ; 
@@ -53,7 +54,7 @@ ExpManager(void );
 
 void SetInfo(TString info){fInfo = info;};
 
-void FillValue(Double_t x, Double_t y, Double_t z, Double_t r, Double_t theta, Double_t b, Double_t bsim);
+void FillValue(Double_t x, Double_t y, Double_t z, Double_t r, Double_t theta, Double_t b, Double_t bsim,TString grid);
 void FillValueError(Double_t x, Double_t y, Double_t z, Double_t r, Double_t theta, Double_t b); // no error on simulation 
 void ShowVectorSizes(void) ;
 void ShowVectorsContent(void) ;
@@ -70,16 +71,16 @@ int GetExpBFieldPointXYZ(double xmin, double xmax, double ymin, double ymax, dou
 int GetExpBFieldPoinRTZ(double rmin, double rmax, double tmin, double tmax, double zmin, double zmax  ) ;
 
 //1D
-void GetExp1DGraphPolar(TString NameTitle, double zmin, double zmax, double anglmin, double anglemax) ; 
-void GetSim1DGraphPolar(TString NameTitle, double zmin, double zmax, double anglemin, double anglemax) ; 
-void GetExp1DGraphX(TString NameTitle, double zmin, double zmax, double ymin, double ymax );
-void GetExp1DGraphY(TString NameTitle, double zmin, double zmax, double xmin, double xmax );
-void GetExp1DGraphZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax );
-void GetSim1DGraphX(TString NameTitle, double zmin, double zmax, double ymin, double ymax );
-void GetSim1DGraphY(TString NameTitle, double zmin, double zmax, double xmin, double xmax );
-void GetSim1DGraphZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax );
+void GetExp1DGraphPolar(TString NameTitle, double zmin, double zmax, double anglmin, double anglemax, TString grid) ; 
+void GetSim1DGraphPolar(TString NameTitle, double zmin, double zmax, double anglemin, double anglemax, TString grid) ; 
+void GetExp1DGraphX(TString NameTitle, double zmin, double zmax, double ymin, double ymax, TString grid);
+void GetExp1DGraphY(TString NameTitle, double zmin, double zmax, double xmin, double xmax, TString grid);
+void GetExp1DGraphZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax, TString grid);
+void GetSim1DGraphX(TString NameTitle, double zmin, double zmax, double ymin, double ymax, TString grid);
+void GetSim1DGraphY(TString NameTitle, double zmin, double zmax, double xmin, double xmax, TString grid);
+void GetSim1DGraphZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax, TString grid);
 
-void DrawGraphs(TString Grid, int Quad, double depth);
+void DrawGraphs(TString Grid, int Quad, double depth); // it Draws a specific set of the above graphs 
 
 //2D 
 void GetExp2DGraph(TString NameTitle, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax) ;

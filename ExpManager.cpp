@@ -7,7 +7,7 @@ Clear();
 ExpManager::~ExpManager(void){}
 
 
-void  ExpManager::FillValue(Double_t x, Double_t y, Double_t z, Double_t r, Double_t theta, Double_t b, Double_t bsim )
+void  ExpManager::FillValue(Double_t x, Double_t y, Double_t z, Double_t r, Double_t theta, Double_t b, Double_t bsim, TString grid )
 {
 	fExpX.push_back(x) ;
 	fExpY.push_back(y) ;
@@ -16,6 +16,8 @@ void  ExpManager::FillValue(Double_t x, Double_t y, Double_t z, Double_t r, Doub
 	fExpTheta.push_back(theta) ;
 	fExpB.push_back(b) ;
 	fSimB.push_back(bsim) ;
+    fGrid.push_back(grid) ;
+
 }
 
 void  ExpManager::FillValueError(Double_t x, Double_t y, Double_t z, Double_t r, Double_t theta, Double_t b)
@@ -37,6 +39,7 @@ cout      <<"x : "<<fExpX.size();
 cout<<endl<<"y : "<<fExpY.size();
 cout<<endl<<"z : "<<fExpZ.size();
 cout<<endl<<"B : "<<fExpB.size();
+cout<<endl<<"g : "<<fGrid.size();
 cout<<endl<<"-----------SIM"<<endl;
 cout<<endl<<"B : "<<fSimB.size();
 cout<<endl<<"------------------------"<<endl;
@@ -52,6 +55,8 @@ for(unsigned i=0 ; i< fExpY.size() ; i++)
 cout<<" "<<fExpY.at(i)<<endl;
 for(unsigned i=0 ; i< fExpZ.size() ; i++)
 cout<<" "<<fExpZ.at(i)<<endl;
+for(unsigned i=0 ; i< fGrid.size() ; i++)
+cout<<" "<<fGrid.at(i)<<endl;
 cout<<endl<<"------------------------"<<endl;
 for(unsigned i=0 ; i< fExpB.size() ; i++)
 cout<<" "<<fExpB.at(i)<<endl;
@@ -62,7 +67,7 @@ cout<<endl<<"========================"<<endl;
 }
 
 
-void ExpManager::GetExp1DGraphPolar(TString NameTitle, double zmin, double zmax, double anglemin, double anglemax) {
+void ExpManager::GetExp1DGraphPolar(TString NameTitle, double zmin, double zmax, double anglemin, double anglemax, TString grid) {
 
     TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
     fGraph->SetTitle("Experimental Data;Radius (mm);Magnetic Field (mT)");
@@ -74,7 +79,7 @@ void ExpManager::GetExp1DGraphPolar(TString NameTitle, double zmin, double zmax,
        
     int graph_counter = 0 ; 
    for (unsigned i=0; i< fExpR.size(); i++)   {
-        if( (fExpTheta.at(i) >= anglemin && fExpTheta.at(i) <= anglemax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) ){ 
+        if( (fExpTheta.at(i) >= anglemin && fExpTheta.at(i) <= anglemax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) && fGrid.at(i)== grid ){ 
             fGraph->SetPoint(graph_counter,fExpR.at(i),fExpB.at(i));    
             fGraph->SetPointError(graph_counter,fExpRErr.at(i),fExpBErr.at(i));   
             graph_counter++;
@@ -89,7 +94,7 @@ void ExpManager::GetExp1DGraphPolar(TString NameTitle, double zmin, double zmax,
 
 
 
-void ExpManager::GetExp1DGraphX(TString NameTitle, double zmin, double zmax, double ymin, double ymax){   // do the same thing as for the polar interpolation
+void ExpManager::GetExp1DGraphX(TString NameTitle, double zmin, double zmax, double ymin, double ymax, TString grid){   // do the same thing as for the polar interpolation
 
     TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
     fGraph->SetTitle("Experimental Data;X (mm);Magnetic Field (mT)");
@@ -102,7 +107,7 @@ void ExpManager::GetExp1DGraphX(TString NameTitle, double zmin, double zmax, dou
     int graph_counter = 0 ; 
    for (unsigned i=0; i< fExpY.size(); i++)   {
     //cout <<  " X "  << fExpX.at(i) ;  
-        if( (fExpY.at(i) >= ymin && fExpY.at(i) <= ymax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) ){
+        if( (fExpY.at(i) >= ymin && fExpY.at(i) <= ymax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax)  && fGrid.at(i)== grid ){
             cout << "  < ----- " ; 
             fGraph->SetPoint(graph_counter,fExpX.at(i),fExpB.at(i));    // CHECK, add new the stuff for emag
             fGraph->SetPointError(graph_counter,fExpXErr.at(i),fExpBErr.at(i));   // CHECK, add new the stuff for emag
@@ -117,7 +122,7 @@ void ExpManager::GetExp1DGraphX(TString NameTitle, double zmin, double zmax, dou
 
 }
 
-void ExpManager::GetExp1DGraphY(TString NameTitle, double zmin, double zmax, double xmin, double xmax){   // do the same thing as for the polar interpolation
+void ExpManager::GetExp1DGraphY(TString NameTitle, double zmin, double zmax, double xmin, double xmax, TString grid){   // do the same thing as for the polar interpolation
 
     TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
     fGraph->SetTitle("Experimental Data;Y (mm);Magnetic Field (mT)");
@@ -130,7 +135,7 @@ void ExpManager::GetExp1DGraphY(TString NameTitle, double zmin, double zmax, dou
     int graph_counter = 0 ; 
    for (unsigned i=0; i< fExpY.size(); i++)   {
     //cout <<  " X "  << fExpX.at(i) ;  
-        if( (fExpX.at(i) >= xmin && fExpX.at(i) <= xmax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) ){
+        if( (fExpX.at(i) >= xmin && fExpX.at(i) <= xmax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) && fGrid.at(i)==grid ){
             fGraph->SetPoint(graph_counter,fExpY.at(i),fExpB.at(i));    // CHECK, add new the stuff for emag
             fGraph->SetPointError(graph_counter,fExpYErr.at(i),fExpBErr.at(i));   // CHECK, add new the stuff for emag
             graph_counter++;
@@ -145,7 +150,7 @@ void ExpManager::GetExp1DGraphY(TString NameTitle, double zmin, double zmax, dou
 }
 
 
-void ExpManager::GetExp1DGraphZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax ){   // do the same thing as for the polar interpolation
+void ExpManager::GetExp1DGraphZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax , TString grid){   // do the same thing as for the polar interpolation
 
     TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
     fGraph->SetTitle("Experimental Data;Z (mm);Magnetic Field (mT)");
@@ -158,7 +163,7 @@ void ExpManager::GetExp1DGraphZ(TString NameTitle, double xmin, double xmax, dou
     int graph_counter = 0 ; 
    for (unsigned i=0; i< fExpY.size(); i++)   {
     //cout <<  " X "  << fExpX.at(i) ;  
-        if( (fExpX.at(i) >= xmin && fExpX.at(i) <= xmax) && (fExpY.at(i) >= ymin && fExpY.at(i) <= ymax) ){
+        if( (fExpX.at(i) >= xmin && fExpX.at(i) <= xmax) && (fExpY.at(i) >= ymin && fExpY.at(i) <= ymax) && fGrid.at(i)==grid){
             fGraph->SetPoint(graph_counter,fExpZ.at(i),fExpB.at(i));    // CHECK, add new the stuff for emag
             fGraph->SetPointError(graph_counter,fExpZErr.at(i),fExpBErr.at(i));   // CHECK, add new the stuff for emag
             graph_counter++;
@@ -172,7 +177,7 @@ void ExpManager::GetExp1DGraphZ(TString NameTitle, double xmin, double xmax, dou
 
 }
 
-void ExpManager::GetSim1DGraphPolar(TString NameTitle, double zmin, double zmax, double anglemin, double anglemax) {
+void ExpManager::GetSim1DGraphPolar(TString NameTitle, double zmin, double zmax, double anglemin, double anglemax, TString grid) {
 
     TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
     fGraph->SetTitle("Simulated Data;Radius (mm);Magnetic Field (mT)");
@@ -184,7 +189,7 @@ void ExpManager::GetSim1DGraphPolar(TString NameTitle, double zmin, double zmax,
        
     int graph_counter = 0 ; 
    for (unsigned i=0; i< fExpR.size(); i++) {
-        if( (fExpTheta.at(i) >= anglemin && fExpTheta.at(i) <= anglemax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) ){
+        if( (fExpTheta.at(i) >= anglemin && fExpTheta.at(i) <= anglemax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) && fGrid.at(i)==grid ){
             fGraph->SetPoint(graph_counter,fExpR.at(i),fSimB.at(i));    
             fGraph->SetPointError(graph_counter,fExpRErr.at(i),0);  
             graph_counter++;
@@ -198,7 +203,7 @@ void ExpManager::GetSim1DGraphPolar(TString NameTitle, double zmin, double zmax,
 }
 
 
-void ExpManager::GetSim1DGraphX(TString NameTitle, double zmin, double zmax, double ymin, double ymax){   // do the same thing as for the polar interpolation
+void ExpManager::GetSim1DGraphX(TString NameTitle, double zmin, double zmax, double ymin, double ymax, TString grid){   // do the same thing as for the polar interpolation
 
     TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
     fGraph->SetTitle("Simulated Data;X (mm);Magnetic Field (mT)");
@@ -211,7 +216,7 @@ void ExpManager::GetSim1DGraphX(TString NameTitle, double zmin, double zmax, dou
     int graph_counter = 0 ; 
    for (unsigned i=0; i< fExpY.size(); i++)   {
     //cout <<  " X "  << fExpX.at(i) ;  
-        if( (fExpY.at(i) >= ymin && fExpY.at(i) <= ymax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) ){ 
+        if( (fExpY.at(i) >= ymin && fExpY.at(i) <= ymax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) && fGrid.at(i)==grid ){ 
             fGraph->SetPoint(graph_counter,fExpX.at(i),fSimB.at(i)); 
             fGraph->SetPointError(graph_counter,fExpXErr.at(i),0);  
             graph_counter++;
@@ -224,7 +229,7 @@ void ExpManager::GetSim1DGraphX(TString NameTitle, double zmin, double zmax, dou
 
 }
 
-void ExpManager::GetSim1DGraphY(TString NameTitle, double zmin, double zmax, double xmin, double xmax){   // do the same thing as for the polar interpolation
+void ExpManager::GetSim1DGraphY(TString NameTitle, double zmin, double zmax, double xmin, double xmax, TString grid){   // do the same thing as for the polar interpolation
 
     TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
     fGraph->SetTitle("Simulated Data;Y (mm);Magnetic Field (mT)");
@@ -237,7 +242,7 @@ void ExpManager::GetSim1DGraphY(TString NameTitle, double zmin, double zmax, dou
     int graph_counter = 0 ; 
    for (unsigned i=0; i< fExpY.size(); i++)   {
     //cout <<  " X "  << fExpX.at(i) ;  
-        if( (fExpX.at(i) >= xmin && fExpX.at(i) <= xmax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) ){
+        if( (fExpX.at(i) >= xmin && fExpX.at(i) <= xmax) && (fExpZ.at(i) >= zmin && fExpZ.at(i) <= zmax) && fGrid.at(i)==grid){
             fGraph->SetPoint(graph_counter,fExpY.at(i),fSimB.at(i));    // CHECK, add new the stuff for emag
             fGraph->SetPointError(graph_counter,fExpYErr.at(i),0);   // CHECK, add new the stuff for emag
             graph_counter++;
@@ -251,7 +256,7 @@ void ExpManager::GetSim1DGraphY(TString NameTitle, double zmin, double zmax, dou
 }
 
 
-void ExpManager::GetSim1DGraphZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax ){   // do the same thing as for the polar interpolation
+void ExpManager::GetSim1DGraphZ(TString NameTitle, double xmin, double xmax, double ymin, double ymax, TString grid ){   // do the same thing as for the polar interpolation
 
     TGraphErrors *fGraph = new TGraphErrors(); //= new TGraph2DErrors(np, x_array, y_array, bz_array, ex, ey, ez);
     fGraph->SetTitle("Simulated Data;Z (mm);Magnetic Field (mT)");
@@ -264,7 +269,7 @@ void ExpManager::GetSim1DGraphZ(TString NameTitle, double xmin, double xmax, dou
     int graph_counter = 0 ; 
    for (unsigned i=0; i< fExpY.size(); i++)   {
     //cout <<  " X "  << fExpX.at(i) ;  
-        if( (fExpX.at(i) >= xmin && fExpX.at(i) <= xmax) && (fExpY.at(i) >= ymin && fExpY.at(i) <= ymax) ){
+        if( (fExpX.at(i) >= xmin && fExpX.at(i) <= xmax) && (fExpY.at(i) >= ymin && fExpY.at(i) <= ymax) &&  fGrid.at(i)==grid ){
             fGraph->SetPoint(graph_counter,fExpZ.at(i),fSimB.at(i));    
             fGraph->SetPointError(graph_counter,fExpZErr.at(i),0);   
             graph_counter++;
@@ -375,15 +380,15 @@ void ExpManager::DrawGraphs(TString grid, int quad, double depth){
         if(quad==1) angle0 = 0 ; 
         else if(quad==2) angle0 = 90 ; 
             else if(quad==3) angle0 = -180 ; 
-                else if(quad==1) angle0 = -90 ; 
+                else if(quad==4) angle0 = -90 ; 
               
-        GetExp1DGraphPolar(fInfo, depth-0.1, depth+0.1, 22.5+angle0-5, 22.5+angle0+5);
-        GetExp1DGraphPolar(fInfo, depth-0.1, depth+0.1, 45.0+angle0-5, 45.0+angle0+5);
-        GetExp1DGraphPolar(fInfo, depth-0.1, depth+0.1, 67.5+angle0-5, 67.5+angle0+5);
+        GetExp1DGraphPolar(fInfo, depth-0.1, depth+0.1, 22.5+angle0-5, 22.5+angle0+5,grid);
+        GetExp1DGraphPolar(fInfo, depth-0.1, depth+0.1, 45.0+angle0-5, 45.0+angle0+5,grid);
+        GetExp1DGraphPolar(fInfo, depth-0.1, depth+0.1, 67.5+angle0-5, 67.5+angle0+5,grid);
         
-        GetSim1DGraphPolar(fInfo, depth-0.1, depth+0.1, 22.5+angle0-5, 22.5+angle0+5); 
-        GetSim1DGraphPolar(fInfo, depth-0.1, depth+0.1, 45.0+angle0-5, 45.0+angle0+5);
-        GetSim1DGraphPolar(fInfo, depth-0.1, depth+0.1, 67.5+angle0-5, 67.5+angle0+5);
+        GetSim1DGraphPolar(fInfo, depth-0.1, depth+0.1, 22.5+angle0-5, 22.5+angle0+5,grid); 
+        GetSim1DGraphPolar(fInfo, depth-0.1, depth+0.1, 45.0+angle0-5, 45.0+angle0+5,grid);
+        GetSim1DGraphPolar(fInfo, depth-0.1, depth+0.1, 67.5+angle0-5, 67.5+angle0+5,grid);
     }
 
 
@@ -395,7 +400,8 @@ void ExpManager::Clear(void) //NEW
 { 
  fInfo="";
 
-//Experimental 
+//Experimental
+ fGrid.clear();
  fExpX.clear();
  fExpY.clear();
  fExpZ.clear();

@@ -8,6 +8,8 @@
 #include "ExpManager.h"
 #include "SimManager.h"
 
+//global variables
+int gVerbose = 0 ; 
 // functions 
 double mapping(TString, TString, TString);
 
@@ -15,18 +17,18 @@ double mapping(TString, TString, TString);
 //main 
 int main(int argc,char *argv[]) {
 
-if (argc < 3 || argc > 4  ) {
-	cout << " use only 3 arguments e.g.\n  ./bin/mapperTool    [experimental-file]  [comsol-file]   [ --optional-- <background-file> ] " << endl ; 
-	exit(-1);
-}
+	if (argc < 3 || argc > 4  ) {
+		cout << " use 3 arguments e.g.\n  ./bin/mapperTool    [experimental-file]  [comsol-file]   [ --optional-- <background-file> ] " << endl ; 
+		exit(-1);
+	}
 
-double chi2 = -1 ;
-if (argc == 3) chi2 = mapping(TString(argv[1]),TString(argv[2]),"nobackground");
-else if(argc == 4) chi2 = mapping(TString(argv[1]),TString(argv[2]),TString(argv[3]));
+	double chi2 = -1 ;
+	if (argc == 3) chi2 = mapping(TString(argv[1]),TString(argv[2]),"nobackground");
+	else if(argc == 4) chi2 = mapping(TString(argv[1]),TString(argv[2]),TString(argv[3]));
 
-cout << " chi2 " << chi2 << endl; 
+	cout <<" file : "<< argv[1] <<"      chi2 : " << chi2 << endl; 
 
- return 0;
+	return 0;
 }
 
 
@@ -36,25 +38,26 @@ double mapping(TString SimData, TString ExpData, TString background = "nobackgro
 /////////////////////// OPEN INPUT AND OUTPUT FILES ///////////////////////
 // open the data file
 ifstream input_exp;
-TString fullpathtofile = Form("%s",ExpData.Data() ) ; cout<<"opening file : |"<<ExpData<< "| ... ";
+TString fullpathtofile = Form("%s",ExpData.Data() ) ; 
+if(gVerbose>0) cout<<"opening file : |"<<ExpData<< "| ... ";
 input_exp.open( ExpData.Data() );
 if (!input_exp) { cout<<"problem opening experimental data file " << fullpathtofile << endl; exit(-1);}
-else cout<<"Experimental file is opened "<<endl;
+else if(gVerbose>0) cout<<"Experimental file is opened "<<endl;
 
 //open the field files from comsol  
 ifstream input_sim;
 fullpathtofile = Form("%s",SimData.Data() ) ; 
-cout<<"opening file : |"<<SimData<< "| ... ";
-input_sim.open(SimData.Data() ) ; // from local input if not go seek in data 1
+if(gVerbose>0) cout<<"opening file : |"<<SimData<< "| ... ";
+input_sim.open(SimData.Data() ) ; 
 if(!input_sim.is_open()) {
-	cout<<"problem opening simulation data file |"<< fullpathtofile <<"|"<< endl;
+	if(gVerbose>0) cout<<"problem opening simulation data file |"<< fullpathtofile <<"|"<< endl;
 	SimData.ReplaceAll("./input/","");
 	fullpathtofile = Form("/data1/moukaddam/MagnetSimulation/%s",SimData.Data()) ;
-	cout<<"trying main directory, opening file : |"<<fullpathtofile<< "| ... ";
+	if(gVerbose>0) cout<<"trying main directory, opening file : |"<<fullpathtofile<< "| ... ";
 	input_sim.open(fullpathtofile.Data() ) ; // from local input if not go seek in data 1
 	if (!input_sim.is_open()) { cout<<"problem opening simulation data file |"<< fullpathtofile <<"|"<< endl<<endl; exit(-1);}
 }
-else cout<<" Simulation file " <<  fullpathtofile <<  " is opened " <<endl;
+else if(gVerbose>0) cout<<" Simulation file " <<  fullpathtofile <<  " is opened " <<endl;
 
 // create root output file 
 ExpData.ReplaceAll("./input/",""); ExpData.ReplaceAll(".dat",""); ExpData.ReplaceAll(".txt","");
@@ -76,8 +79,10 @@ Int_t counter2=0; // counter on the first lines
 // read the first lines
 Int_t dimX, dimY, dimZ;
 input_sim>>dimX>>dimY>>dimZ;
-cout<<"\nSimulated Field Table dimensions      X:"<<dimX<<"     Y:"<<dimY<<"    Z:"<<dimZ<<endl;
-
+if(gVerbose>0) cout<<"\nSimulated Field Table dimensions              X : "<<dimX<<"     Y : "<<dimY<<"     Z : "<<dimZ<<endl;
+dimX=dimX+10;
+dimY=dimY+10;
+dimZ=dimZ+10;
 TH3D *f3DHistBx = new TH3D("f3DHistBX", "Bx"         , dimX,-dimX, dimX, dimY,-dimY, dimY, dimZ, -dimZ, dimZ); 
 TH3D *f3DHistBy = new TH3D("f3DHistBY", "By"         , dimX,-dimX, dimX, dimY,-dimY, dimY, dimZ, -dimZ, dimZ);  
 TH3D *f3DHistBz = new TH3D("f3DHistBZ", "Bz"         , dimX,-dimX, dimX, dimY,-dimY, dimY, dimZ, -dimZ, dimZ);  
@@ -91,7 +96,7 @@ while (d_buffer != 0 && counter1< 15){ // find a solution for this with do while
 	counter2++;
 	}
 getline(input_sim,s_buffer);
-cout<< " Number of skipped lines in comsol file : " <<counter2 << "  last line content : "<<s_buffer<<endl;
+if(gVerbose>0) cout<< " Number of skipped lines in comsol file : " <<counter2 << "  last line content : "<<s_buffer<<endl;
 
 // read and fill
 SimulationPoint* SimPoint = new SimulationPoint();
@@ -105,6 +110,8 @@ while ( !input_sim.eof() ) {
 	   // Choose format
 	   if(counter2<9)   input_sim >> X >> Y >> Z >> BX >> BY >> BZ >> Perm ;
 	   else   			input_sim >> X >> Y >> Z >> BX >> BY >> BZ >> EX >> EY >> EZ >> Perm ;
+	    
+	    //Z = Z-5; 
 		SimPoint->ReadLineAndTreat(X,Y,Z,BX,BY,BZ,EX,EY,EZ,Perm );
 		//SimPoint->Show();
 		// fill in TH3D all the simulation data
@@ -118,11 +125,11 @@ while ( !input_sim.eof() ) {
 		//count the lines for inspection
 		line++;
 	   if (line%5000 == 0) {
-		   printf("\r     @line : %d  ... Still reading ...",line);
-		   //cout<< X<<"   "<<Y <<"   "<<Z <<"   "<<BX <<"   "<<BY<<"   "<<BZ <<"   "<< EX<<"   "<< EY<<"   "<< EZ<<"   "<< Perm<<endl ;
+		   if(gVerbose>0) printf("\r     @line : %d  ... Still reading ...",line);
+		   if(gVerbose>1) cout<< X<<"   "<<Y <<"   "<<Z <<"   "<<BX <<"   "<<BY<<"   "<<BZ <<"   "<< EX<<"   "<< EY<<"   "<< EZ<<"   "<< Perm<<endl ;
 	   }
 }  
-cout<<" total number of lines read : "<<line<<endl;
+if(gVerbose>0) cout<<" total number of lines read : "<<line<<endl;
 
 
 ///////////////////////////// Create histograms with SimManager //////////////////////// 
@@ -163,11 +170,11 @@ for (int i = 0 ; i < 1 ; i++){ // number of lines to neglect
 
 double R,Theta,Bexp,Bsim,Berr;
 while (input_exp >> Quadrant){
-	cout << "Quadrant : " << Quadrant <<endl;
+	if(gVerbose>1) cout << "Quadrant : " << Quadrant <<endl;
 	if (Quadrant == 0) { getline(input_exp,s_buffer); continue ;} 	//skip lines starting by zero
 	//FORMAT : 1	A	1	3	-904.5	568.7	232.7
 	input_exp >> Grid >> Position >> Level >> BX >> BY >> BZ;
-	  cout << Grid <<  Position << Level << BX << BY << BZ<<endl; 
+	if(gVerbose>1) cout << "     Grid "<< Grid << "  " << Position << "    level " << Level << "     Bx:By:Bz " << BX << " " << BY << " " << BZ <<endl;
 
 	ExpPoint->ClearParameters();	
 	ExpPoint->ReadLineAndTreat( Quadrant, Grid, Position, Level , BX , BY , BZ); 
@@ -182,7 +189,8 @@ while (input_exp >> Quadrant){
 	Bsim = SimBxManager->GetPoint(X,Y,Z);
 	Berr = SimBxManager->GetPointError(X,Y,Z); // used as an error on the experimental values 
 	//
-	mapExpField[0].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
+	if(gVerbose>2) cout << "     XYZ "<< X << "  " << Y << "  " << Z << "  R " << R << "  theta " << Theta << "   Bexp " << Bexp <<endl;
+	mapExpField[0].FillValue(X,Y,Z,R,Theta,Bexp,Bsim,Grid);
 	mapExpField[0].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
 
 	X = ExpPoint->fSensorPositionY.X() ; 
@@ -194,7 +202,8 @@ while (input_exp >> Quadrant){
 	Bsim = SimByManager->GetPoint(X,Y,Z);
 	Berr = SimByManager->GetPointError(X,Y,Z); // used as an error on the experimental values 
 	//
-	mapExpField[1].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
+	if(gVerbose>2) cout << "     XYZ "<< X << "  " << Y << "  " << Z << "  R " << R << "  theta " << Theta << "   Bexp " << Bexp <<endl;
+	mapExpField[1].FillValue(X,Y,Z,R,Theta,Bexp,Bsim,Grid);
 	mapExpField[1].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
 
 
@@ -207,7 +216,8 @@ while (input_exp >> Quadrant){
 	Bsim = SimBzManager->GetPoint(X,Y,Z);
 	Berr = SimBzManager->GetPointError(X,Y,Z); // used as an error on the experimental values 
 	//
-	mapExpField[2].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
+	if(gVerbose>2) cout << "     XYZ "<< X << "  " << Y << "  " << Z << "  R " << R << "  theta " << Theta << "   Bexp " << Bexp <<endl;
+	mapExpField[2].FillValue(X,Y,Z,R,Theta,Bexp,Bsim,Grid);
 	mapExpField[2].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
 
  
@@ -220,7 +230,8 @@ while (input_exp >> Quadrant){
 	Bsim = SimBmagManager->GetPoint(X,Y,Z);
 	Berr = SimBmagManager->GetPointError(X,Y,Z); // used as an error on the experimental values 
 	//
-	mapExpField[3].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
+	if(gVerbose>2) cout << "     XYZ "<< X << "  " << Y << "  " << Z << "  R " << R << "  theta " << Theta << "   Bexp " << Bexp <<endl;
+	mapExpField[3].FillValue(X,Y,Z,R,Theta,Bexp,Bsim,Grid);
 	mapExpField[3].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
 
 
@@ -233,7 +244,8 @@ while (input_exp >> Quadrant){
 	Bsim = SimBtanManager->GetPoint(X,Y,Z);
 	Berr = SimBtanManager->GetPointError(X,Y,Z); // used as an error on the experimental values 
 	//
-	mapExpField[4].FillValue(X,Y,Z,R,Theta,Bexp,Bsim);
+	if(gVerbose>2) cout << "     XYZ "<< X << "  " << Y << "  " << Z << "  R " << R << "  theta " << Theta << "   Bexp " << Bexp <<endl;
+	mapExpField[4].FillValue(X,Y,Z,R,Theta,Bexp,Bsim,Grid);
 	mapExpField[4].FillValueError(0.5,0.5,0.5,0.7,0.5,Berr);
 	
 }
