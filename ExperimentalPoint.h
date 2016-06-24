@@ -44,6 +44,7 @@ TString  fGrid ; // A, B, C, D (will decide if the reading is Cartezian or not) 
 int fMagnetQuadrant ; // Q12 , Q23, Q34, Q41 (will be fixed by the flat tip) or 0, 1, 2, 3 (counter clock wise )
 int fLocation ; // an integer corresponding to the location 
 int fLevel ; // an integer corresponding to the level of the mapper  (1 to 8, 1 being the top)
+double fFieldOffset ; // if the magnets in the comsol simulation are shifted towards the target by x, fFieldOffset should be set to +x 
 
 // NEW this will be used to correct the sensor position
 TVector3 fPosition; //central position
@@ -61,6 +62,8 @@ ExperimentalPoint(TString background="nobackground");
 
 void ClearParameters(void);
 void ShowParameters(void);
+void SetFieldOffset(double x); 
+
 void CheckList(TString Grid, int MagnetQuadrant, int Level);
 void CalculateCentralPosition();
 void ReadLineAndTreat(int MagnetQuadrant, TString Grid, int Location, int Level , double Bx, double By, double Bz);

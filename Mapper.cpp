@@ -111,7 +111,6 @@ while ( !input_sim.eof() ) {
 	   if(counter2<9)   input_sim >> X >> Y >> Z >> BX >> BY >> BZ >> Perm ;
 	   else   			input_sim >> X >> Y >> Z >> BX >> BY >> BZ >> EX >> EY >> EZ >> Perm ;
 	    
-	    //Z = Z-5; 
 		SimPoint->ReadLineAndTreat(X,Y,Z,BX,BY,BZ,EX,EY,EZ,Perm );
 		//SimPoint->Show();
 		// fill in TH3D all the simulation data
@@ -151,6 +150,8 @@ mapExpField[3].SetInfo("Bmag");
 mapExpField[4].SetInfo("Btan"); // tangential field   
 
 ExperimentalPoint* ExpPoint = new ExperimentalPoint(background);  
+ExpPoint->SetFieldOffset(0); // if magnets are moved 1mm towards the target (positive z direction), the value is +1
+
 // Attention, Sensor X,Y or Z measures in all directions (not necessarly what the 
 // name suggest). This is due to the fact that lens is rotated with respect to mapper plate in some cases
 // The ExperimentalPoint Class will take care fo all these rotations once the location of the measurment is provided 

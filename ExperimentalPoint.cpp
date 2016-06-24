@@ -9,7 +9,8 @@ ExperimentalPoint::ExperimentalPoint(TString background){
 		}
 	fSensorOffsetX.SetXYZ(SENSORXOFFSETX,SENSORXOFFSETY,SENSORXOFFSETZ); 
     fSensorOffsetY.SetXYZ(SENSORYOFFSETX,SENSORYOFFSETY,SENSORYOFFSETZ); 
-    fSensorOffsetZ.SetXYZ(SENSORZOFFSETX,SENSORZOFFSETY,SENSORZOFFSETZ); 
+    fSensorOffsetZ.SetXYZ(SENSORZOFFSETX,SENSORZOFFSETY,SENSORZOFFSETZ);
+    fFieldOffset = 0 ;  
 }
 
 ExperimentalPoint::~ExperimentalPoint(void){}
@@ -24,20 +25,25 @@ void ExperimentalPoint::CalculateCentralPosition(void){ // taking into account t
 	fPosition.SetXYZ(x,y,z); 
 }
 
+void ExperimentalPoint::SetFieldOffset(double x){
+	fFieldOffset = x; 
+}
+
 double ExperimentalPoint::GetDepth(int level){ // taking into account the level and the quadrant 
  
-    // Calculate the sensor position wrt to the base of the plate 
+    // Calculate the sensor position wrt to the base of the plate :
 	// 200 is the height of the hole #8 (the hole closer to base plate bottom) with respect to the base of the pole : -200 (design)
 	// 15 mm difference between holes : -15 for every level as we go up  (design)  =>  -((8-level)*15)
 	// 5 mm is the half thickness of the plate : +5 mm (design)
 	// 193mm is the distance from the contact surface of the pedestal to the tip of the probe : +193   (measured)
 	// all the sensors have -1.8 mm offset inside the stem : -1.8 mm (specsheet)
-	double z = -200 -((8-level)*15) +5 +193 -1.8  ;    
+	double z = -200 -((8-level)*15) +5 +193 -1.8 ;    
     //the base plate (zero of design) is at -1mm wrt to the target (represents the zero of comsol) 
     z = z - 1 ; 
-
+    //add the offset due to the moving of the magnets.
+    z = z - fFieldOffset ;
     // Additional info not used :
-	// 11.5mm is the pedestal where the probe rests (desing)
+	// 11.5mm is the pedestal where the probe rests (design)
 	// 104.8mm is the length of the probe, "L" in the catalogue however it's not very accurate 
 	// Levels {1 to 8 }-->{ -109.8, -94.8, -79.8, -64.8, -49.8, -34.8, -19.8, -4.8}
 
@@ -180,6 +186,8 @@ void ExperimentalPoint::ShowParameters(void){
 	printf("Position Sensor X (mm)     : %2.2f\t%2.2f\t%2.2f\tradius %2.2f\tphi %2.2f\n",fSensorPositionX.X(),fSensorPositionX.Y(),fSensorPositionX.Z(),fSensorPositionX.Perp(),fSensorPositionX.Phi()*TMath::RadToDeg()); 
 	printf("Position Sensor Y (mm)     : %2.2f\t%2.2f\t%2.2f\tradius %2.2f\tphi %2.2f\n",fSensorPositionY.X(),fSensorPositionY.Y(),fSensorPositionY.Z(),fSensorPositionY.Perp(),fSensorPositionY.Phi()*TMath::RadToDeg()); 
 	printf("Position Sensor Z (mm)     : %2.2f\t%2.2f\t%2.2f\tradius %2.2f\tphi %2.2f\n",fSensorPositionZ.X(),fSensorPositionZ.Y(),fSensorPositionZ.Z(),fSensorPositionZ.Perp(),fSensorPositionZ.Phi()*TMath::RadToDeg()); 
+	printf("Field offset               : %2.2f\n",fFieldOffset); 
+
 }
 
 //Clear all parameters
