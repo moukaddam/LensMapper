@@ -37,7 +37,7 @@ double ExperimentalPoint::GetDepth(int level){ // taking into account the level 
 	// 5 mm is the half thickness of the plate : +5 mm (design)
 	// 193mm is the distance from the contact surface of the pedestal to the tip of the probe : +193   (measured)
 	// all the sensors have -1.8 mm offset inside the stem : -1.8 mm (specsheet)
-	double z = -200 -((8-level)*15) +5 +193 -1.8 ;    
+	double z = -200 -((8-level)*15) -5 +193 -1.8 ;    
     //the base plate (zero of design) is at -1mm wrt to the target (represents the zero of comsol) 
     z = z - 1 ; 
     //add the offset due to the moving of the magnets.
@@ -45,7 +45,7 @@ double ExperimentalPoint::GetDepth(int level){ // taking into account the level 
     // Additional info not used :
 	// 11.5mm is the pedestal where the probe rests (design)
 	// 104.8mm is the length of the probe, "L" in the catalogue however it's not very accurate 
-	// Levels {1 to 8 }-->{ -109.8, -94.8, -79.8, -64.8, -49.8, -34.8, -19.8, -4.8}
+	// Levels {1 to 8 }-->{ -119.8, -104.8, -89.8, -74.8, -59.8, -44.8, -29.8, -14.8}
 
 	return z ; 
 }
